@@ -1,0 +1,8 @@
+perl
+ssh trrogers-2.desktop.amazon.co
+ssh trrogers-2.desktop.amazon.co
+ssh trrogers-2.desktop.amazon.com
+ssh
+ping  trrogers-2.desktop.amazon.com
+ssh trrogers-2.desktop.amazon.com
+ssh -t -t trrogers-2.desktop.amazon.com
