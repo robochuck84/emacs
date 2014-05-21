@@ -28,8 +28,34 @@
 ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258")) 
 (package-initialize)
 
+(require 'cl)
+(require 'eclim)
+(global-eclim-mode)
+(add-to-list 'eclim-eclipse-dirs "C:/Users/trrogers/My\ Documents/eclipse/eclipse")
+(setq eclim-executable "C:/Users/trrogers/Documents/eclipse/eclipse/plugins/org.eclim_2.3.2/bin/eclim")
+
 (require 'company)
+(require 'company-emacs-eclim)
+
+(setq company-backends
+      (cons 'company-emacs-eclim (remove 'company-eclim
+					 company-backends)))
+
 (global-company-mode t)
+
+(global-set-key "\C-cl" 'org-store-link) 
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key "\C-cp" 'eclim-manage-projects)
+
+
+(setq erc-autojoin-channels-alist
+      '(("amazon.com" "#ingestion")))
+(erc :server "irc.amazon.com" :port 6667 :nick "trrogers")
+
+(require 'dirtree)
+(add-to-list 'load-path "~/.emacs.d")
+(load "line-num.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -43,20 +69,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(require 'discover)
+(global-discover-mode 1)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-
-(ido-mode 1)
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-
-(setq inhibit-startup-message t
-      inhibit-startup-echo-area-message t)
-
-(define-key global-map (kbd "RET") 'newline-and-indent)
-
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-
-
