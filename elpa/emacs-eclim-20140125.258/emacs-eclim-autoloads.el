@@ -4,7 +4,7 @@
 
 
 ;;;### (autoloads (eclim-mode eclim/workspace-dir) "eclim" "eclim.el"
-;;;;;;  (21246 5009 0 0))
+;;;;;;  (21247 28966 42015 503000))
 ;;; Generated autoloads from eclim.el
 
 (autoload 'eclim/workspace-dir "eclim" "\
@@ -23,7 +23,7 @@ An interface to the Eclipse IDE.
 ;;;***
 
 ;;;### (autoloads (eclim-manage-projects) "eclim-project" "eclim-project.el"
-;;;;;;  (21246 5010 0 0))
+;;;;;;  (21247 28966 170015 504000))
 ;;; Generated autoloads from eclim-project.el
 
 (autoload 'eclim-manage-projects "eclim-project" "\
@@ -35,8 +35,8 @@ An interface to the Eclipse IDE.
 
 ;;;### (autoloads nil nil ("ac-emacs-eclim-source.el" "company-emacs-eclim.el"
 ;;;;;;  "eclim-ant.el" "eclim-completion.el" "eclim-java.el" "eclim-maven.el"
-;;;;;;  "eclim-problems.el" "eclimd.el" "emacs-eclim-pkg.el") (21246
-;;;;;;  5010 396000 0))
+;;;;;;  "eclim-problems.el" "eclimd.el" "emacs-eclim-pkg.el") (21247
+;;;;;;  28966 235787 277000))
 
 ;;;***
 

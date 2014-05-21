@@ -1,8 +1,8 @@
-perl
-ssh trrogers-2.desktop.amazon.co
-ssh trrogers-2.desktop.amazon.co
-ssh trrogers-2.desktop.amazon.com
-ssh
-ping  trrogers-2.desktop.amazon.com
-ssh trrogers-2.desktop.amazon.com
-ssh -t -t trrogers-2.desktop.amazon.com
+learnyounode
+clear
+git status
+git add seasoned.scm
+git commit
+git status
+git commit -m "start of the tastier book"
+git push

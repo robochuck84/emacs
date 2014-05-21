@@ -4,7 +4,7 @@
 
 
 ;;;### (autoloads (enable-paredit-mode paredit-mode) "paredit" "paredit.el"
-;;;;;;  (21246 5050 0 0))
+;;;;;;  (21247 29004 582015 787000))
 ;;; Generated autoloads from paredit.el
 
 (autoload 'paredit-mode "paredit" "\
@@ -25,7 +25,8 @@ Turn on pseudo-structural editing of Lisp code.
 
 ;;;***
 
-;;;### (autoloads nil nil ("paredit-pkg.el") (21246 5050 380000 0))
+;;;### (autoloads nil nil ("paredit-pkg.el") (21247 29004 604226
+;;;;;;  974000))
 
 ;;;***
 
