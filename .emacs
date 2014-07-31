@@ -59,4 +59,15 @@
 (global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
+(require 'eclim)
+(global-eclim-mode)
+
+(require 'eclimd)
+
+(custom-set-variables
+ '(eclim-eclipse-dirs "~/Downloads/eclipse"))
+
+(require 'company-emacs-eclim)
+(company-emacs-eclim-setup)
+
 

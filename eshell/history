@@ -6,3 +6,18 @@ git commit
 git status
 git commit -m "start of the tastier book"
 git push
+cd ..
+cd Downloads/
+ls
+tar -xvf eclipse-standard-luna-R-linux-gtk-x86_64.tar.gz 
+cd eclipse/
+ls
+cd ../../../../
+cd ..
+cd ..
+brazil-build test-unit
+brazil-build test
+cd
+sudo apt-get install clojure
+sudo apt-get install clojure
+clojure
