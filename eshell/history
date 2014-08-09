@@ -21,3 +21,24 @@ cd
 sudo apt-get install clojure
 sudo apt-get install clojure
 clojure
+cd ..
+ls
+cd development/
+ls
+brazil ws --create --name work_item
+cd work_item/
+cd ..
+brazil ws --create --name recon
+cd recon/
+brazil ws --use --package CatalogRTIPRedrives
+cd src/CatalogRTIPRedrives/
+ls
+cd perlModules/
+ls
+cd bin
+ls
+cd ..
+cd ..
+brazil-build
+ls
+brazil-build

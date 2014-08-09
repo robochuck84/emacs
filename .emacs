@@ -26,16 +26,56 @@
              '("melpa" . "http://melpa.milkbox.net/packages/")t)
 
 ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258")) 
+(add-to-list 'load-path "~/emacs/neotree")
+
 (package-initialize)
 
+;; Requires
 (require 'cl)
+(require 'discover)
+(require 'neotree)
+(require 'eclim)
+(require 'eclimd)
+(require 'company)
+(require 'company-emacs-eclim)
+(require 'dirtree)
+(require 'compile)
+(require 'highlight-symbol)
+(require 'visual-regexp-steroids)
 
+;; Modes
+(window-numbering-mode 1)
+(global-linum-mode t)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(ido-mode 1)
+(global-eclim-mode)
+(winner-mode 1):
+(global-company-mode t)
+
+;; Global keys
+(global-set-key [f8] 'neotree-toggle)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-cc" 'org-capture)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cb" 'org-iswitchb)
+(define-key global-map (kbd "RET") 'newline-and-indent)
+
+
+;; Custom Setup
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (misterioso))))
+ '(custom-enabled-themes (quote (misterioso)))
+ '(eclim-eclipse-dirs (quote ("~/Downloads/eclipse")))
+ '(eclim-executable "~/Downloads/eclipse/eclim")
+)
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -43,45 +83,29 @@
  ;; If there is more than one, they won't work right.
  )
 
-(global-linum-mode t)
-
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-
 (set-face-attribute 'default nil :height 110)
-
-(ido-mode 1)
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message t)
 
-(define-key global-map (kbd "RET") 'newline-and-indent)
+;; Org
+(load-library "find-lisp")
+(setq org-agenda-files (find-lisp-find-files "~/org" "\.org$"))
+;;(setq org-default-notes-file (concat org-directory "/refile.org"))
 
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;;(setq org-capture-templates
+;;    '(("t" "Todo" entry
 
-(require 'eclim)
-(global-eclim-mode)
+;; Ido
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
 
-(require 'eclimd)
-
-(custom-set-variables
- '(eclim-eclipse-dirs '("~/Downloads/eclipse"))
- '(eclim-executable "~/Downloads/eclipse/eclim"))
-
-(require 'company)
-(require 'company-emacs-eclim)
+;; Company
 (company-emacs-eclim-setup)
-(global-company-mode t)
-
 (setq help-at-pt-display-when-idle t)
-(setq help-at-pt-timer-delay 0.1)
+(setq help-at-pt-timer-delay 0.05)
 (help-at-pt-set-timer)
 
-(require 'dirtree)
-
+;; Functions
 (defun tr/exit-code-helper (cmd rx)
   "Pipe through perl looking for rx."
   (s-concat cmd
@@ -102,7 +126,7 @@
             (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p" "-f" "-o"))))
             tr/junit-failure-regex)))
 
-(require 'compile)
+
 (add-to-list 'compilation-mode-font-lock-keywords
              '("Tests run: [0-9]*, Failures: [1-9][0-9]*,.*$"
                (0 compilation-error-face)))
@@ -132,9 +156,13 @@
   (local-set-key (kbd "C-c T") 'tr/eclim-java-junit-all)
   (local-set-key (kbd "C-c z") 'eclim-java-implement))
 
+(fset 'emphasize-buffer
+   "\C-u16\C-x}")
+(global-set-key [f5] 'emphasize-buffer)
+
 (add-hook 'java-mode-hook 'java-mode-keys)
 
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
 
-(winner-mode 1):
+
