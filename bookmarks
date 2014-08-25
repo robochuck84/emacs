@@ -2,14 +2,19 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("org-refile-last-stored"
- (filename . "~/org/refile.org")
- (front-context-string . "** TODO Redrive ")
- (rear-context-string . "ngs][Meetings]]\n")
- (position . 280))
+(("org-capture-last-stored-marker"
+ (filename . "~/org/agenda.org")
+ (front-context-string . "** TODO Somethin")
+ (rear-context-string . "g to be refiled\n")
+ (position . 1090))
+("org-refile-last-stored"
+ (filename . "~/org/agenda.org")
+ (front-context-string . "** TODO Work on ")
+ (rear-context-string . "18:51] =>  1:00\n")
+ (position . 100))
 ("org-capture-last-stored"
- (filename . "~/org/refile.org")
- (front-context-string . "** TODO Redrive ")
- (rear-context-string . "*Email][Email]]\n")
- (position . 177))
+ (filename . "~/org/agenda.org")
+ (front-context-string . "** TODO Somethin")
+ (rear-context-string . "efile technique\n")
+ (position . 1058))
 )

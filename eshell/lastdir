@@ -1,4 +1,3 @@
-/home/local/ANT/trrogers/emacs
 /home/local/ANT/trrogers/Downloads
 /home/local/ANT/trrogers/Downloads/eclipse
 /home/local/ANT/trrogers/development/catexp/src/GRCSCatExpTools/tst/com/amazon/gcs/catexp/validation
@@ -7,7 +6,6 @@
 /home/local/ANT/trrogers/development/catexp/src/GRCSCatExpTools
 /home/local/ANT/trrogers/development/catexp/src/GRCSCatExpTools/src/com/amazon/gcs/catexp/spc
 /home/local/ANT/trrogers/org
-/home/local/ANT/trrogers
 /home/local/ANT/trrogers/development/work_item
 /home/local/ANT/trrogers/development
 /home/local/ANT/trrogers/development/recon
@@ -15,7 +13,15 @@
 /home/local/ANT/trrogers/development/recon/src/CatalogRTIPRedrives/perlModules/bin
 /home/local/ANT/trrogers/development/recon/src/CatalogRTIPRedrives/perlModules
 /home/local/ANT/trrogers/development/recon/src/CatalogRTIPRedrives
+<<<<<<< HEAD
 /home/trogers/development/one/templates
 /home/trogers/development/one
 /home/trogers/development
 /home/trogers/development/seven_weeks
+=======
+~/emacs
+/home/local/ANT/trrogers
+/home/local/ANT/trrogers/emacs
+/home/local/ANT/trrogers
+/home/local/ANT/trrogers/development/catexp/src/GRCSCatExpAutoService
+>>>>>>> updates
