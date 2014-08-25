@@ -42,3 +42,11 @@ cd ..
 brazil-build
 ls
 brazil-build
+cd ..
+ls
+cd ..
+ls
+lein new 7weeks
+lein new seven_weeks
+cd seven_weeks/
+ls
