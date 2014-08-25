@@ -26,14 +26,14 @@
              '("melpa" . "http://melpa.milkbox.net/packages/")t)
 
 ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258")) 
-(add-to-list 'load-path "~/emacs/neotree")
+;;(add-to-list 'load-path "~/emacs/neotree")
 
 (package-initialize)
 
 ;; Requires
 (require 'cl)
 (require 'discover)
-(require 'neotree)
+;;(require 'neotree)
 (require 'eclim)
 (require 'eclimd)
 (require 'company)
@@ -105,6 +105,58 @@
 (setq help-at-pt-timer-delay 0.05)
 (help-at-pt-set-timer)
 
+
+;; Clojure
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+(add-hook 'cider-mode-hook 'enable-paredit-mode)
+(add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+
+(add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
+
+(defun shell-send-input (input)
+  "Send INPUT into the *shell* buffer and leave it visible."
+  (save-selected-window
+    (switch-to-buffer-other-window "*shell*")
+    (goto-char (point-max))
+    (insert input)
+    (comint-send-input)))
+
+(defun defun-at-point ()
+  "Return the text of the defun at point."
+  (apply #'buffer-substring-no-properties
+	 (region-for-defun-at-point)))
+
+(defun region-for-defun-at-point ()
+  "Return the start and end position of defun at point."
+  (save-excursion
+    (save-match-data
+      (end-of-defun)
+      (let ((end (point)))
+	(beginning-of-defun)
+	(list (point) end)))))
+
+(defun expression-preceding-point ()
+  "Return the expression preceding point as a string."
+  (buffer-substring-no-properties
+   (save-excursion (backward-sexp) (point))
+   (point)))
+
+(defun shell-eval-last-expression ()
+  "Send the expression preceding point to the *shell* buffer."
+  (interactive)
+  (shell-send-input (expression-preceding-point)))
+
+(defun shell-eval-defun ()
+  "Send the current toplevel expression to the *shell* buffer."
+  (interactive)
+  (shell-send-input (defun-at-point)))
+
+(add-hook 'clojure-mode-hook
+	  '(lambda ()
+	     (define-key clojure-mode-map (kbd "C-c e") 'shell-eval-last-expression)
+	     (define-key clojure-mode-map (kbd "C-c x") 'shell-eval-defun)))
+    
 ;; Functions
 (defun tr/exit-code-helper (cmd rx)
   "Pipe through perl looking for rx."
