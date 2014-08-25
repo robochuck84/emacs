@@ -43,7 +43,6 @@ brazil-build
 ls
 brazil-build
 cd ..
-<<<<<<< HEAD
 ls
 cd ..
 ls
@@ -51,7 +50,6 @@ lein new 7weeks
 lein new seven_weeks
 cd seven_weeks/
 ls
-=======
 cd emacs
 cd ..
 ls -lah
@@ -60,4 +58,3 @@ brazil-build
 brazil-build
 brazil-build 
 brazil-build 
->>>>>>> updates
