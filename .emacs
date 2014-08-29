@@ -26,14 +26,15 @@
              '("melpa" . "http://melpa.milkbox.net/packages/")t)
 
 ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258")) 
-;;(add-to-list 'load-path "~/emacs/neotree")
+(add-to-list 'load-path "~/emacs/neotree")
+(add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
 
 (package-initialize)
 
 ;; Requires
 (require 'cl)
 (require 'discover)
-;;(require 'neotree)
+(require 'neotree)
 (require 'eclim)
 (require 'eclimd)
 (require 'company)
@@ -42,10 +43,12 @@
 (require 'compile)
 (require 'highlight-symbol)
 (require 'visual-regexp-steroids)
+(require 'tls)
+(require 'erc)
+(require 'erc-highlight-nicknames)
 
 ;; Modes
 (window-numbering-mode 1)
-(global-linum-mode t)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -74,7 +77,9 @@
  '(custom-enabled-themes (quote (misterioso)))
  '(eclim-eclipse-dirs (quote ("~/Downloads/eclipse")))
  '(eclim-executable "~/Downloads/eclipse/eclim")
-)
+ '(erc-port 6697)
+ '(erc-server "ircs.amazon.com")
+ '(org-hide-leading-stars t))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -90,10 +95,12 @@
 ;; Org
 (load-library "find-lisp")
 (setq org-agenda-files (find-lisp-find-files "~/org" "\.org$"))
-;;(setq org-default-notes-file (concat org-directory "/refile.org"))
+(setq org-default-notes-file "~/org/refile.org")
 
-;;(setq org-capture-templates
-;;    '(("t" "Todo" entry
+(setq org-capture-templates
+    '(("t" "Todo" entry (file+headline "~/org/agenda.org" "Tasks")
+       "* TODO %?\n")))
+      
 
 ;; Ido
 (setq ido-enable-flex-matching t)
@@ -105,58 +112,6 @@
 (setq help-at-pt-timer-delay 0.05)
 (help-at-pt-set-timer)
 
-
-;; Clojure
-(add-hook 'clojure-mode-hook 'enable-paredit-mode)
-(add-hook 'cider-mode-hook 'enable-paredit-mode)
-(add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-
-(add-to-list 'auto-mode-alist '("\\.cljs$" . clojure-mode))
-
-(defun shell-send-input (input)
-  "Send INPUT into the *shell* buffer and leave it visible."
-  (save-selected-window
-    (switch-to-buffer-other-window "*shell*")
-    (goto-char (point-max))
-    (insert input)
-    (comint-send-input)))
-
-(defun defun-at-point ()
-  "Return the text of the defun at point."
-  (apply #'buffer-substring-no-properties
-	 (region-for-defun-at-point)))
-
-(defun region-for-defun-at-point ()
-  "Return the start and end position of defun at point."
-  (save-excursion
-    (save-match-data
-      (end-of-defun)
-      (let ((end (point)))
-	(beginning-of-defun)
-	(list (point) end)))))
-
-(defun expression-preceding-point ()
-  "Return the expression preceding point as a string."
-  (buffer-substring-no-properties
-   (save-excursion (backward-sexp) (point))
-   (point)))
-
-(defun shell-eval-last-expression ()
-  "Send the expression preceding point to the *shell* buffer."
-  (interactive)
-  (shell-send-input (expression-preceding-point)))
-
-(defun shell-eval-defun ()
-  "Send the current toplevel expression to the *shell* buffer."
-  (interactive)
-  (shell-send-input (defun-at-point)))
-
-(add-hook 'clojure-mode-hook
-	  '(lambda ()
-	     (define-key clojure-mode-map (kbd "C-c e") 'shell-eval-last-expression)
-	     (define-key clojure-mode-map (kbd "C-c x") 'shell-eval-defun)))
-    
 ;; Functions
 (defun tr/exit-code-helper (cmd rx)
   "Pipe through perl looking for rx."
@@ -218,3 +173,24 @@
   (windmove-default-keybindings))
 
 
+;; ERC
+(add-to-list 'erc-modules 'highlight-nicknames)
+(erc-update-modules)
+(erc-spelling-mode 1)
+(setq erc-autojoin-channels-list '(("amazon.com" "#ingestion")))
+
+(defun start-irc ()
+  "Connect to IRC."
+  (interactive)
+  (erc-tls :server "ircs.amazon.com" :port 6697
+	   :nick "trrogers" :full-name "trrogers"))
+
+(add-hook 'erc-insert-post-hook
+	  (lambda () (goto-char (point-min))
+	    (when (re-search-forward
+		   (regexp-quote (erc-current-nick)) nil t) (ding))))
+
+;; Perl
+(-each '(flycheck-mode linum-mode) (lambda (mode) (add-hook 'perl-mode-hook mode)))
+	  
+     
