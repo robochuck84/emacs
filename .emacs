@@ -35,7 +35,7 @@
 (require 'cl)
 (require 'cl-lib)			
 (require 'discover)
-(require 'neotree)
+;;(require 'neotree)
 (require 'eclim)
 (require 'eclimd)
 (require 'company)
@@ -65,6 +65,9 @@
 (global-company-mode t)
 (global-hungry-delete-mode)
 (google-this-mode 1)
+
+;; Alias
+(defalias 'perl-mode 'cperl-mode)
 
 ;; Global keys
 ;; Found these great global key bindings at endlessparentheses.com
