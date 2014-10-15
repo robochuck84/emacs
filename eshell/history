@@ -1,60 +1,128 @@
-learnyounode
-clear
-git status
-git add seasoned.scm
-git commit
-git status
-git commit -m "start of the tastier book"
-git push
-cd ..
-cd Downloads/
 ls
-tar -xvf eclipse-standard-luna-R-linux-gtk-x86_64.tar.gz 
-cd eclipse/
-ls
-cd ../../../../
-cd ..
-cd ..
-brazil-build test-unit
-brazil-build test
-cd
-sudo apt-get install clojure
-sudo apt-get install clojure
-clojure
-cd ..
-ls
-cd development/
-ls
-brazil ws --create --name work_item
-cd work_item/
-cd ..
-brazil ws --create --name recon
-cd recon/
-brazil ws --use --package CatalogRTIPRedrives
-cd src/CatalogRTIPRedrives/
-ls
-cd perlModules/
-ls
-cd bin
-ls
-cd ..
-cd ..
-brazil-build
-ls
-brazil-build
-cd ..
-ls
-cd ..
-ls
-lein new 7weeks
-lein new seven_weeks
-cd seven_weeks/
-ls
-cd emacs
-cd ..
 ls -lah
+cd ..
 cp .emacs emacs/.emacs
-brazil-build
-brazil-build
 brazil-build 
 brazil-build 
+brazil-build 
+brazil-build 
+brazil-build 
+git status
+post-review
+post-review -t RetailCatalogPublishDataService -t RetailCatalogPublishDataServiceModel -r 2905551
+cd ..
+cd RetailCatalogPublishDataServiceModel/
+brazil-build
+brazil ws sync --metaData
+brazil-build
+brazil ws --help
+brazil ws use --help
+brazil ws use -vs live
+brazil-build
+brazil ws selfupdate
+brazil --help
+cd ../RetailCatalogPublishDataService/
+brazil-build
+brazil ws sync --metaData
+brazil-setup --all
+cd ../RetailCatalogPublishDataServiceModel/
+brazil workspace clean
+brazil build
+git status
+git status
+git log
+clear
+brazil build
+brazil ws clean
+brazil wbuild
+brazil build
+env -i PATH=/apollo/env/ruby193/bin:/apollo/env/SDETools/bin:/usr/local/bin:/usr/bin:/bin brazil build
+sudo perl -MCPAN -e 'install String::Approx'
+brazil-build
+brazil-setup --perl
+sudo perl -MCPAN -e 'install String::Approx'
+brazil build
+brazil ws clean
+brazil build
+perl --version
+perl
+perldoc -l String::Approx
+sudo apt-get install perldoc
+sudo apt-get install perl-doc
+perldoc -l String::Approx
+which perl
+brazil setup --perl
+cd /usr/bin
+ls
+ls | grep perl
+ls -lah | grep perl
+cd /home/local/ANT/trrogers/perl5
+cd
+ls
+cd
+cd development/publish/
+brazil --version
+cd src/RetailCatalogPublishDataServiceModel/
+brazil-build
+cd ..
+cd ..
+env/CoralBuildTool-1.0/runtime/perl/lib/perl5.8 -MCPAN -d 'install String:: Approx'
+env/CoralBuildTool-1.0/runtime/perl/bin/perl5.8/perl -MCPAN -d 'install String:: Approx'
+env/CoralBuildTool-1.0/runtime/perl/bin/perl5.8/perl -MCPAN -e 'install String:: Approx'
+sudo env/CoralBuildTool-1.0/runtime/perl/bin/perl5.8/perl -MCPAN -e 'install String:: Approx'
+perl -MCPAN -e 'install String::Approx'
+perl -MCPAN -e 'install String::Approx'
+cd src/
+cd RetailCatalogPublishDataServiceModel/
+brazil-build
+perl -MCPAN -e 'install String::Approx'
+cd /usr/local/lib/perl
+cd /usr/local/lib/
+ls
+ls -lah
+cd -
+sudo perl -MCPAN -e 'install String::Approx'
+perl -MCPAN -e 'install String::Approx'
+perl -MCPAN -e 'install String::Approx'
+sudo perl -MCPAN -e 'install String::Approx'
+cd /usr/lib
+ls
+cd perl
+ls
+ls -lah
+cd /root/perl5/lib/perl5/x86_64-linux-gnu-thread-multi/auto/String
+cd /root/perl5/lib/perl5/x86_64-linux-gnu-thread-multi/auto/
+cd /root/perl5/
+cd /
+ls
+cd root
+ls
+cd
+cd development/publish/
+sudo perl -MCPAN -e 'install String::Approx'
+perl -MCPAN -e 'install String::Approx'
+sudo apt-get install perl
+perl -MCPAN -e 'install String::Approx'
+cd /usr/local
+ls
+ls -lah
+cd lib
+ls
+ls -lah
+cd ..
+ls
+ls
+ls -lah
+sudo chmod 777 lib
+ls
+ls -lah
+perl -MCPAN -e 'install String::Approx'
+sudo chmod 777 man
+perl -MCPAN -e 'install String::Approx'
+perl -e "use String::Approx"
+cd
+cd development/publish/src/RetailCatalogPublishDataServiceModel/
+brazil-build
+git status
+cd development/
+cd prog-lang/
