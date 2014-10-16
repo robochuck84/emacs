@@ -120,6 +120,7 @@
 ;; (define-key launcher-map "v" (run "steam"))
 (define-key launcher-map "e" (run "eclipse"))
 (define-key launcher-map "p" (run "pidgin"))
+(define-key launcher-map "s" (run "spotify"))
 
 (defmacro browse (url)
   "Return a function that calls `browse-url' on URL."
@@ -137,6 +138,7 @@
 (define-key launcher-map "a" (browse "http://www.penny-arcade.com/"))
 (define-key launcher-map "x" (browse "http://www.xkcd.com/"))
 (define-key launcher-map "m" (browse "http://www.gizmag.com/"))
+(define-key launcher-map "g" (browse "http://www.gmail.com/"))
 
 
 ;; Some global bindings I found from mastering emacs blog
