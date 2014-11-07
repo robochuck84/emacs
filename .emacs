@@ -25,8 +25,7 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/")t)
 
-;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258")) 
-(add-to-list 'load-path "~/emacs/neotree")
+;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
 (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
 
 (package-initialize)
@@ -35,7 +34,6 @@
 (require 'cl)
 (require 'cl-lib)			
 (require 'discover)
-;;(require 'neotree)
 (require 'eclim)
 (require 'eclimd)
 (require 'company)
@@ -50,6 +48,27 @@
 (require 'smart-mode-line)
 (require 'hungry-delete)
 (require 'google-this)
+(require 'clj-refactor)
+
+;; Custom Setup
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("b21bf64c01dc3a34bc56fff9310d2382aa47ba6bc3e0f4a7f5af857cd03a7ef7" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "8f7e1668dd3a097964e6016c26d36822ab2e48fc3e9a3a2e2634224a5ca728c8" "1e194b1010c026b1401146e24a85e4b7c545276845fc38b8c4b371c8338172ad" "3a727bdc09a7a141e58925258b6e873c65ccf393b2240c51553098ca93957723" "756597b162f1be60a12dbd52bab71d40d6a2845a3e3c2584c6573ee9c332a66e" "6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" default)))
+ '(eclim-eclipse-dirs (quote ("~/Downloads/eclipse")))
+ '(eclim-executable "~/Downloads/eclipse/eclim")
+ '(erc-port 6697)
+ '(erc-server "ircs.amazon.com")
+ '(org-hide-leading-stars t))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
 (add-to-list 'sml/replacer-regexp-list '("^~/development/" ":DEV:") t)
 
@@ -105,7 +124,22 @@
 (define-key launcher-map "t" #'proced) ; top
 
 ;; Key chord bindings
+;; faster shift
+(key-chord-define-global "1q" "!")
 (key-chord-define-global "2w" "@")
+(key-chord-define-global "3e" "#")
+(key-chord-define-global "4r" "$")
+(key-chord-define-global "5t" "%")
+(key-chord-define-global "6y" "^")
+(key-chord-define-global "7u" "&")
+(key-chord-define-global "8i" "*")
+(key-chord-define-global "9o" "(")
+(key-chord-define-global "0p" ")")
+;; Ace jump
+(key-chord-define-global "aj" 'ace-jump-mode)
+;; Magit
+(key-chord-define-global "ms" 'magit-status)
+
 
 (defmacro run (exec)
   "Return a function that runs the executable EXEC."
@@ -150,27 +184,6 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 (define-key global-map (kbd "RET") 'newline-and-indent)
-
-
-;; Custom Setup
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "8f7e1668dd3a097964e6016c26d36822ab2e48fc3e9a3a2e2634224a5ca728c8" "1e194b1010c026b1401146e24a85e4b7c545276845fc38b8c4b371c8338172ad" "3a727bdc09a7a141e58925258b6e873c65ccf393b2240c51553098ca93957723" "756597b162f1be60a12dbd52bab71d40d6a2845a3e3c2584c6573ee9c332a66e" "6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" default)))
- '(eclim-eclipse-dirs (quote ("~/Downloads/eclipse")))
- '(eclim-executable "~/Downloads/eclipse/eclim")
- '(erc-port 6697)
- '(erc-server "ircs.amazon.com")
- '(org-hide-leading-stars t))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 (load-file "~/.emacs.d/themes/almost-monokai.el")
 (color-theme-almost-monokai)
@@ -260,6 +273,13 @@ narrowed."
              '("Tests run: [0-9]*, Failures: 0, Errors: 0, Time elapsed: .*$"
                (0 compilation-info-face)))
 
+(defun tr/java-self-insert-complete (char)
+  (lexical-let ((char char))
+    (lambda ()
+      (interactive)
+      (insert char)
+      (company-complete))))
+
 (defun java-mode-keys ()
   (local-set-key (kbd "C-c o") 'eclim-java-import-organize)
   (local-set-key (kbd "C-c p") 'eclim-problems)
@@ -277,7 +297,8 @@ narrowed."
   (local-set-key (kbd "C-c s") 'eclim-java-method-signature-at-point)
   (local-set-key (kbd "C-c t") 'tr/eclim-java-junit)
   (local-set-key (kbd "C-c T") 'tr/eclim-java-junit-all)
-  (local-set-key (kbd "C-c z") 'eclim-java-implement))
+  (local-set-key (kbd "C-c z") 'eclim-java-implement)
+  (local-set-key (kbd ".") (tr/java-self-inserg-complete ".")))
 
 (fset 'emphasize-buffer
    "\C-u16\C-x}")
@@ -311,4 +332,15 @@ narrowed."
 
 ;; Smart mode line
 (sml/setup)
-(sml/apply-theme 'dark)
+(sml/apply-theme 'powerline)
+(add-to-list 'rm-excluded-modes '(google-this-mode company-mode))
+
+
+;; CLJ Refactor
+(add-hook 'clojore-mode-hook
+	  (lambda()
+	    (clj-refactor-mode 1)
+	    (local-unset-key (kbd "C-m"))
+	    (cljr-add-keybindings-with-prefix "C-c m")
+	    ))
+

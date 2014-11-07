@@ -1,25 +1,3 @@
-brazil-build 
-brazil-build 
-git status
-post-review
-post-review -t RetailCatalogPublishDataService -t RetailCatalogPublishDataServiceModel -r 2905551
-cd ..
-cd RetailCatalogPublishDataServiceModel/
-brazil-build
-brazil ws sync --metaData
-brazil-build
-brazil ws --help
-brazil ws use --help
-brazil ws use -vs live
-brazil-build
-brazil ws selfupdate
-brazil --help
-cd ../RetailCatalogPublishDataService/
-brazil-build
-brazil ws sync --metaData
-brazil-setup --all
-cd ../RetailCatalogPublishDataServiceModel/
-brazil workspace clean
 brazil build
 git status
 git status
@@ -126,3 +104,25 @@ cd development/perl/
 perl -d test.pm 
 ssh trrogers-2.desktop.amazon.com
 ssh trrogers-2.desktop.amazon.com
+ls
+cd emacs
+ls
+cd erc-highlight-nicknames/
+ls
+cd ..
+mkdir bin
+cd bin
+ls
+ln -s /home/local/ANT/trrogers/emacs-amazon/src/EmacsAmazonLibs/share/emacs/site-lisp/ amazon
+ls
+ls -lah
+cd amazon
+ls
+cd
+ls
+cd emacs
+ls
+cd bin
+ls
+cd amazon
+ls

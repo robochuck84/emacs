@@ -1,4 +1,4 @@
-;; -*- emacs-lisp -*- <14/10/12 13:53:49 /home/local/ANT/trrogers/.emacs.d/tramp>
+;; -*- emacs-lisp -*- <14/11/06 16:41:23 /home/local/ANT/trrogers/.emacs.d/tramp>
 ;; Tramp connection history.  Don't change this file.
 ;; You can delete it, forcing Tramp to reapply the checks.
 
@@ -13,4 +13,21 @@
   ("readlink" "\\readlink")
   ("stat" "\\stat")
   ("id" "/usr/bin/id")
-  ("gid-integer" 0)))
+  ("gid-integer" 0))
+ (["scpc" nil "trrogers-2.desktop.amazon.com" nil nil]
+  ("uname" "Linux 2.6.18-164.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("readlink" "\\readlink")
+  ("stat" "\\stat")
+  ("file-exists" "test -e")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 100)
+  ("uid-integer" 10064)
+  ("ls" "/bin/ls --color=never")))
