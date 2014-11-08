@@ -1,23 +1,22 @@
-;; .emacs
+#+TITLE: Travis's Emacs Configuration
+#+OPTIONS: toc:4 h:4
 
-;;; uncomment this line to disable loading of "default.el" at startup
-;; (setq inhibit-default-init t)
+* Configuration
+** About this file
+<<babel-init>>
 
-;; enable visual feedback on selections
-;(setq transient-mark-mode t)
+The next evolution in emacs config technology
 
+Defaults from the beginning
+#+begin_src emacs-lisp :tangle no
 ;; default to better frame titles
 (setq frame-title-format
       (concat  "%b - emacs@" (system-name)))
 
 ;; default to unified diffs
 (setq diff-switches "-u")
+#+end_src
 
-;; always end a file with a newline
-;(setq require-final-newline 'query)
-
-;;; uncomment for CJK utf-8 support for non-Asian users
-;; (require 'un-define)
 
 (require 'package)
 (add-to-list 'package-archives
