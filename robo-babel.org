@@ -9,7 +9,7 @@ The next evolution in emacs config technology
 
 Defaults from the beginning
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 ;; default to better frame titles
 (setq frame-title-format
       (concat  "%b - emacs@" (system-name)))
@@ -20,7 +20,8 @@ Defaults from the beginning
 
 ** Emacs initialization
 *** Package Setup
-#+begin_src emacs_lisp
+
+#+begin_src emacs-lisp
 (require 'package)
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
@@ -52,7 +53,6 @@ Defaults from the beginning
 (require 'hungry-delete)
 (require 'google-this)
 (require 'clj-refactor)
-
 #+end_src
 
 Custom Variables
@@ -80,7 +80,7 @@ Custom Variables
 ** General Configuration
 *** File backup
 
-#+begin_src
+#+begin_src emacs-lisp
 ;; Backup file settigs
 (setq
  backup-directory-alist '(("." . "~/.saves"))
@@ -93,7 +93,7 @@ Custom Variables
 
 *** History
 
-#+begin_src emacs_lisp
+#+begin_src emacs-lisp
 (setq savehist-file "~/.emacs.d/savehist")
 (savehist-mode 1)
 (setq history-length t)
@@ -104,10 +104,10 @@ Custom Variables
   search-ring
   regexp-search-ring))
 #+end_src
-
+    
 *** Window configuration
 
-#+begin_src
+#+begin_src emacs-lisp
 ;; Modes
 (tooltip-mode -1)
 (menu-bar-mode -1)
@@ -121,12 +121,12 @@ Custom Variables
 
 *** Winner mode - undo and redo window configuration
 
-#+begin_src
+#+begin_src emacs-lisp
 (winner-mode 1)
 #+end_src
 
 *** IDO mode - completion in many places
-#+begin_src
+#+begin_src emacs-lisp
 (ido-mode 1)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
@@ -145,10 +145,11 @@ I use smart mode line, mostly for ease of use, someday ill customize
 
 Minor modes I do not want to see
 
-#+begin_src
+#+begin_src emacs-lisp
 (require 'diminish)
 (eval-after-load "google-this" '(diminish 'google-this-mode))
 (eval-after-load "company" '(diminish 'company-mode))
+(eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
 #+end_src
 
 *** Change "yes or no" to "y or n"

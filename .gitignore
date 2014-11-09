@@ -3,3 +3,5 @@ session.*
 eshell/history
 eshell/lastdir
 elpa/archives
+savehist
+robo-babel.el
