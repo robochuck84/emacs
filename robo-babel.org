@@ -22,37 +22,42 @@ Defaults from the beginning
 *** Package Setup
 
 #+begin_src emacs-lisp
-(require 'package)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/")t)
-
-;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
-(add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
-
-(package-initialize)
-
-;; Requires
-(require 'use-package)
-(require 'cl)
-(require 'cl-lib)			
-(require 'discover)
-(require 'eclim)
-(require 'eclimd)
-(require 'company)
-(require 'company-emacs-eclim)
-(require 'dirtree)
-(require 'compile)
-(require 'highlight-symbol)
-(require 'visual-regexp-steroids)
-(require 'tls)
-(require 'erc)
-(require 'erc-highlight-nicknames)
-(require 'smart-mode-line)
-(require 'hungry-delete)
-(require 'google-this)
-(require 'clj-refactor)
+  (require 'package)
+  (add-to-list 'package-archives
+               '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.milkbox.net/packages/")t)
+  
+  ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
+  (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
+  (add-to-list 'load-path "~/emacs/origami")
+  (add-to-list 'load-path "~/emacs/ipa")
+  
+  (package-initialize)
+  
+  ;; Requires
+  (require 'use-package)
+  (require 'bm)
+  (require 'cl)
+  (require 'cl-lib)                       
+  (require 'discover)
+  (require 'eclim)
+  (require 'eclimd)
+  (require 'company)
+  (require 'company-emacs-eclim)
+  (require 'dirtree)
+  (require 'compile)
+  (require 'highlight-symbol)
+  (require 'visual-regexp-steroids)
+  (require 'tls)
+  (require 'erc)
+  (require 'erc-highlight-nicknames)
+  (require 'smart-mode-line)
+  (require 'hungry-delete)
+  (require 'google-this)
+  (require 'clj-refactor)
+  (require 'origami)
+  (require 'ipa)
 #+end_src
 
 Custom Variables
@@ -78,6 +83,19 @@ Custom Variables
 #+end_src
 
 ** General Configuration
+*** Visual Bookmarks
+
+[[https://github.com/joodland/bm][Github page]]
+
+#+begin_src emacs-lisp
+  (setq bm-highlight-style 'bm-highlight-only-fringe)
+  
+  (global-set-key "\C-cbt" 'bm-toggle)
+  (global-set-key "\C-cbn" 'bm-next)
+  (global-set-key "\C-cbp" 'bm-previous)
+  (global-set-key "\C-cba" 'bm-show-all)
+#+end_src
+
 *** File backup
 
 #+begin_src emacs-lisp
@@ -132,6 +150,61 @@ Custom Variables
 (setq ido-everywhere t)
 #+end_src
 
+If you use imenu to look at the functions in a file, this will give you ido mode in that
+
+#+begin_src emacs-lisp
+  (defun ido-goto-symbol (&optional symbol-list)
+        "Refresh imenu and jump to a place in the buffer using Ido."
+        (interactive)
+        (unless (featurep 'imenu)
+          (require 'imenu nil t))
+        (cond
+         ((not symbol-list)
+          (let ((ido-mode ido-mode)
+                (ido-enable-flex-matching
+                 (if (boundp 'ido-enable-flex-matching)
+                     ido-enable-flex-matching t))
+                name-and-pos symbol-names position)
+            (unless ido-mode
+              (ido-mode 1)
+              (setq ido-enable-flex-matching t))
+            (while (progn
+                     (imenu--cleanup)
+                     (setq imenu--index-alist nil)
+                     (ido-goto-symbol (imenu--make-index-alist))
+                     (setq selected-symbol
+                           (ido-completing-read "Symbol? " symbol-names))
+                     (string= (car imenu--rescan-item) selected-symbol)))
+            (unless (and (boundp 'mark-active) mark-active)
+              (push-mark nil t nil))
+            (setq position (cdr (assoc selected-symbol name-and-pos)))
+            (cond
+             ((overlayp position)
+              (goto-char (overlay-start position)))
+             (t
+              (goto-char position)))))
+         ((listp symbol-list)
+          (dolist (symbol symbol-list)
+            (let (name position)
+              (cond
+               ((and (listp symbol) (imenu--subalist-p symbol))
+                (ido-goto-symbol symbol))
+               ((listp symbol)
+                (setq name (car symbol))
+                (setq position (cdr symbol)))
+               ((stringp symbol)
+                (setq name symbol)
+                (setq position
+                      (get-text-property 1 'org-imenu-marker symbol))))
+              (unless (or (null position) (null name)
+                          (string= (car imenu--rescan-item) name))
+                (add-to-list 'symbol-names name)
+                (add-to-list 'name-and-pos (cons name position))))))))
+  
+  
+  (global-set-key (kbd "C-c g s") 'ido-goto-symbol)
+#+end_src 
+
 *** Mode line format
 
 I use smart mode line, mostly for ease of use, someday ill customize
@@ -140,7 +213,6 @@ I use smart mode line, mostly for ease of use, someday ill customize
 ;; Smart mode line
 (sml/setup)
 (sml/apply-theme 'dark)
-(add-to-list 'rm-excluded-modes '(google-this-mode company-mode))
 #+end_src
 
 Minor modes I do not want to see
@@ -163,8 +235,9 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 *** Theme 
 
 #+begin_src emacs-lisp
-(load-file "~/.emacs.d/themes/almost-monokai.el")
-(color-theme-almost-monokai)
+  (load-file "~/.emacs.d/themes/almost-monokai.el")
+  (color-theme-almost-monokai)
+  (set-face-foreground 'erc-input-face "lightblue")
 #+end_src
 
 *** Undo Tree mode - visualize your undos and branches
@@ -250,7 +323,7 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 
 (add-hook 'java-mode-hook 'java-mode-keys)
 #+end_src
-
+    
 *** Company
 
 #+begin_src emacs-lisp
@@ -287,7 +360,7 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 ;; Ace jump
 (key-chord-define-global "aj" 'ace-jump-mode)
 ;; Magit
-(key-chord-define-global "ms" 'magit-status)
+(key-chord-define-global "jk" 'magit-status)
 #+end_src
 
 *** Perl
@@ -295,6 +368,7 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 #+begin_src emacs-lisp
 ;; Alias
 (defalias 'perl-mode 'cperl-mode)
+(setq cperl-invalid-face nil)
 #+end_src
 
 *** Endless toggle and launcher
@@ -303,71 +377,71 @@ Found these great global key bindings at endlessparentheses.com
 Mnemonic example, "Emacs toggle column", C-x t c
 
 #+begin_src emacs-lisp
-;; Global keys
-(define-prefix-command 'endless/toggle-map)
-(define-key ctl-x-map "t" 'endless/toggle-map)
-
-(define-key endless/toggle-map "c" #'column-number-mode)
-(define-key endless/toggle-map "d" #'toggle-debug-on-error)
-(define-key endless/toggle-map "e" #'toggle-debug-on-error)
-(define-key endless/toggle-map "f" #'auto-fill-mode)
-(define-key endless/toggle-map "l" #'toggle-truncate-lines)
-(define-key endless/toggle-map "q" #'toggle-debug-on-quit)
-(define-key endless/toggle-map "t" #'endless/toggle-theme)
-;;; Generalized version of `read-only-mode'.
-(define-key endless/toggle-map "r" #'dired-toggle-read-only)
-(autoload 'dired-toggle-read-only "dired" nil t)
-(define-key endless/toggle-map "w" #'whitespace-mode)
-
-;; More from endless, say "Emacs launch calc", C-x l c
-(define-prefix-command 'launcher-map)
-;; C-x l is `count-lines-page' by default. If you
-;; use that, you can try s-l or <C-return>.
-(define-key ctl-x-map "l" 'launcher-map)
-(global-set-key (kbd "s-l") 'launcher-map)
-(define-key launcher-map "c" #'calc)
-(define-key launcher-map "d" #'ediff-buffers)
-(define-key launcher-map "f" #'find-dired)
-(define-key launcher-map "g" #'lgrep)
-(define-key launcher-map "G" #'rgrep)
-(define-key launcher-map "h" #'man) ; Help
-(define-key launcher-map "n" #'nethack)
-(define-key launcher-map "l" #'paradox-list-packages)
-(define-key launcher-map "s" #'eshell)
-(define-key launcher-map "t" #'proced) ; top
-
-(defmacro run (exec)
-  "Return a function that runs the executable EXEC."
-  (let ((func-name (intern (concat "endless/run-" exec))))
-    `(progn
-       (defun ,func-name ()
-         ,(format "Run the %s executable." exec)
-         (interactive)
-         (start-process "" nil ,exec))
-       ',func-name)))
-
-;; (define-key launcher-map "v" (run "steam"))
-(define-key launcher-map "e" (run "eclipse"))
-(define-key launcher-map "p" (run "pidgin"))
-(define-key launcher-map "s" (run "spotify"))
-
-(defmacro browse (url)
-  "Return a function that calls `browse-url' on URL."
-  (let ((func-name (intern (concat "endless/browse-" url))))
-    `(progn
-       (defun ,func-name ()
-         ,(format "Browse to the url %s." url)
-         (interactive)
-         (browse-url ,url))
-       ',func-name)))
-
-(define-key launcher-map "r" (browse "http://www.reddit.com/r/emacs/"))
-(define-key launcher-map "w" (browse "http://www.emacswiki.org/"))
-(define-key launcher-map "?" (browse "http://emacs.stackexchange.com/"))
-(define-key launcher-map "a" (browse "http://www.penny-arcade.com/"))
-(define-key launcher-map "x" (browse "http://www.xkcd.com/"))
-(define-key launcher-map "m" (browse "http://www.gizmag.com/"))
-(define-key launcher-map "g" (browse "http://www.gmail.com/"))
+  ;; Global keys
+  (define-prefix-command 'endless/toggle-map)
+  (define-key ctl-x-map "t" 'endless/toggle-map)
+  
+  (define-key endless/toggle-map "c" #'column-number-mode)
+  (define-key endless/toggle-map "d" #'toggle-debug-on-error)
+  (define-key endless/toggle-map "e" #'toggle-debug-on-error)
+  (define-key endless/toggle-map "f" #'auto-fill-mode)
+  (define-key endless/toggle-map "l" #'toggle-truncate-lines)
+  (define-key endless/toggle-map "q" #'toggle-debug-on-quit)
+  (define-key endless/toggle-map "t" #'endless/toggle-theme)
+  ;;; Generalized version of `read-only-mode'.
+  (define-key endless/toggle-map "r" #'dired-toggle-read-only)
+  (autoload 'dired-toggle-read-only "dired" nil t)
+  (define-key endless/toggle-map "w" #'whitespace-mode)
+  
+  ;; More from endless, say "Emacs launch calc", C-x l c
+  (define-prefix-command 'launcher-map)
+  ;; C-x l is `count-lines-page' by default. If you
+  ;; use that, you can try s-l or <C-return>.
+  (define-key ctl-x-map "l" 'launcher-map)
+  (global-set-key (kbd "s-l") 'launcher-map)
+  (define-key launcher-map "c" #'calc)
+  (define-key launcher-map "d" #'ediff-buffers)
+  (define-key launcher-map "f" #'find-dired)
+  (define-key launcher-map "g" #'lgrep)
+  (define-key launcher-map "G" #'rgrep)
+  (define-key launcher-map "h" #'man) ; Help
+  (define-key launcher-map "n" #'nethack)
+  (define-key launcher-map "l" #'paradox-list-packages)
+  (define-key launcher-map "s" #'eshell)
+  (define-key launcher-map "t" #'proced) ; top
+  
+  (defmacro run (exec)
+    "Return a function that runs the executable EXEC."
+    (let ((func-name (intern (concat "endless/run-" exec))))
+      `(progn
+         (defun ,func-name ()
+           ,(format "Run the %s executable." exec)
+           (interactive)
+           (start-process "" nil ,exec))
+         ',func-name)))
+  
+  ;; (define-key launcher-map "v" (run "steam"))
+  (define-key launcher-map "e" (run "eclipse"))
+  (define-key launcher-map "p" (run "pidgin"))
+  (define-key launcher-map "s" (run "spotify"))
+  
+  (defmacro browse (url)
+    "Return a function that calls `browse-url' on URL."
+    (let ((func-name (intern (concat "endless/browse-" url))))
+      `(progn
+         (defun ,func-name ()
+           ,(format "Browse to the url %s." url)
+           (interactive)
+           (browse-url ,url))
+         ',func-name)))
+  
+  (define-key launcher-map "r" (browse "http://www.reddit.com/r/emacs/"))
+  (define-key launcher-map "w" (browse "http://www.emacswiki.org/"))
+  (define-key launcher-map "?" (browse "http://emacs.stackexchange.com/"))
+  (define-key launcher-map "a" (browse "http://www.penny-arcade.com/"))
+  (define-key launcher-map "x" (browse "http://www.xkcd.com/"))
+  (define-key launcher-map "m" (browse "http://www.gizmag.com/"))
+  (define-key launcher-map "g" (browse "http://www.gmail.com/"))
 #+end_src
 
 *** Mastering Emacs Key Bindings
@@ -381,22 +455,54 @@ Some global bindings I found from mastering emacs blog
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
 (global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
 (define-key global-map (kbd "RET") 'newline-and-indent)
 #+end_src
 
+Paradox is a better package manager, uses git hub as well so we need this token
+
+#+begin_src emacs-listp
 (setq paradox-github-token '0af38642de4c23e8399e7849d875a7118308f322)
+#+end_src
 
 *** Org
 
 #+begin_src emacs-lisp
-(load-library "find-lisp")
-(setq org-agenda-files (find-lisp-find-files "~/org" "\.org$"))
-(setq org-default-notes-file "~/org/refile.org")
-
-(setq org-capture-templates
-    '(("t" "Todo" entry (file+headline "~/org/agenda.org" "Tasks")
-       "* TODO %?\n")))
+  (load-library "find-lisp")
+  (setq org-agenda-files (find-lisp-find-files "~/org" "\.org$"))
+  (setq org-default-notes-file "~/org/refile.org")
+  
+  (setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/org/agenda.org" "Tasks")
+         "* TODO %? %^G\n")
+        ("n" "Note" entry (file+headline "~/org/agenda.org" "Notes")
+         "* %?\n")
+        ("j" "Journal" entry (file+datetree "~/org/journal.org")
+         "* %?\nEntered on %U\n %i")
+        ("l" "Journal with link" entry (file+datetree "~/org/journal.org")
+         "* %?\nEntered on %U\n  %i\n  %a")))
+  
+  (setq org-todo-keywords
+        '((sequence "TODO" "STARTED" "|" "DONE" "PUNT")))
+  
+  (setq org-todo-keyword-faces
+        '(("TODO" . org-warning) ("STARTED" . "yellow")
+          ("DONE" . "green") ("PUNT" . "purple")))
+  
+  (setq org-tag-alist '(("region" . ?r) ("sprint" . ?s) ("home" . ?h) ("adhoc" . ?a)))
+  
+  (setq org-log-done 'time)
+  
+  (setq org-agenda-custom-commands
+             '(("h" "Agenda and Home-related tasks"
+                ((tags-todo "home")
+                 ))
+               ("o" "Agenda and Office-related tasks"
+                ((agenda "")
+                 (tags-todo "region")
+                 (tags-todo "sprint")
+                 (tags-todo "adhoc")))))
+  
+  (add-hook 'org-mode-hook 'auto-fill-mode)
 #+end_src
 
 *** Narrow-or-widen
@@ -437,7 +543,7 @@ First attempt at my own hand written customization, not just copied. Needs some 
 
 #+begin_src emacs-lisp
 (fset 'emphasize-buffer
-   "\C-u16\C-x}")
+   "\C-u32\C-x}")
 (global-set-key [f5] 'emphasize-buffer)
 #+end_src
 
@@ -451,29 +557,83 @@ First attempt at my own hand written customization, not just copied. Needs some 
 *** ERC
 
 #+begin_src emacs-lisp
-(add-to-list 'erc-modules 'highlight-nicknames)
-(erc-update-modules)
-(erc-spelling-mode 1)
-(setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion")
-				    ("freenode.net" "#pfproject")))
+  (add-to-list 'erc-modules 'highlight-nicknames)
+  (erc-update-modules)
+  (erc-spelling-mode 1)
+  (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon")
+                                      ("freenode.net" "#pfproject")))
+  
+  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+  
+  (defun start-amazon-irc ()
+    "Connect to Amazon IRC."
+    (interactive)
+    (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon" "#grcs")))
+    (erc-tls :server "ircs.amazon.com" :port 6697
+             :nick "trrogers" :full-name "trrogers"))
+  
+  (defun start-irc ()
+    "Connect to IRC."
+    (interactive)
+    (setq erc-autojoin-channels-alist '(("freenode.net" "#pfproject")))
+    (erc :server "irc.freenode.net" :port 6667 :nick "robochuck"))
+  
+  (add-hook 'erc-insert-post-hook
+            (lambda () (goto-char (point-min))
+              (when (re-search-forward
+                     (regexp-quote (erc-current-nick)) nil t) (ding))))
+  
+  
+#+end_src
 
-(defun start-amazon-irc ()
-  "Connect to Amazon IRC."
+Greg sent me this, is a way to have the mode line go very bright when erc is getting some action. Also provides a way
+to mute that, which is very useful when a channel you dont care about is getting chatty
+
+#+begin_src emacs-lisp
+(defun gs/set-mode-line-background (color)
+  (when color (set-face-background 'mode-line color)))
+
+(lexical-let ((alerts '()))
+  (defun gs/mode-line-alert (alert-id color)
+    "Alert by setting the modeline to COLOR. If COLOR is the symbol
+  clear then remove the current notification."
+    (defun alerting-p (alert-id) (assoc alert-id alerts))
+    (defun set-alerting (alert-id color)
+      (when (not (alerting-p alert-id))
+        (setq alerts (cons (cons alert-id color) alerts))
+        (gs/set-mode-line-background color)))
+    (defun remove-alert (alert-id) (setq alerts (assq-delete-all alert-id alerts)))
+    (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
+    (cond ((eq alert-id 'print) alerts)
+          ((eq color 'clear)
+           (when (alerting-p alert-id)
+             (progn (remove-alert alert-id)
+                    (gs/set-mode-line-background (cdar alerts)))))
+          ((alerting-p alert-id) nil)
+          (t (set-alerting alert-id color)))))
+
+(defvar gs/erc-notify-mute-buffers nil
+  "Buffers that are currently muted and should not be alerted if
+activity occurs.")
+
+(defun gs/erc-toggle-mute-buffer ()
   (interactive)
-  (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion")))
-  (erc-tls :server "ircs.amazon.com" :port 6697
-	   :nick "trrogers" :full-name "trrogers"))
+  (if (memq (current-buffer) gs/erc-notify-mute-buffers)
+      (progn (setq gs/erc-notify-mute-buffers (delete (current-buffer)
+                                                      gs/erc-notify-mute-buffers))
+             (message "Buffer unmuted"))
+    (add-to-list 'gs/erc-notify-mute-buffers (current-buffer))
+    (message "Buffer muted")))
 
-(defun start-irc ()
-  "Connect to IRC."
-  (interactive)
-  (setq erc-autojoin-channels-alist '(("freenode.net" "#pfproject")))
-  (erc :server "irc.freenode.net" :port 6667 :nick "robochuck"))
+(defun gs/erc-notify-activity ()
+  (if (not (null erc-modified-channels-alist))
+      (when (not (every (lambda (channel)
+                          (memq (car channel) gs/erc-notify-mute-buffers))
+                        erc-modified-channels-alist))
+        (gs/mode-line-alert 'erc-notify "#00ff00"))
+    (gs/mode-line-alert 'erc-notify 'clear)))
 
-(add-hook 'erc-insert-post-hook
-	  (lambda () (goto-char (point-min))
-	    (when (re-search-forward
-		   (regexp-quote (erc-current-nick)) nil t) (ding))))
+(add-hook 'erc-track-list-changed-hook 'gs/erc-notify-activity)
 #+end_src
 
 *** Clojure Refactor
@@ -518,3 +678,29 @@ ap: add a dependency to your project depends on refactor-nrepl
 	    ))
 #+end_src
 
+*** Auto Fill Mode
+
+#+begin_src emacs-lisp
+(setq-default fill-column 120)
+#+end_src
+*** Origami
+This is gregs folding code, works pretty well, this is just the key chords I am using
+
+#+begin_src emacs-lisp
+(key-chord-define-global "o[" 'origami-open-node)
+(key-chord-define-global "c]" 'origami-close-node)
+(key-chord-define-global "[]" 'origami-show-only-node)
+#+end_src
+
+*** IPA
+
+In Place Annotations, lets you make annotations on a file without modifying the original file.
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c i i") 'ipa-insert)
+  (global-set-key (kbd "C-c i e") 'ipa-edit)
+  (global-set-key (kbd "C-c i t") 'ipa-toggle)
+  (global-set-key (kbd "C-c i s") 'ipa-show)
+  (global-set-key (kbd "C-c i n") 'ipa-next)
+  (global-set-key (kbd "C-c i p") 'ipa-previous)
+#+end_src
