@@ -222,6 +222,7 @@ Minor modes I do not want to see
 (eval-after-load "google-this" '(diminish 'google-this-mode))
 (eval-after-load "company" '(diminish 'company-mode))
 (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
+(eval-after-load "smarparens" '(diminish 'smartparens-mode))
 #+end_src
 
 *** Change "yes or no" to "y or n"
@@ -340,27 +341,6 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 
 #+begin_src emacs-lisp
 (google-this-mode 1)
-#+end_src
-
-*** Key-chord
-
-#+begin_src emacs-lisp
-(key-chord-mode 1)
-;; faster shift
-(key-chord-define-global "1q" "!")
-(key-chord-define-global "2w" "@")
-(key-chord-define-global "3e" "#")
-(key-chord-define-global "4r" "$")
-(key-chord-define-global "5t" "%")
-(key-chord-define-global "6y" "^")
-(key-chord-define-global "7u" "&")
-(key-chord-define-global "8i" "*")
-(key-chord-define-global "9o" "(")
-(key-chord-define-global "0p" ")")
-;; Ace jump
-(key-chord-define-global "aj" 'ace-jump-mode)
-;; Magit
-(key-chord-define-global "jk" 'magit-status)
 #+end_src
 
 *** Perl
@@ -683,6 +663,7 @@ ap: add a dependency to your project depends on refactor-nrepl
 #+begin_src emacs-lisp
 (setq-default fill-column 120)
 #+end_src
+
 *** Origami
 This is gregs folding code, works pretty well, this is just the key chords I am using
 
@@ -703,4 +684,69 @@ In Place Annotations, lets you make annotations on a file without modifying the 
   (global-set-key (kbd "C-c i s") 'ipa-show)
   (global-set-key (kbd "C-c i n") 'ipa-next)
   (global-set-key (kbd "C-c i p") 'ipa-previous)
+#+end_src
+
+*** Guide-Key
+
+Popup for key shortcuts
+
+#+begin_src emacs-lisp
+(use-package guide-key
+  :init
+  (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c"))
+  (guide-key-mode 1))  
+#+end_src
+
+** Navigation
+*** Pop to mark
+
+Hande way of getting back to previous places
+
+#+begin_src emacs-lisp
+(bind-key "C-x p" 'pop-to-mark-command)
+(setq set-mark-command-repeat-pop t)
+#+end_src
+
+*** Better window splitting
+
+Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tricks/chldury
+
+#+begin_src emacs-lisp
+(defun travis/vsplit-last-buffer ()
+  "Split the window vertically and display the previous buffer."
+  (interactive "p")
+  (split-window-vertically)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
+(defun travis/hsplit-last-buffer ()
+  "Split the window horizontally and display the previous buffer."
+  (interactive "p")
+  (split-window-horizontally)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
+(bind-key "C-x 2" 'travis/vsplit-last-buffer)
+(bind-key "C-x 3" 'travis/hsplit-last-buffer)
+#+end_src
+
+*** Key-chord
+
+#+begin_src emacs-lisp
+(key-chord-mode 1)
+;; faster shift
+(key-chord-define-global "1q" "!")
+(key-chord-define-global "2w" "@")
+(key-chord-define-global "3e" "#")
+(key-chord-define-global "4r" "$")
+(key-chord-define-global "5t" "%")
+(key-chord-define-global "6y" "^")
+(key-chord-define-global "7u" "&")
+(key-chord-define-global "8i" "*")
+(key-chord-define-global "9o" "(")
+(key-chord-define-global "0p" ")")
+;; Ace jump
+(key-chord-define-global "aj" 'ace-jump-mode)
+;; Magit
+(key-chord-define-global "jk" 'magit-status)
+
+(key-chord-define-global "uu" 'undo)
 #+end_src
