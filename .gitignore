@@ -5,3 +5,6 @@ eshell/lastdir
 elpa/archives
 savehist
 robo-babel.el
+projectile*
+recentf
+ido.last

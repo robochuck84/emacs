@@ -88,6 +88,15 @@ Custom Variables
 #+end_src
 
 ** General Configuration
+*** Fringe
+#+BEGIN_SRC emacs-lisp
+  (when (window-system)
+    (require 'git-gutter-fringe)
+    (global-git-gutter-mode +1))
+
+  (setq-default indicate-buffer-boundaries 'left)
+  (setq-default indicate-empty-lines +1)
+#+END_SRC
 *** Visual Bookmarks
 
 [[https://github.com/joodland/bm][Github page]]
@@ -752,6 +761,15 @@ again all the time.
         (message "Opening file...")
       (message "Aborting")))
   
+#+END_SRC
+
+*** Projectile
+
+#+BEGIN_SRC emacs-lisp
+  (projectile-global-mode)
+
+  (setq projectile-enable-caching t)
+
 #+END_SRC
 
 ** Navigation
