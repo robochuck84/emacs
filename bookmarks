@@ -14,7 +14,7 @@
  (position . 100))
 ("org-capture-last-stored"
  (filename . "~/org/agenda.org")
- (front-context-string . "** TODO Somethin")
- (rear-context-string . "efile technique\n")
- (position . 1058))
+ (front-context-string . "** TODO pull the")
+ (rear-context-string . "t into January.\n")
+ (position . 9841))
 )

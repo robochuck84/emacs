@@ -32,6 +32,7 @@ Defaults from the beginning
   (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
   (add-to-list 'load-path "~/emacs/origami")
   (add-to-list 'load-path "~/emacs/ipa")
+  (add-to-list 'load-path "~/emacs/httprepl")
   
   (package-initialize)
   
@@ -58,6 +59,10 @@ Defaults from the beginning
   (require 'clj-refactor)
   (require 'origami)
   (require 'ipa)
+  (require 'rainbow-mode)
+  (require 'rainbow-delimiters)
+  (require 'httprepl)
+  (require 'recentf)
 #+end_src
 
 Custom Variables
@@ -450,6 +455,7 @@ Paradox is a better package manager, uses git hub as well so we need this token
   (load-library "find-lisp")
   (setq org-agenda-files (find-lisp-find-files "~/org" "\.org$"))
   (setq org-default-notes-file "~/org/refile.org")
+  (setq org-tags-column -100)
   
   (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/org/agenda.org" "Tasks")
@@ -468,7 +474,7 @@ Paradox is a better package manager, uses git hub as well so we need this token
         '(("TODO" . org-warning) ("STARTED" . "yellow")
           ("DONE" . "green") ("PUNT" . "purple")))
   
-  (setq org-tag-alist '(("region" . ?r) ("sprint" . ?s) ("home" . ?h) ("adhoc" . ?a)))
+  (setq org-tag-alist '(("region" . ?r) ("sprint" . ?s) ("home" . ?h) ("adhoc" . ?a) ("project" . ?p) ("catexp" . ?c)))
   
   (setq org-log-done 'time)
   
@@ -478,11 +484,15 @@ Paradox is a better package manager, uses git hub as well so we need this token
                  ))
                ("o" "Agenda and Office-related tasks"
                 ((agenda "")
-                 (tags-todo "region")
                  (tags-todo "sprint")
+                 (tags-todo "project")
+                 (tags-todo "catexp")
+                 (tags-todo "region")
                  (tags-todo "adhoc")))))
   
   (add-hook 'org-mode-hook 'auto-fill-mode)
+  
+  (setq org-clock-into-drawer t)
 #+end_src
 
 *** Narrow-or-widen
@@ -668,9 +678,9 @@ ap: add a dependency to your project depends on refactor-nrepl
 This is gregs folding code, works pretty well, this is just the key chords I am using
 
 #+begin_src emacs-lisp
-(key-chord-define-global "o[" 'origami-open-node)
-(key-chord-define-global "c]" 'origami-close-node)
-(key-chord-define-global "[]" 'origami-show-only-node)
+  (key-chord-define-global "o[" 'origami-open-node-recursively)
+  (key-chord-define-global "c]" 'origami-close-node)
+  (key-chord-define-global "[]" 'origami-show-only-node)
 #+end_src
 
 *** IPA
@@ -697,6 +707,53 @@ Popup for key shortcuts
   (guide-key-mode 1))  
 #+end_src
 
+*** Rainbow Delimiters
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+#+END_SRC
+
+*** Buffer Mangement
+
+Function from Greg, used to quickly create new scratch buffers
+
+#+BEGIN_SRC emacs-lisp
+  (defun gs/create-new-scratch-buffer ()
+    "This creates a new *scratch* buffer regardless of whether one
+  exists. It then switches to it."
+    (interactive)
+    (let ((buf (generate-new-buffer "*scratch*")))
+      (switch-to-buffer buf)
+      (lisp-interaction-mode)))
+  
+  (global-set-key (kbd "C-c b b") 'gs/create-new-scratch-buffer)
+#+END_SRC
+
+*** RecentF
+
+Find a file from a list of your most recent files. Very handy because i look at the same files over and over and over
+again all the time.
+
+#+BEGIN_SRC emacs-lisp
+  ;; get rid of `find-file-read-only' and replace it with something
+  ;; more useful.
+  (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
+  
+  ;; enable recent files mode.
+  (recentf-mode t)
+  
+  ; 50 files ought to be enough.
+  (setq recentf-max-saved-items 50)
+  
+  (defun ido-recentf-open ()
+    "Use `ido-completing-read' to \\[find-file] a recent file"
+    (interactive)
+    (if (find-file (ido-completing-read "Find recent file: " recentf-list))
+        (message "Opening file...")
+      (message "Aborting")))
+  
+#+END_SRC
+
 ** Navigation
 *** Pop to mark
 
@@ -712,20 +769,20 @@ Hande way of getting back to previous places
 Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tricks/chldury
 
 #+begin_src emacs-lisp
-(defun travis/vsplit-last-buffer ()
-  "Split the window vertically and display the previous buffer."
-  (interactive "p")
-  (split-window-vertically)
-  (other-window 1 nil)
-  (switch-to-next-buffer))
-(defun travis/hsplit-last-buffer ()
-  "Split the window horizontally and display the previous buffer."
-  (interactive "p")
-  (split-window-horizontally)
-  (other-window 1 nil)
-  (switch-to-next-buffer))
-(bind-key "C-x 2" 'travis/vsplit-last-buffer)
-(bind-key "C-x 3" 'travis/hsplit-last-buffer)
+  (defun travis/vsplit-last-buffer (_)
+    "Split the window vertically and display the previous buffer."
+    (interactive "p")
+    (split-window-vertically)
+    (other-window 1 nil)
+    (switch-to-next-buffer))
+  (defun travis/hsplit-last-buffer (_)
+    "Split the window horizontally and display the previous buffer."
+    (interactive "p")
+    (split-window-horizontally)
+    (other-window 1 nil)
+    (switch-to-next-buffer))
+  (bind-key "C-x 2" 'travis/vsplit-last-buffer)
+  (bind-key "C-x 3" 'travis/hsplit-last-buffer)
 #+end_src
 
 *** Key-chord
