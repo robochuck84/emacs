@@ -764,9 +764,10 @@ again all the time.
 
 #+BEGIN_SRC emacs-lisp
   (projectile-global-mode)
-
+  
   (setq projectile-enable-caching t)
-
+  
+  (setq projectile-file-exists-remote-cache-expire nil)
 #+END_SRC
 
 ** Navigation
