@@ -88,6 +88,11 @@ Custom Variables
 #+end_src
 
 ** General Configuration
+*** Tramp
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'tramp-remote-path "/apollo/env/SDETools/bin")
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+#+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
   (when (window-system)
@@ -268,78 +273,84 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 *** Eclim
 
 #+begin_src emacs-lisp
-(global-eclim-mode)
-(company-emacs-eclim-setup)
-(setq help-at-pt-display-when-idle t)
-(setq help-at-pt-timer-delay 0.05)
-(help-at-pt-set-timer)
-
-;; Functions
-(defun tr/exit-code-helper (cmd rx)
-  "Pipe through perl looking for rx."
-  (s-concat cmd
-            "|perl -e 'my $flag=0; while(<>) { if ($_=~/" rx "/)"
-            "{ $flag = 1 } print $_ } exit $flag'"))
-
-(defvar tr/junit-failure-regex "(Failures: [1-9][0-9]*)|(Errors: [1-9][0-9]*)")
-
-(defun tr/eclim-java-junit-all ()
-  (interactive)
-  (compile (tr/exit-code-helper
-            (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p"))))
-            tr/junit-failure-regex)))
-
-(defun tr/eclim-java-junit ()
-  (interactive)
-  (compile (tr/exit-code-helper
-            (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p" "-f" "-o"))))
-            tr/junit-failure-regex)))
-
-
-(add-to-list 'compilation-mode-font-lock-keywords
-             '("Tests run: [0-9]*, Failures: [1-9][0-9]*,.*$"
-               (0 compilation-error-face)))
-(add-to-list 'compilation-mode-font-lock-keywords
-             '("Tests run: [0-9]*, Failures: 0, Errors: [1-9][0-9]*,.*$"
-               (0 compilation-error-face)))
-(add-to-list 'compilation-mode-font-lock-keywords
-             '("Tests run: [0-9]*, Failures: 0, Errors: 0, Time elapsed: .*$"
-               (0 compilation-info-face)))
-
-(defun tr/java-self-insert-complete (char)
-  (lexical-let ((char char))
-    (lambda ()
-      (interactive)
-      (insert char)
-      (company-complete))))
-
-(defun java-mode-keys ()
-  (local-set-key (kbd "C-c o") 'eclim-java-import-organize)
-  (local-set-key (kbd "C-c p") 'eclim-problems)
-  (local-set-key (kbd "C-c P") 'eclim-problems-open)
-  (local-set-key (kbd "C-c d") 'eclim-java-doc-comment)
-  (local-set-key (kbd "C-c C-d") 'eclim-java-find-declaration)
-  (local-set-key (kbd "C-c C-e") 'eclim-java-find-generic)
-  (local-set-key (kbd "C-c C-r") 'eclim-java-find-references)
-  (local-set-key (kbd "C-c C-t") 'eclim-java-find-type)
-  (local-set-key (kbd "C-c C-f") 'eclim-java-format)
-  (local-set-key (kbd "C-c G") 'eclim-java-generate-getter-and-setter)
-  (local-set-key (kbd "C-c h") 'eclim-java-hierarchy)
-  (local-set-key (kbd "C-c j") 'eclim-java-show-documentation-for-current-element)
-  (local-set-key (kbd "C-c r") 'eclim-java-refactor-rename-symbol-at-point)
-  (local-set-key (kbd "C-c s") 'eclim-java-method-signature-at-point)
-  (local-set-key (kbd "C-c t") 'tr/eclim-java-junit)
-  (local-set-key (kbd "C-c T") 'tr/eclim-java-junit-all)
-  (local-set-key (kbd "C-c z") 'eclim-java-implement)
-  (local-set-key (kbd ".") (tr/java-self-inserg-complete ".")))
-
-(add-hook 'java-mode-hook 'java-mode-keys)
+  (global-eclim-mode)
+  (company-emacs-eclim-setup)
+  (setq help-at-pt-display-when-idle t)
+  (setq help-at-pt-timer-delay 0.05)
+  (help-at-pt-set-timer)
+  
+  ;; Functions
+  (defun tr/exit-code-helper (cmd rx)
+    "Pipe through perl looking for rx."
+    (s-concat cmd
+              "|perl -e 'my $flag=0; while(<>) { if ($_=~/" rx "/)"
+              "{ $flag = 1 } print $_ } exit $flag'"))
+  
+  (defvar tr/junit-failure-regex "(Failures: [1-9][0-9]*)|(Errors: [1-9][0-9]*)")
+  
+  (defun tr/eclim-java-junit-all ()
+    (interactive)
+    (compile (tr/exit-code-helper
+              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p"))))
+              tr/junit-failure-regex)))
+  
+  (defun tr/eclim-java-junit ()
+    (interactive)
+    (compile (tr/exit-code-helper
+              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p" "-f" "-o"))))
+              tr/junit-failure-regex)))
+  
+  
+  (add-to-list 'compilation-mode-font-lock-keywords
+               '("Tests run: [0-9]*, Failures: [1-9][0-9]*,.*$"
+                 (0 compilation-error-face)))
+  (add-to-list 'compilation-mode-font-lock-keywords
+               '("Tests run: [0-9]*, Failures: 0, Errors: [1-9][0-9]*,.*$"
+                 (0 compilation-error-face)))
+  (add-to-list 'compilation-mode-font-lock-keywords
+               '("Tests run: [0-9]*, Failures: 0, Errors: 0, Time elapsed: .*$"
+                 (0 compilation-info-face)))
+  
+  (defun tr/java-self-insert-complete (char)
+    (lexical-let ((char char))
+      (lambda ()
+        (interactive)
+        (insert char)
+        (company-complete))))
+  
+  (defun java-mode-keys ()
+    (local-set-key (kbd "C-c o") 'eclim-java-import-organize)
+    (local-set-key (kbd "C-c p") 'eclim-problems)
+    (local-set-key (kbd "C-c P") 'eclim-problems-open)
+    (local-set-key (kbd "C-c d") 'eclim-java-doc-comment)
+    (local-set-key (kbd "C-c C-d") 'eclim-java-find-declaration)
+    (local-set-key (kbd "C-c C-e") 'eclim-java-find-generic)
+    (local-set-key (kbd "C-c C-r") 'eclim-java-find-references)
+    (local-set-key (kbd "C-c C-t") 'eclim-java-find-type)
+    (local-set-key (kbd "C-c C-f") 'eclim-java-format)
+    (local-set-key (kbd "C-c G") 'eclim-java-generate-getter-and-setter)
+    (local-set-key (kbd "C-c h") 'eclim-java-hierarchy)
+    (local-set-key (kbd "C-c j") 'eclim-java-show-documentation-for-current-element)
+    (local-set-key (kbd "C-c r") 'eclim-java-refactor-rename-symbol-at-point)
+    (local-set-key (kbd "C-c s") 'eclim-java-method-signature-at-point)
+    (local-set-key (kbd "C-c t") 'tr/eclim-java-junit)
+    (local-set-key (kbd "C-c T") 'tr/eclim-java-junit-all)
+    (local-set-key (kbd "C-c z") 'eclim-java-implement)
+    (local-set-key (kbd ".") (tr/java-self-insert-complete ".")))
+  
+  (add-hook 'java-mode-hook 'java-mode-keys)
 #+end_src
     
 *** Company
 
 #+begin_src emacs-lisp
-(global-company-mode t)
+  (global-company-mode t)
+  (setq company-dabbrev-downcase nil)
+  (setq company-idle-delay 0.3)
+  (setq company-show-numbers t)
+  (setq company-minimum-prefix-length 1)
+  (setq company-require-match nil)
+  
 #+end_src
 
 *** Hungry delete
@@ -763,11 +774,11 @@ again all the time.
 *** Projectile
 
 #+BEGIN_SRC emacs-lisp
-  (projectile-global-mode)
+  ;; (projectile-global-mode)
   
-  (setq projectile-enable-caching t)
+  ;; (setq projectile-enable-caching t)
   
-  (setq projectile-file-exists-remote-cache-expire nil)
+  ;; (setq projectile-file-exists-remote-cache-expire nil)
 #+END_SRC
 
 ** Navigation
