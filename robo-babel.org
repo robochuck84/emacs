@@ -63,6 +63,7 @@ Defaults from the beginning
   (require 'rainbow-delimiters)
   (require 'httprepl)
   (require 'recentf)
+  (require 'soap-client)
 #+end_src
 
 Custom Variables
@@ -781,6 +782,25 @@ again all the time.
   ;; (setq projectile-file-exists-remote-cache-expire nil)
 #+END_SRC
 
+*** My Functions
+Some of the things I have found that are handy or I have written up to make life easier
+
+Tidy is like an html lint, this function cleans up the buffer
+#+BEGIN_SRC emacs-lisp
+  
+  (defun tidy-html()
+    "Tidies the HTML content in the buffer using `tidy"
+    (interactive)
+    (shell-command-on-region
+     (point-min)
+     (point-max)
+     "tidy -i -w 120 -q"
+     (current-buffer)
+     t
+     "*Tidy Error Buffer*"
+     t))
+  
+#+END_SRC
 ** Navigation
 *** Pop to mark
 
