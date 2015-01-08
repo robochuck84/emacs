@@ -64,6 +64,7 @@ Defaults from the beginning
   (require 'httprepl)
   (require 'recentf)
   (require 'soap-client)
+  
 #+end_src
 
 Custom Variables
@@ -89,16 +90,24 @@ Custom Variables
 #+end_src
 
 ** General Configuration
-*** Tramp
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'tramp-remote-path "/apollo/env/SDETools/bin")
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-#+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
   (when (window-system)
     (require 'git-gutter-fringe)
     (global-git-gutter-mode +1))
+#+END_SRC
+*** Octave
+
+#+BEGIN_SRC emacs-lisp
+  (setq auto-mode-alist
+        (cons '("\\.m$" . octave-mode) auto-mode-alist))
+  
+  (add-hook 'octave-mode-hook
+            (lambda ()
+              (abbrev-mode 1)
+              (auto-fill-mode 1)
+              (if (eq window-system 'x)
+                  (font-lock-mode 1))))
 #+END_SRC
 *** Visual Bookmarks
 
@@ -235,11 +244,12 @@ I use smart mode line, mostly for ease of use, someday ill customize
 Minor modes I do not want to see
 
 #+begin_src emacs-lisp
-(require 'diminish)
-(eval-after-load "google-this" '(diminish 'google-this-mode))
-(eval-after-load "company" '(diminish 'company-mode))
-(eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
-(eval-after-load "smarparens" '(diminish 'smartparens-mode))
+  (require 'diminish)
+  (eval-after-load "google-this" '(diminish 'google-this-mode))
+  (eval-after-load "company" '(diminish 'company-mode))
+  (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
+  (eval-after-load "smarparens" '(diminish 'smartparens-mode))
+  (eval-after-load "yasnippet" '(diminish 'yas-minor-mode))
 #+end_src
 
 *** Change "yes or no" to "y or n"
@@ -347,9 +357,9 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 #+begin_src emacs-lisp
   (global-company-mode t)
   (setq company-dabbrev-downcase nil)
-  (setq company-idle-delay 0.3)
+  (setq company-idle-delay 0.5)
   (setq company-show-numbers t)
-  (setq company-minimum-prefix-length 1)
+  (setq company-minimum-prefix-length 2)
   (setq company-require-match nil)
   
 #+end_src
@@ -775,11 +785,9 @@ again all the time.
 *** Projectile
 
 #+BEGIN_SRC emacs-lisp
-  ;; (projectile-global-mode)
+  (projectile-global-mode)
   
-  ;; (setq projectile-enable-caching t)
-  
-  ;; (setq projectile-file-exists-remote-cache-expire nil)
+  (setq projectile-file-exists-remote-cache-expire nil)
 #+END_SRC
 
 *** My Functions
@@ -799,6 +807,11 @@ Tidy is like an html lint, this function cleans up the buffer
      t
      "*Tidy Error Buffer*"
      t))
+  
+#+END_SRC
+*** Yasnippet
+#+BEGIN_SRC emacs-lisp
+  (yas-global-mode 1)
   
 #+END_SRC
 ** Navigation
