@@ -64,6 +64,7 @@ Defaults from the beginning
   (require 'httprepl)
   (require 'recentf)
   (require 'soap-client)
+  (require 'flycheck)
   
 #+end_src
 
@@ -379,9 +380,19 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 *** Perl
 
 #+begin_src emacs-lisp
-;; Alias
-(defalias 'perl-mode 'cperl-mode)
-(setq cperl-invalid-face nil)
+  ;; Alias
+  (defalias 'perl-mode 'cperl-mode)
+  (setq cperl-invalid-face nil)
+  
+  (flycheck-define-checker perl
+    "Checker for perl"
+    :command ("/apollo/bin/env" "-e" "rtip-state-processor" "perl" "-w" "-c" source)
+    :error-patterns
+    ((error line-start (minimal-match (message))
+            " at " (file-name) " line " line
+            (or "." (and ", " (zero-or-more not-newline))) line-end))
+    :modes (perl-mode cperl-mode)
+    :next-checkers (perl-perlcritic))
 #+end_src
 
 *** Endless toggle and launcher
@@ -808,6 +819,13 @@ Tidy is like an html lint, this function cleans up the buffer
      "*Tidy Error Buffer*"
      t))
   
+  (defun highlight-and-show()
+    "Highlight a symbol and show all occurences"
+    (interactive)
+    (highlight-symbol-at-point)
+    (highlight-symbol-occur))
+  
+  (global-set-key "\C-chs" 'highlight-and-show)
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
