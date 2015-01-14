@@ -153,15 +153,15 @@ Custom Variables
 *** Window configuration
 
 #+begin_src emacs-lisp
-;; Modes
-(tooltip-mode -1)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-
-(set-face-attribute 'default nil :height 110)
-(setq inhibit-startup-message t
-      inhibit-startup-echo-area-message t)
+  ;; Modes
+  (tooltip-mode -1)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  
+  (set-face-attribute 'default nil :height 100)
+  (setq inhibit-startup-message t
+        inhibit-startup-echo-area-message t)
 #+end_src
 
 *** Winner mode - undo and redo window configuration
@@ -251,6 +251,9 @@ Minor modes I do not want to see
   (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
   (eval-after-load "smarparens" '(diminish 'smartparens-mode))
   (eval-after-load "yasnippet" '(diminish 'yas-minor-mode))
+  (eval-after-load "projectile" '(diminish 'projectile-mode))
+  (eval-after-load "guide-key" '(diminish 'guide-key-mode))
+  (eval-after-load "git-gutter" '(diminish 'git-gutter-mode))
 #+end_src
 
 *** Change "yes or no" to "y or n"
@@ -383,6 +386,8 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
   ;; Alias
   (defalias 'perl-mode 'cperl-mode)
   (setq cperl-invalid-face nil)
+  
+  (add-hook 'cperl-mode-hook 'flycheck-mode)
   
   (flycheck-define-checker perl
     "Checker for perl"
