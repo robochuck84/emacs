@@ -172,9 +172,10 @@ Custom Variables
 
 *** IDO mode - completion in many places
 #+begin_src emacs-lisp
-(ido-mode 1)
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
+  (ido-mode 1)
+  (ido-ubiquitous-mode 1)
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
 #+end_src
 
 If you use imenu to look at the functions in a file, this will give you ido mode in that
@@ -387,6 +388,7 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
   (defalias 'perl-mode 'cperl-mode)
   (setq cperl-invalid-face nil)
   
+
   (add-hook 'cperl-mode-hook 'flycheck-mode)
   
   (flycheck-define-checker perl
