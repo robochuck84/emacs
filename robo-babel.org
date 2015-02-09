@@ -891,4 +891,7 @@ Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tri
 (key-chord-define-global "jk" 'magit-status)
 
 (key-chord-define-global "uu" 'undo)
+
+    
 #+end_src
+
