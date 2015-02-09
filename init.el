@@ -6,6 +6,9 @@
 
 (setq package-enable-at-startup nil)
 
+(set-keyboard-coding-system nil)
+
+
 (require 'org)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
