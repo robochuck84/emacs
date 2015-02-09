@@ -65,7 +65,7 @@ Defaults from the beginning
   (require 'recentf)
   (require 'soap-client)
   (require 'flycheck)
-  
+  (require 'tea-time)
 #+end_src
 
 Custom Variables
