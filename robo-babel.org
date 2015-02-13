@@ -33,6 +33,7 @@ Defaults from the beginning
   (add-to-list 'load-path "~/emacs/origami")
   (add-to-list 'load-path "~/emacs/ipa")
   (add-to-list 'load-path "~/emacs/httprepl")
+  (add-to-list 'load-path "~/emacs/symon")
   
   (package-initialize)
   
@@ -66,6 +67,7 @@ Defaults from the beginning
   (require 'soap-client)
   (require 'flycheck)
   (require 'tea-time)
+  (require 'symon)
 #+end_src
 ** General Configuration
 *** Fringe
