@@ -248,8 +248,7 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
-  (when (window-system) 
-    (color-theme-almost-monokai))
+  (color-theme-almost-monokai)
   (set-face-foreground 'erc-input-face "lightblue")
 #+end_src
 
@@ -463,13 +462,14 @@ Mnemonic example, "Emacs toggle column", C-x t c
 Some global bindings I found from mastering emacs blog
 
 #+begin_src emacs-lisp
-(global-set-key [f8] 'neotree-toggle)
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-cc" 'org-capture)
-(global-set-key "\C-ca" 'org-agenda)
-(define-key global-map (kbd "RET") 'newline-and-indent)
+  (global-set-key [f8] 'neotree-toggle)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cml" 'magit-file-log)
+  (define-key global-map (kbd "RET") 'newline-and-indent)
 #+end_src
 
 Paradox is a better package manager, uses git hub as well so we need this token
@@ -522,6 +522,7 @@ Paradox is a better package manager, uses git hub as well so we need this token
   (add-hook 'org-mode-hook 'auto-fill-mode)
   
   (setq org-clock-into-drawer t)
+  (setq org-hide-leading-stars t)
 #+end_src
 
 *** Narrow-or-widen
@@ -789,6 +790,64 @@ again all the time.
   (projectile-global-mode)
   
   (setq projectile-file-exists-remote-cache-expire nil)
+#+END_SRC
+
+This bit creates a view of all projects which also shells out to git to get some useful info about the project as far
+as the repo is concerned
+
+#+BEGIN_SRC emacs-lisp
+  (define-derived-mode git-projects-mode special-mode "Git Overview")
+  
+  ;(define-key git-projects-mode-map (kbd "RET") 'gs-git-proj/open-in-magit)
+  ;(define-key git-projects-mode-map (kbd "n") 'gs-git-proj/next-project)
+  ;(define-key git-projects-mode-map (kbd "p") 'gs-git-proj/prev-project)
+  ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
+  
+  (defface project-header
+    '((((class color) (background light))
+        :foreground "white"
+        :background "black"
+        :weight bold
+        :underline t)
+       (((class color) (background dark))
+        :foreground "white"
+        :weight bold
+        :underline t))
+      "Highlights the project header")
+  
+  (defface project-body
+    '((((class color) (background light))
+       :foreground "white"
+       :background "black")
+      (((class color) (background dark))
+       :foreground "white"
+       :background "black"))
+      "Highlights the body of the project")
+  
+  (defun tr-project-display/present-title (title)
+    (concat "\n" (propertize (concat title "\n")
+                             'face 'project-header)))
+  (defun tr-project-display/present-body (body)
+    (propertize (concat "\n" body)
+                'face 'project-body))
+  
+  (defun tr/list-projects ()
+    "Loops through all known projects from projectile and applies git-tldr to them"
+    (interactive)
+    (let ((bufname (get-buffer-create "*Project*")))
+      (with-current-buffer bufname
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (mapc
+           (lambda (project)
+             (let ((default-directory project))
+               (insert (tr-project-display/present-title project))
+               (insert (tr-project-display/present-body (shell-command-to-string "git tldr")))))
+           (projectile-relevant-known-projects))
+          (git-projects-mode)
+          (pop-to-buffer bufname)))))
+  
+  (tr/list-projects)
 #+END_SRC
 
 *** My Functions
