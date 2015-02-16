@@ -69,6 +69,12 @@ Defaults from the beginning
   (require 'tea-time)
   (require 'symon)
 #+end_src
+*** Font
+
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'default t :font "DejaVu Sans Mono-10")
+  
+#+END_SRC
 ** General Configuration
 *** Fringe
 #+BEGIN_SRC emacs-lisp
@@ -385,6 +391,7 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 #+end_src
 
 *** Endless toggle and launcher
+    CLOSED: [2015-02-16 Mon 20:24]
 
 Found these great global key bindings at endlessparentheses.com
 Mnemonic example, "Emacs toggle column", C-x t c
@@ -810,7 +817,8 @@ as the repo is concerned
         :weight bold
         :underline t)
        (((class color) (background dark))
-        :foreground "white"
+        :foreground "azure"
+        :background "SteelBlue4"
         :weight bold
         :underline t))
       "Highlights the project header")
@@ -820,21 +828,21 @@ as the repo is concerned
        :foreground "white"
        :background "black")
       (((class color) (background dark))
-       :foreground "white"
-       :background "black"))
+       :foreground "DodgerBlue4"
+       :background "LightSteelBlue2"
+       ))
       "Highlights the body of the project")
   
   (defun tr-project-display/present-title (title)
     (concat "\n" (propertize (concat title "\n")
                              'face 'project-header)))
   (defun tr-project-display/present-body (body)
-    (propertize (concat "\n" body)
-                'face 'project-body))
+    (propertize body 'face 'project-body))
   
   (defun tr/list-projects ()
     "Loops through all known projects from projectile and applies git-tldr to them"
     (interactive)
-    (let ((bufname (get-buffer-create "*Project*")))
+    (let ((bufname (get-buffer-create "*Projects*")))
       (with-current-buffer bufname
         (let ((inhibit-read-only t))
           (erase-buffer)
@@ -847,7 +855,7 @@ as the repo is concerned
           (git-projects-mode)
           (pop-to-buffer bufname)))))
   
-  (tr/list-projects)
+  (global-set-key "\C-ct" 'tr/list-projects)
 #+END_SRC
 
 *** My Functions
