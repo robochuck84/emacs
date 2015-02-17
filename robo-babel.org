@@ -76,6 +76,47 @@ Defaults from the beginning
   
 #+END_SRC
 ** General Configuration
+*** My Functions
+Some of the things I have found that are handy or I have written up to make life easier
+
+Tidy is like an html lint, this function cleans up the buffer
+#+BEGIN_SRC emacs-lisp
+  
+  (defun tidy-html()
+    "Tidies the HTML content in the buffer using `tidy"
+    (interactive)
+    (shell-command-on-region
+     (point-min)
+     (point-max)
+     "tidy -i -w 120 -q"
+     (current-buffer)
+     t
+     "*Tidy Error Buffer*"
+     t))
+  
+  (defun highlight-and-show()
+    "Highlight a symbol and show all occurences"
+    (interactive)
+    (highlight-symbol-at-point)
+    (highlight-symbol-occur))
+  
+  (global-set-key "\C-chs" 'highlight-and-show)
+  
+  (defun tr/search-text-next-prop (prop value)
+    "Searches the text from point until it finds the property"
+    (interactive)
+    (let ((next-change
+           (or (text-property-any
+                (next-property-change (point) (current-buffer))
+                (buffer-size)
+                prop
+                value)
+               (point))))
+      (goto-char next-change)))
+  
+  
+  
+#+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
   (when (window-system)
@@ -803,14 +844,14 @@ This bit creates a view of all projects which also shells out to git to get some
 as the repo is concerned
 
 #+BEGIN_SRC emacs-lisp
-  (define-derived-mode git-projects-mode special-mode "Git Overview")
+  (define-derived-mode git-projectiles-mode special-mode "Projectiles")
   
   ;(define-key git-projects-mode-map (kbd "RET") 'gs-git-proj/open-in-magit)
-  ;(define-key git-projects-mode-map (kbd "n") 'gs-git-proj/next-project)
+  (define-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
   ;(define-key git-projects-mode-map (kbd "p") 'gs-git-proj/prev-project)
   ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
   
-  (defface project-header
+  (defface projectiles-header
     '((((class color) (background light))
         :foreground "white"
         :background "black"
@@ -823,7 +864,7 @@ as the repo is concerned
         :underline t))
       "Highlights the project header")
   
-  (defface project-body
+  (defface projectiles-body
     '((((class color) (background light))
        :foreground "white"
        :background "black")
@@ -833,56 +874,34 @@ as the repo is concerned
        ))
       "Highlights the body of the project")
   
-  (defun tr-project-display/present-title (title)
+  (defun tr-projectiles/present-title (title)
     (concat "\n" (propertize (concat title "\n")
-                             'face 'project-header)))
-  (defun tr-project-display/present-body (body)
-    (propertize body 'face 'project-body))
+                             'face 'projectiles-header)))
+  (defun tr-projectiles/present-body (body)
+    (propertize body 'face 'projectiles-body))
   
-  (defun tr/list-projects ()
+  (defun tr-projectiles/list-projects ()
     "Loops through all known projects from projectile and applies git-tldr to them"
     (interactive)
-    (let ((bufname (get-buffer-create "*Projects*")))
+    (let ((bufname (get-buffer-create "*Git*")))
       (with-current-buffer bufname
         (let ((inhibit-read-only t))
           (erase-buffer)
           (mapc
            (lambda (project)
              (let ((default-directory project))
-               (insert (tr-project-display/present-title project))
-               (insert (tr-project-display/present-body (shell-command-to-string "git tldr")))))
+               (insert (tr-projectiles/present-title project))
+               (insert (tr-projectiles/present-body (shell-command-to-string "git tldr")))))
            (projectile-relevant-known-projects))
-          (git-projects-mode)
+          (git-projectiles-mode)
           (pop-to-buffer bufname)))))
   
-  (global-set-key "\C-ct" 'tr/list-projects)
-#+END_SRC
-
-*** My Functions
-Some of the things I have found that are handy or I have written up to make life easier
-
-Tidy is like an html lint, this function cleans up the buffer
-#+BEGIN_SRC emacs-lisp
+  (global-set-key "\C-ct" 'tr-projectiles/list-projects)
   
-  (defun tidy-html()
-    "Tidies the HTML content in the buffer using `tidy"
+  (defun tr-projectiles/search-next ()
+    "Hunts for the next header"
     (interactive)
-    (shell-command-on-region
-     (point-min)
-     (point-max)
-     "tidy -i -w 120 -q"
-     (current-buffer)
-     t
-     "*Tidy Error Buffer*"
-     t))
-  
-  (defun highlight-and-show()
-    "Highlight a symbol and show all occurences"
-    (interactive)
-    (highlight-symbol-at-point)
-    (highlight-symbol-occur))
-  
-  (global-set-key "\C-chs" 'highlight-and-show)
+    (tr/search-text-next-prop 'face 'projectiles-header))
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
