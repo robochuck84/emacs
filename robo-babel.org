@@ -114,6 +114,7 @@ Tidy is like an html lint, this function cleans up the buffer
                (point))))
       (goto-char next-change)))
   
+<<<<<<< HEAD
   (defun tr/git-get-branch ()
     (substring (shell-command-to-string "git branch | grep '\*'") 2 -1))
   
@@ -136,6 +137,10 @@ Tidy is like an html lint, this function cleans up the buffer
     (browse-url (tr/generate-code-link)))
   
   (global-set-key "\C-xlC" 'tr/open-code-amazon-com)
+#+END_SRC  
+*** Defaults
+#+BEGIN_SRC emacs-lisp
+  (setq truncate-lines t)
 #+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
