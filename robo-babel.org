@@ -129,7 +129,13 @@ Tidy is like an html lint, this function cleans up the buffer
                (-filter (lambda (dir) (string= dir ".git"))
                         (directory-files (mapconcat 'identity list "/")))))
       (format "https://code.amazon.com/packages/%s/blobs/heads/%s/--/%s#line-%d"
-              (car seen) (tr/git-get-branch) (mapconcat 'identity (cdr seen) "/") (point))))
+              (car seen) (tr/git-get-branch) (mapconcat 'identity (cdr seen) "/") (line-number-at-pos))))
+  
+  (defun tr/open-code-amazon-com ()
+    (interactive)
+    (browse-url (tr/generate-code-link)))
+  
+  (global-set-key "\C-xlC" 'tr/open-code-amazon-com)
 #+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
@@ -446,7 +452,6 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
 #+end_src
 
 *** Endless toggle and launcher
-    CLOSED: [2015-02-16 Mon 20:24]
 
 Found these great global key bindings at endlessparentheses.com
 Mnemonic example, "Emacs toggle column", C-x t c
@@ -517,6 +522,8 @@ Mnemonic example, "Emacs toggle column", C-x t c
   (define-key launcher-map "x" (browse "http://www.xkcd.com/"))
   (define-key launcher-map "m" (browse "http://www.gizmag.com/"))
   (define-key launcher-map "g" (browse "http://www.gmail.com/"))
+  
+  
 #+end_src
 
 *** Mastering Emacs Key Bindings
