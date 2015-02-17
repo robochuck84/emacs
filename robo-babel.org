@@ -114,8 +114,22 @@ Tidy is like an html lint, this function cleans up the buffer
                (point))))
       (goto-char next-change)))
   
+  (defun tr/git-get-branch ()
+    (substring (shell-command-to-string "git branch | grep '\*'") 2 -1))
   
-  
+  (defun tr/generate-code-link ()
+    "Builds a link to the proper spot in code.amazon.com"
+    (interactive)
+    (let* ((path (buffer-file-name))
+           (list (split-string path "/"))
+           (seen ()))
+      (while (progn
+               (setq seen (push (car (last list)) seen))
+               (setq list (butlast list))
+               (-filter (lambda (dir) (string= dir ".git"))
+                        (directory-files (mapconcat 'identity list "/")))))
+      (format "https://code.amazon.com/packages/%s/blobs/heads/%s/--/%s#line-%d"
+              (car seen) (tr/git-get-branch) (mapconcat 'identity (cdr seen) "/") (point))))
 #+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
