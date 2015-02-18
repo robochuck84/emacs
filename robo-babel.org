@@ -126,10 +126,10 @@ Tidy is like an html lint, this function cleans up the buffer
       (while (progn
                (setq seen (push (car (last list)) seen))
                (setq list (butlast list))
-               (-filter (lambda (dir) (string= dir ".git"))
-                        (directory-files (mapconcat 'identity list "/")))))
+               (not (-filter (lambda (dir) (string= dir ".git"))
+                        (directory-files (mapconcat 'identity list "/"))))))
       (format "https://code.amazon.com/packages/%s/blobs/heads/%s/--/%s#line-%d"
-              (car seen) (tr/git-get-branch) (mapconcat 'identity (cdr seen) "/") (line-number-at-pos))))
+              (car (last list)) (tr/git-get-branch) (mapconcat 'identity seen "/") (line-number-at-pos))))
   
   (defun tr/open-code-amazon-com ()
     (interactive)
