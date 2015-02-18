@@ -72,8 +72,8 @@ Defaults from the beginning
 *** Font
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default t :font "DejaVu Sans Mono-10")
-  
+  (if (find-font (font-spec :name "DejaVu Sans Mono"))
+      (set-face-attribute 'default t :font "DejaVu Sans Mono-10"))
 #+END_SRC
 ** General Configuration
 *** My Functions
@@ -887,7 +887,7 @@ as the repo is concerned
         :foreground "azure"
         :background "SteelBlue4"
         :weight bold
-        :underline t))
+        ))
       "Highlights the project header")
   
   (defface projectiles-body
