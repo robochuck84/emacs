@@ -114,8 +114,7 @@ Tidy is like an html lint, this function cleans up the buffer
                (point))))
       (goto-char next-change)))
   
-<<<<<<< HEAD
-  (defun tr/git-get-branch ()
+(defun tr/git-get-branch ()
     (substring (shell-command-to-string "git branch | grep '\*'") 2 -1))
   
   (defun tr/generate-code-link ()
