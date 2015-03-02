@@ -884,7 +884,7 @@ as the repo is concerned
 #+BEGIN_SRC emacs-lisp
   (define-derived-mode git-projectiles-mode special-mode "Projectiles")
   
-  ;(define-key git-projects-mode-map (kbd "RET") 'gs-git-proj/open-in-magit)
+  (define-key git-projectiles-mode-map (kbd "RET") 'tr-projectiles/open-in-magit)
   (define-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
   (define-key git-projectiles-mode-map (kbd "p") 'tr-projectiles/search-prev)
   ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
@@ -945,6 +945,11 @@ as the repo is concerned
     "Hunts for the prev header"
     (interactive)
     (tr/search-text-prev-prop 'face 'projectiles-header))
+  
+  (defun tr-projectiles/open-in-magit ()
+    "Opens the current line in magit"
+    (interactive)
+    (magit-status (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
