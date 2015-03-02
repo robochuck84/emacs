@@ -135,7 +135,7 @@ Tidy is like an html lint, this function cleans up the buffer
     (interactive)
     (browse-url (tr/generate-code-link)))
   
-  (global-set-key "\C-xlC" 'tr/open-code-amazon-com)
+
 #+END_SRC  
 *** Defaults
 #+BEGIN_SRC emacs-lisp
@@ -493,6 +493,7 @@ Mnemonic example, "Emacs toggle column", C-x t c
   (define-key launcher-map "l" #'paradox-list-packages)
   (define-key launcher-map "s" #'eshell)
   (define-key launcher-map "t" #'proced) ; top
+  (define-key launcher-map "C" #'tr/open-code-amazon-com)
   
   (defmacro run (exec)
     "Return a function that runs the executable EXEC."
