@@ -114,28 +114,40 @@ Tidy is like an html lint, this function cleans up the buffer
                (point))))
       (goto-char next-change)))
   
-  (defun tr/git-get-branch ()
-    (substring (shell-command-to-string "git branch | grep '\*'") 2 -1))
+  (defun tr/search-text-prev-prop (prop value)
+    "Searches the text backwards from point until it finds the property"
+    (interactive)
+    (while (progn
+             (goto-char (or (previous-single-property-change (point) prop (current-buffer)) (point)))
+             (not (eq (get-char-property (point) prop) value)))))
   
-  (defun tr/generate-code-link ()
+  
+  (defun gs/git-get-branch (path)
+    (let ((default-directory path))
+      (-> "git symbolic-ref -q --short HEAD" shell-command-to-string s-trim)))
+  
+  (defun gs/git-get-dir (path)
+    (let ((default-directory path))
+      (-> "git rev-parse --show-toplevel" shell-command-to-string s-trim)))
+  
+  (defun amz/generate-code-link (path)
     "Builds a link to the proper spot in code.amazon.com"
-    (interactive)
-    (let* ((path (buffer-file-name))
-           (list (split-string path "/"))
-           (seen ()))
-      (while (progn
-               (setq seen (push (car (last list)) seen))
-               (setq list (butlast list))
-               (not (-filter (lambda (dir) (string= dir ".git"))
-                        (directory-files (mapconcat 'identity list "/"))))))
+    (let ((path (f-relative path (gs/git-get-dir path)))
+          (branch (gs/git-get-branch path))
+          (package (f-filename (gs/git-get-dir path))))
       (format "https://code.amazon.com/packages/%s/blobs/heads/%s/--/%s#line-%d"
-              (car (last list)) (tr/git-get-branch) (mapconcat 'identity seen "/") (line-number-at-pos))))
+              package branch path (line-number-at-pos))))
   
-  (defun tr/open-code-amazon-com ()
+  (defun amz/view-on-code (path)
+    (interactive (list (buffer-file-name)))
+    (browse-url (amz/generate-code-link path)))
+  
+  (defun amz/code-link-to-kill-ring ()
     (interactive)
-    (browse-url (tr/generate-code-link)))
+    (kill-new (amz/generate-code-link)))
   
-  (global-set-key "\C-xlC" 'tr/open-code-amazon-com)
+  (global-set-key "\C-ck" 'amz/code-link-to-kill-ring)
+  
 #+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
@@ -869,7 +881,7 @@ as the repo is concerned
   
   ;(define-key git-projects-mode-map (kbd "RET") 'gs-git-proj/open-in-magit)
   (define-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
-  ;(define-key git-projects-mode-map (kbd "p") 'gs-git-proj/prev-project)
+  (define-key git-projectiles-mode-map (kbd "p") 'tr-projectiles/search-prev)
   ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
   
   (defface projectiles-header
@@ -923,6 +935,11 @@ as the repo is concerned
     "Hunts for the next header"
     (interactive)
     (tr/search-text-next-prop 'face 'projectiles-header))
+  
+  (defun tr-projectiles/search-prev ()
+    "Hunts for the prev header"
+    (interactive)
+    (tr/search-text-prev-prop 'face 'projectiles-header))
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
