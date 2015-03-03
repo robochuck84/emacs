@@ -883,12 +883,13 @@ as the repo is concerned
 
 #+BEGIN_SRC emacs-lisp
   (define-derived-mode git-projectiles-mode special-mode "Projectiles")
-  
+
   (define-key git-projectiles-mode-map (kbd "RET") 'tr-projectiles/open-in-magit)
   (define-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
   (define-key git-projectiles-mode-map (kbd "p") 'tr-projectiles/search-prev)
+  (define-key git-projectiles-mode-map (kbd "f") 'tr-projectiles/fine-file-at-point)
   ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
-  
+
   (defface projectiles-header
     '((((class color) (background light))
         :foreground "white"
@@ -901,7 +902,7 @@ as the repo is concerned
         :weight bold
         ))
       "Highlights the project header")
-  
+
   (defface projectiles-body
     '((((class color) (background light))
        :foreground "white"
@@ -911,13 +912,13 @@ as the repo is concerned
        :background "LightSteelBlue2"
        ))
       "Highlights the body of the project")
-  
+
   (defun tr-projectiles/present-title (title)
     (concat "\n" (propertize (concat title "\n")
                              'face 'projectiles-header)))
   (defun tr-projectiles/present-body (body)
     (propertize body 'face 'projectiles-body))
-  
+
   (defun tr-projectiles/list-projects ()
     "Loops through all known projects from projectile and applies git-tldr to them"
     (interactive)
@@ -933,23 +934,35 @@ as the repo is concerned
            (projectile-relevant-known-projects))
           (git-projectiles-mode)
           (pop-to-buffer bufname)))))
-  
+
   (global-set-key "\C-ct" 'tr-projectiles/list-projects)
-  
+
   (defun tr-projectiles/search-next ()
     "Hunts for the next header"
     (interactive)
     (tr/search-text-next-prop 'face 'projectiles-header))
-  
+
   (defun tr-projectiles/search-prev ()
     "Hunts for the prev header"
     (interactive)
     (tr/search-text-prev-prop 'face 'projectiles-header))
-  
+
   (defun tr-projectiles/open-in-magit ()
     "Opens the current line in magit"
     (interactive)
     (magit-status (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+
+  (defun tr-projectiles/find-file-with-project (project-dir)
+    "Opens a mini buffer with the files from the project"
+    (interactive)
+    (let ((default-directory project-dir))
+      (projectile-find-file)))
+
+  (defun tr-projectiles/fine-file-at-point ()
+    "Opens a mini buffer with the files in the project at point"
+    (interactive)
+    (tr-projectiles/find-file-with-project
+     (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
