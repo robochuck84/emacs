@@ -76,7 +76,6 @@ Defaults from the beginning
   (require 'highlight-symbol)
   (require 'discover-my-major)
   (require 'git-messenger)
-  (require 'guide-key-tip)
 #+end_src
 *** Font
 
