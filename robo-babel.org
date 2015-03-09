@@ -27,16 +27,18 @@ Defaults from the beginning
                '("marmalade" . "http://marmalade-repo.org/packages/"))
   (add-to-list 'package-archives
                '("melpa" . "http://melpa.milkbox.net/packages/")t)
-  
+
   ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
   (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
   (add-to-list 'load-path "~/emacs/origami")
   (add-to-list 'load-path "~/emacs/ipa")
   (add-to-list 'load-path "~/emacs/httprepl")
   (add-to-list 'load-path "~/emacs/symon")
-  
+  (add-to-list 'load-path "~/emacs/gotolastchange")
+  (add-to-list 'load-path "~/emacs/highlight-symbol")
+
   (package-initialize)
-  
+
   ;; Requires
   (require 'use-package)
   (require 'bm)
@@ -68,6 +70,13 @@ Defaults from the beginning
   (require 'flycheck)
   (require 'tea-time)
   (require 'symon)
+  (require 'goto-last-change)
+  (require 'ace-window)
+  (require 'project-explorer)
+  (require 'highlight-symbol)
+  (require 'discover-my-major)
+  (require 'git-messenger)
+  (require 'guide-key-tip)
 #+end_src
 *** Font
 
@@ -76,6 +85,16 @@ Defaults from the beginning
       (set-face-attribute 'default t :font "DejaVu Sans Mono-10"))
 #+END_SRC
 ** General Configuration
+*** Global Key Bindings
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-p") 'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+
+  ;; Discover my major, good for those days you cant remember!
+  (global-set-key (kbd "C-h C-m") 'discover-my-major)
+
+#+END_SRC
 *** My Functions
 Some of the things I have found that are handy or I have written up to make life easier
 
@@ -817,10 +836,10 @@ In Place Annotations, lets you make annotations on a file without modifying the 
 Popup for key shortcuts
 
 #+begin_src emacs-lisp
-(use-package guide-key
-  :init
-  (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c"))
-  (guide-key-mode 1))  
+  (use-package guide-key
+    :init
+    (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c"))
+    (guide-key-mode 1))
 #+end_src
 
 *** Rainbow Delimiters
