@@ -83,6 +83,10 @@ Defaults from the beginning
   (if (find-font (font-spec :name "DejaVu Sans Mono"))
       (set-face-attribute 'default t :font "DejaVu Sans Mono-10"))
 #+END_SRC
+** Global Variables
+   #+BEGIN_SRC emacs-lisp
+        (setq-default indent-tabs-mode nil)
+   #+END_SRC
 ** General Configuration
 *** Global Key Bindings
 
