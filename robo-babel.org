@@ -718,50 +718,57 @@ Greg sent me this, is a way to have the mode line go very bright when erc is get
 to mute that, which is very useful when a channel you dont care about is getting chatty
 
 #+begin_src emacs-lisp
-(defun gs/set-mode-line-background (color)
-  (when color (set-face-background 'mode-line color)))
+  (defun gs/set-mode-line-background (color)
+    (when color (set-face-background 'mode-line color)))
 
-(lexical-let ((alerts '()))
-  (defun gs/mode-line-alert (alert-id color)
-    "Alert by setting the modeline to COLOR. If COLOR is the symbol
-  clear then remove the current notification."
-    (defun alerting-p (alert-id) (assoc alert-id alerts))
-    (defun set-alerting (alert-id color)
-      (when (not (alerting-p alert-id))
-        (setq alerts (cons (cons alert-id color) alerts))
-        (gs/set-mode-line-background color)))
-    (defun remove-alert (alert-id) (setq alerts (assq-delete-all alert-id alerts)))
-    (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
-    (cond ((eq alert-id 'print) alerts)
-          ((eq color 'clear)
-           (when (alerting-p alert-id)
-             (progn (remove-alert alert-id)
-                    (gs/set-mode-line-background (cdar alerts)))))
-          ((alerting-p alert-id) nil)
-          (t (set-alerting alert-id color)))))
+  (lexical-let ((alerts '()))
+    (defun gs/mode-line-alert (alert-id color)
+      "Alert by setting the modeline to COLOR. If COLOR is the symbol
+    clear then remove the current notification."
+      (defun alerting-p (alert-id) (assoc alert-id alerts))
+      (defun set-alerting (alert-id color)
+        (when (not (alerting-p alert-id))
+          (setq alerts (cons (cons alert-id color) alerts))
+          (gs/set-mode-line-background color)))
+      (defun remove-alert (alert-id) (setq alerts (assq-delete-all alert-id alerts)))
+      (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
+      (cond ((eq alert-id 'print) alerts)
+            ((eq color 'clear)
+             (when (alerting-p alert-id)
+               (progn (remove-alert alert-id)
+                      (gs/set-mode-line-background (cdar alerts)))))
+            ((alerting-p alert-id) nil)
+            (t (set-alerting alert-id color)))))
 
-(defvar gs/erc-notify-mute-buffers nil
-  "Buffers that are currently muted and should not be alerted if
-activity occurs.")
+  (defvar gs/erc-notify-mute-buffers nil
+    "Buffers that are currently muted and should not be alerted if
+  activity occurs.")
 
-(defun gs/erc-toggle-mute-buffer ()
-  (interactive)
-  (if (memq (current-buffer) gs/erc-notify-mute-buffers)
-      (progn (setq gs/erc-notify-mute-buffers (delete (current-buffer)
-                                                      gs/erc-notify-mute-buffers))
-             (message "Buffer unmuted"))
-    (add-to-list 'gs/erc-notify-mute-buffers (current-buffer))
-    (message "Buffer muted")))
+  (defun gs/erc-toggle-mute-buffer ()
+    (interactive)
+    (if (memq (current-buffer) gs/erc-notify-mute-buffers)
+        (progn (setq gs/erc-notify-mute-buffers (delete (current-buffer)
+                                                        gs/erc-notify-mute-buffers))
+               (message "Buffer unmuted"))
+      (add-to-list 'gs/erc-notify-mute-buffers (current-buffer))
+      (message "Buffer muted")))
 
-(defun gs/erc-notify-activity ()
-  (if (not (null erc-modified-channels-alist))
-      (when (not (every (lambda (channel)
-                          (memq (car channel) gs/erc-notify-mute-buffers))
-                        erc-modified-channels-alist))
-        (gs/mode-line-alert 'erc-notify "#00ff00"))
-    (gs/mode-line-alert 'erc-notify 'clear)))
+  (defun gs/erc-notify-activity ()
+    (if (not (null erc-modified-channels-alist))
+        (when (not (every (lambda (channel)
+                            (memq (car channel) gs/erc-notify-mute-buffers))
+                          erc-modified-channels-alist))
+          (gs/mode-line-alert 'erc-notify "#00ff00"))
+      (gs/mode-line-alert 'erc-notify 'clear)))
 
-(add-hook 'erc-track-list-changed-hook 'gs/erc-notify-activity)
+  (add-hook 'erc-track-list-changed-hook 'gs/erc-notify-activity)
+
+  (defun erc-notify (string, message, buffer, sender)
+    (let ((title buffer)
+          (body string))
+      (shell-command-to-string (format "osascript -e 'display notification \"%s\" with title \"%s\"'" body title))))
+
+  (add-hook 'erc-echo-notice-in-user-buffers 'erc-notify)
 #+end_src
 
 *** Clojure Refactor
