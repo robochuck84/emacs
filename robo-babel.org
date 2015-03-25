@@ -497,7 +497,6 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
   (defalias 'perl-mode 'cperl-mode)
   (setq cperl-invalid-face nil)
 
-
   (add-hook 'cperl-mode-hook 'flycheck-mode)
 
   (flycheck-define-checker perl
@@ -511,7 +510,10 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
     :next-checkers (perl-perlcritic))
 
   (custom-set-variables
-       '(cperl-indent-parens-as-block t))
+       '(cperl-indent-parens-as-block t)
+       '(cperl-indent-level 4))
+  
+  (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))
 #+end_src
 
 *** Endless toggle and launcher
@@ -796,6 +798,14 @@ to mute that, which is very useful when a channel you dont care about is getting
   (let ((list '("#recon" "#grcs")))
     (dolist (var list)
       (add-to-list 'gs/erc-notify-mute-buffers var)))
+
+  (defun erc-notify (string, message, buffer, sender)
+    (let ((title buffer)
+          (body string))
+      (shell-command-to-string (format "osascript -e 'display notification \"%s\" with title \"%s\"'" body title))))
+
+;;  (add-hook 'erc-echo-notice-in-user-buffers 'erc-notify)
+
 #+end_src
 
 *** Clojure Refactor
@@ -932,6 +942,9 @@ again all the time.
   (projectile-global-mode)
   
   (setq projectile-file-exists-remote-cache-expire nil)
+  
+  (add-to-list 'projectile-test-files-suffices ".t")
+  (add-to-list 'projectile-test-files-suffices ".pm")
 #+END_SRC
 
 This bit creates a view of all projects which also shells out to git to get some useful info about the project as far
