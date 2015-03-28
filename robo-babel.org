@@ -27,7 +27,7 @@ Defaults from the beginning
                '("marmalade" . "http://marmalade-repo.org/packages/"))
   (add-to-list 'package-archives
                '("melpa" . "http://melpa.milkbox.net/packages/")t)
-
+  
   ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
   (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
   (add-to-list 'load-path "~/emacs/origami")
@@ -36,9 +36,9 @@ Defaults from the beginning
   (add-to-list 'load-path "~/emacs/symon")
   (add-to-list 'load-path "~/emacs/gotolastchange")
   (add-to-list 'load-path "~/emacs/highlight-symbol")
-
+  
   (package-initialize)
-
+  
   ;; Requires
   (require 'use-package)
   (require 'bm)
@@ -76,7 +76,6 @@ Defaults from the beginning
   (require 'highlight-symbol)
   (require 'discover-my-major)
   (require 'git-messenger)
-  (require 'mu4e)
 #+end_src
 *** Font
 
@@ -101,27 +100,33 @@ Defaults from the beginning
 #+END_SRC
 *** Mu4e
 #+BEGIN_SRC emacs-lisp
-  (setq
-   user-full-name "Travis Rogers"
-   user-mail-address "trrogers@amazon.co.uk"
-   mu4e-maildir "~/Mail"
-   mu4e-get-mail-command "offlineimap"
-   mu4e-update-interval 300
-   message-send-mail-function 'smtpmail-send-it
-   smtpmail-smtp-server "ballard.amazon.com"
-   mu4e-headers-include-related t)
-
-  (setq
-   mu4e-maildir-shortcuts
-   '( ("/synced/INBOX" . ?i)))
-
-  (add-to-list 'mu4e-bookmarks
-               '("maildir:/synced/INBOX AND flag:unread" "Inbox Unread" ?i))
-
-  (setq
-   mu4e-html2text-command "w3m -T text/html")
-
-
+  
+  (defun setup-mu4e () 
+    (require 'mu4e)
+    (setq
+     user-full-name "Travis Rogers"
+     user-mail-address "trrogers@amazon.co.uk"
+     mu4e-maildir "~/Mail"
+     mu4e-get-mail-command "offlineimap"
+     mu4e-update-interval 300
+     message-send-mail-function 'smtpmail-send-it
+     smtpmail-smtp-server "ballard.amazon.com"
+     mu4e-headers-include-related t)
+    
+    (setq
+     mu4e-maildir-shortcuts
+     '( ("/synced/INBOX" . ?i)))
+    
+    (add-to-list 'mu4e-bookmarks
+                 '("maildir:/synced/INBOX AND flag:unread" "Inbox Unread" ?i))
+    
+    (setq
+     mu4e-html2text-command "w3m -T text/html")
+  )
+  
+  (if (executable-find "mu")
+      (setup-mu4e))
+  
 #+END_SRC
 *** My Functions
 Some of the things I have found that are handy or I have written up to make life easier
