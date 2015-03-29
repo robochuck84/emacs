@@ -15,7 +15,7 @@ Defaults from the beginning
       (concat  "%b - emacs@" (system-name)))
 
 ;; default to unified diffs
-(setq diff-switches "-u")
+(setq diff-tsjswitches "-u")
 #+end_src
 
 ** Emacs initialization
@@ -27,7 +27,7 @@ Defaults from the beginning
                '("marmalade" . "http://marmalade-repo.org/packages/"))
   (add-to-list 'package-archives
                '("melpa" . "http://melpa.milkbox.net/packages/")t)
-  
+
   ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
   (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
   (add-to-list 'load-path "~/emacs/origami")
@@ -36,9 +36,9 @@ Defaults from the beginning
   (add-to-list 'load-path "~/emacs/symon")
   (add-to-list 'load-path "~/emacs/gotolastchange")
   (add-to-list 'load-path "~/emacs/highlight-symbol")
-  
+
   (package-initialize)
-  
+
   ;; Requires
   (require 'use-package)
   (require 'bm)
@@ -76,6 +76,8 @@ Defaults from the beginning
   (require 'highlight-symbol)
   (require 'discover-my-major)
   (require 'git-messenger)
+  (require 'helm)
+  (require 'helm-config)
 #+end_src
 *** Font
 
@@ -85,17 +87,33 @@ Defaults from the beginning
 #+END_SRC
 ** Global Variables
    #+BEGIN_SRC emacs-lisp
-        (setq-default indent-tabs-mode nil)
+     (setq-default indent-tabs-mode nil)
+     (setq paradox-github-token '0af38642de4c23e8399e7849d875a7118308f322)
    #+END_SRC
 ** General Configuration
 *** Global Key Bindings
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "M-p") 'ace-window)
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    (global-set-key (kbd "M-p") 'ace-window)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
-  ;; Discover my major, good for those days you cant remember!
-  (global-set-key (kbd "C-h C-m") 'discover-my-major)
+    ;; Discover my major, good for those days you cant remember!
+    (global-set-key (kbd "C-h C-m") 'discover-my-major)
+
+    (global-set-key [f8] 'neotree-toggle)
+  ;;  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-x") 'helm-M-x)
+    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+    (global-set-key "\C-cl" 'org-store-link)
+    (global-set-key "\C-cc" 'org-capture)
+    (global-set-key "\C-ca" 'org-agenda)
+    (global-set-key "\C-cml" 'magit-file-log)
+    (define-key global-map (kbd "RET") 'newline-and-indent)
+#+END_SRC
+*** Helm
+#+BEGIN_SRC emacs-lisp
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
 
 #+END_SRC
 *** Mu4e
@@ -597,27 +615,6 @@ Mnemonic example, "Emacs toggle column", C-x t c
   
 #+end_src
 
-*** Mastering Emacs Key Bindings
-
-Some global bindings I found from mastering emacs blog
-
-#+begin_src emacs-lisp
-  (global-set-key [f8] 'neotree-toggle)
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-  (global-set-key "\C-cl" 'org-store-link)
-  (global-set-key "\C-cc" 'org-capture)
-  (global-set-key "\C-ca" 'org-agenda)
-  (global-set-key "\C-cml" 'magit-file-log)
-  (define-key global-map (kbd "RET") 'newline-and-indent)
-#+end_src
-
-Paradox is a better package manager, uses git hub as well so we need this token
-
-#+begin_src emacs-listp
-(setq paradox-github-token '0af38642de4c23e8399e7849d875a7118308f322)
-#+end_src
-
 *** Org
 
 #+begin_src emacs-lisp
@@ -668,6 +665,9 @@ Paradox is a better package manager, uses git hub as well so we need this token
 
   (setq org-clock-into-drawer t)
   (setq org-hide-leading-stars t)
+
+  (eval-after-load 'org
+    '(define-key org-mode-map (kbd "C-c h s") 'helm-org-headlines))
 #+end_src
 
 *** Narrow-or-widen
