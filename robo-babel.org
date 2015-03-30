@@ -633,6 +633,21 @@ Mnemonic example, "Emacs toggle column", C-x t c
         ("l" "Journal with link" entry (file+datetree "~/org/journal.org")
          "* %?\nEntered on %U\n  %i\n  %a")))
 
+  (defun tr/org-agenda-add-status ()
+    (let ((at-point (org-entry-get (point) "Status")))
+      (if (> (length at-point) 0)
+          (format "[%s] " at-point)
+        "")))
+
+  (setq org-agenda-prefix-format
+          (quote
+           ((agenda . " %i %-12:c%?-12t% s%(tr/org-agenda-add-status)")
+            (timeline . "  % s")
+            (todo . " %i %-12:c")
+            (tags . " %i %-12:c")
+            (search . " %i %-12:c"))))
+   
+
   (setq org-todo-keywords
         '((sequence "TODO" "STARTED" "|" "DONE" "PUNT")))
 
