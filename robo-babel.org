@@ -634,14 +634,20 @@ Mnemonic example, "Emacs toggle column", C-x t c
          "* %?\nEntered on %U\n  %i\n  %a")))
 
   (defun tr/org-agenda-add-status ()
-    (let ((at-point (org-entry-get (point) "Status")))
+    (let ((at-point (org-entry-get (point) "Status"))
+          (status-map '(("Accept" . "✓")
+                       ("Tentative" . "⋯")
+                       ("NoResponseReceived" . "⁇")
+                       ("Unknown" . "⁉")
+                       ("Decline" . "✕")))
+          )
       (if (> (length at-point) 0)
-          (format "[%s] " at-point)
-        "")))
+          (cdr (assoc at-point status-map))
+        " ")))
 
   (setq org-agenda-prefix-format
           (quote
-           ((agenda . " %i %-12:c%?-12t% s%(tr/org-agenda-add-status)")
+           ((agenda . " %i%-12:c %?-12t% s%(tr/org-agenda-add-status) ")
             (timeline . "  % s")
             (todo . " %i %-12:c")
             (tags . " %i %-12:c")
