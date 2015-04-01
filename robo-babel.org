@@ -78,6 +78,7 @@ Defaults from the beginning
   (require 'git-messenger)
   (require 'helm)
   (require 'helm-config)
+  (require 'prodigy)
 #+end_src
 *** Font
 
