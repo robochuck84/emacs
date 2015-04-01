@@ -101,8 +101,7 @@ Defaults from the beginning
     (global-set-key (kbd "C-h C-m") 'discover-my-major)
 
     (global-set-key [f8] 'neotree-toggle)
-  ;;  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "M-x") 'helm-M-x)
+    (global-set-key (kbd "M-x") 'smex)
     (global-set-key (kbd "M-X") 'smex-major-mode-commands)
     (global-set-key "\C-cl" 'org-store-link)
     (global-set-key "\C-cc" 'org-capture)
@@ -110,12 +109,7 @@ Defaults from the beginning
     (global-set-key "\C-cml" 'magit-file-log)
     (define-key global-map (kbd "RET") 'newline-and-indent)
 #+END_SRC
-*** Helm
-#+BEGIN_SRC emacs-lisp
-  (helm-mode 1)
-  (helm-autoresize-mode 1)
 
-#+END_SRC
 *** Mu4e
 #+BEGIN_SRC emacs-lisp
   
