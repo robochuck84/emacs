@@ -113,9 +113,10 @@ Defaults from the beginning
 
 *** Mu4e
 #+BEGIN_SRC emacs-lisp
-  
+
   (defun setup-mu4e () 
     (require 'mu4e)
+    (require 'mu4e-contrib)
     (setq
      user-full-name "Travis Rogers"
      user-mail-address "trrogers@amazon.co.uk"
@@ -132,14 +133,17 @@ Defaults from the beginning
     
     (add-to-list 'mu4e-bookmarks
                  '("maildir:/synced/INBOX AND flag:unread" "Inbox Unread" ?i))
+
+    (add-to-list 'mu4e-bookmarks
+                 '("flag:flagged" "Flagged" ?f))
     
     (setq
      mu4e-html2text-command "w3m -T text/html")
   )
-  
+
   (if (executable-find "mu")
       (setup-mu4e))
-  
+
 #+END_SRC
 *** My Functions
 Some of the things I have found that are handy or I have written up to make life easier
@@ -637,6 +641,7 @@ Mnemonic example, "Emacs toggle column", C-x t c
   (defun tr/org-agenda-add-status ()
     (let ((at-point (org-entry-get (point) "Status"))
           (status-map '(("Accept" . "✓")
+                        ("Organizer" . "✓")
                        ("Tentative" . "⋯")
                        ("NoResponseReceived" . "⁇")
                        ("Unknown" . "⁉")
