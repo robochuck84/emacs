@@ -25,7 +25,7 @@
  '(eclim-executable "~/Downloads/eclipse/eclim")
  '(org-agenda-files
    (quote
-    ("/home/local/ANT/trrogers/org/refile.org" "/home/local/ANT/trrogers/org/project_notes.org" "/home/local/ANT/trrogers/org/deep_learning.org" "/home/local/ANT/trrogers/org/agenda.org" "/home/local/ANT/trrogers/org/phonescreens/ovidiu_tirsa.org" "/home/local/ANT/trrogers/org/phonescreens/questions.org" "/home/local/ANT/trrogers/org/emacs-notes.org" "/home/local/ANT/trrogers/org/ticket_notes.org" "/home/local/ANT/trrogers/org/emacs.org" "/home/local/ANT/trrogers/org/nuclear_notes.org" "/home/local/ANT/trrogers/org/journal.org")))
+    ("/home/local/ANT/trrogers/org/emacs-notes.org" "/home/local/ANT/trrogers/org/deep_learning.org" "/home/local/ANT/trrogers/org/project_notes.org" "/home/local/ANT/trrogers/org/phonescreens/ovidiu_tirsa.org" "/home/local/ANT/trrogers/org/phonescreens/questions.org" "/home/local/ANT/trrogers/org/emacs.org" "/home/local/ANT/trrogers/org/ticket_notes.org" "/home/local/ANT/trrogers/org/projects.org" "/home/local/ANT/trrogers/org/agenda.org" "/home/local/ANT/trrogers/org/nuclear_notes.org" "/home/local/ANT/trrogers/org/journal.org" "/home/local/ANT/trrogers/org/refile.org" "/home/local/ANT/trrogers/org/calendar.org")))
  '(org-hide-leading-stars t)
  '(paradox-github-token t t))
 (custom-set-faces
