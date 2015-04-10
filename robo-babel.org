@@ -684,6 +684,46 @@ Mnemonic example, "Emacs toggle column", C-x t c
 
   (eval-after-load 'org
     '(define-key org-mode-map (kbd "C-c h s") 'helm-org-headlines))
+
+  (defvar ews~launch-script "ews")
+
+  (defvar ews~user-email "trrogers@a2z.com")
+
+  (defvar ews~pass-file "~/.pword")
+
+  (defun tr/action-meeting-invite (action)
+    (interactive)
+    (let* ((marker (org-get-at-bol 'org-marker))
+           (buffer (marker-buffer marker))
+           (pos (marker-position marker)))
+      (with-current-buffer (current-buffer)
+        (save-excursion
+          (set-buffer buffer)
+          (widen)
+          (goto-char pos)
+          (let ((id (org-entry-get (point) "ID")))
+            (shell-command-to-string
+             (format "%s -e %s -p %s -m %s -%s"
+                     ews~launch-script
+                     ews~user-email
+                     ews~pass-file
+                     id
+                     action)))))))
+
+  (defun tr/accept-meeting-invite ()
+    (interactive)
+    (tr/action-meeting-invite "a"))
+
+  (defun tr/decline-meeting-invite ()
+    (interactive)
+    (tr/action-meeting-invite "d"))
+    
+  (eval-after-load 'org-agenda
+    '(define-key org-agenda-mode-map (kbd "C-c M-a") 'tr/accept-meeting-invite)
+    )
+  (eval-after-load 'org-agenda
+    '(define-key org-agenda-mode-map (kbd "C-c M-d") 'tr/decline-meeting-invite)
+    )
 #+end_src
 
 *** Narrow-or-widen
