@@ -396,7 +396,13 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
-  (color-theme-almost-monokai)
+  (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
+  (require 'color-theme)
+  (color-theme-initialize)
+
+  ;(color-theme-almost-monokai)
+  (color-theme-eclipse)
+
   (set-face-foreground 'erc-input-face "lightblue")
 #+end_src
 
@@ -783,28 +789,28 @@ First attempt at my own hand written customization, not just copied. Needs some 
   (erc-spelling-mode 1)
   (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon")
                                       ("freenode.net" "#pfproject")))
-  
+
   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-  
+
   (defun start-amazon-irc ()
     "Connect to Amazon IRC."
     (interactive)
     (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon" "#grcs")))
     (erc-tls :server "ircs.amazon.com" :port 6697
              :nick "trrogers" :full-name "trrogers"))
-  
+
   (defun start-irc ()
     "Connect to IRC."
     (interactive)
     (setq erc-autojoin-channels-alist '(("freenode.net" "#pfproject")))
     (erc :server "irc.freenode.net" :port 6667 :nick "robochuck"))
-  
+
   (add-hook 'erc-insert-post-hook
             (lambda () (goto-char (point-min))
               (when (re-search-forward
                      (regexp-quote (erc-current-nick)) nil t) (ding))))
-  
-  
+
+
 #+end_src
 
 Greg sent me this, is a way to have the mode line go very bright when erc is getting some action. Also provides a way
@@ -818,24 +824,23 @@ to mute that, which is very useful when a channel you dont care about is getting
     (defun gs/mode-line-alert (alert-id color)
       "Alert by setting the modeline to COLOR. If COLOR is the symbol
     clear then remove the current notification."
-      (defun alerting-p (alert-id) (assoc alert-id alerts))
-      (defun set-alerting (alert-id color)
-        (when (not (alerting-p alert-id))
-          (setq alerts (cons (cons alert-id color) alerts))
-          (gs/set-mode-line-background color)))
-      (defun remove-alert (alert-id) (setq alerts (assq-delete-all alert-id alerts)))
-      (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
-      (cond ((eq alert-id 'print) alerts)
-            ((eq color 'clear)
-             (when (alerting-p alert-id)
-               (progn (remove-alert alert-id)
-                      (gs/set-mode-line-background (cdar alerts)))))
-            ((alerting-p alert-id) nil)
-            (t (set-alerting alert-id color)))))
+      (cl-flet ((set-alert (alert-id color)
+                           (when (not (assoc alert-id alerts))
+                             (setq alerts (cons (cons alert-id color) alerts))
+                             (gs/set-mode-line-background color)))
+                (remove-alert (alert-id)
+                              (when (assoc alert-id alerts)
+                                (setq alerts (assq-delete-all alert-id alerts))
+                                (gs/set-mode-line-background (cdar alerts)))))
+        ;; set this lazily to allow a color scheme to be chosen before first use
+        (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
+        (cond ((eq alert-id 'print) alerts)  ;handy debug proxy
+              ((eq color 'clear) (remove-alert alert-id))
+              (t (set-alert alert-id color))))))
 
   (defvar gs/erc-notify-mute-buffers nil
     "Buffers that are currently muted and should not be alerted if
-  activity occurs.")
+    activity occurs.")
 
   (defun gs/erc-toggle-mute-buffer ()
     (interactive)
@@ -865,7 +870,7 @@ to mute that, which is very useful when a channel you dont care about is getting
           (body string))
       (shell-command-to-string (format "osascript -e 'display notification \"%s\" with title \"%s\"'" body title))))
 
-;;  (add-hook 'erc-echo-notice-in-user-buffers 'erc-notify)
+  ;;  (add-hook 'erc-echo-notice-in-user-buffers 'erc-notify)
 
 #+end_src
 
@@ -1181,12 +1186,26 @@ Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tri
               (set-window-buffer-start-and-point w1 b2 s2 p2)
               (set-window-buffer-start-and-point w2 b1 s1 p1)
               (setq i (1+ i))))
-  
+
           (setq i 0
                 rotate-times
                 (if (< rotate-times 0) (1+ rotate-times) (1- rotate-times)))))))
-  
+
+  (defun window-split-toggle ()
+    "Toggle between horizontal and vertical split with two windows."
+    (interactive)
+    (if (> (length (window-list)) 2)
+        (error "Can't toggle with more than 2 windows!")
+      (let ((func (if (window-full-height-p)
+                      #'split-window-vertically
+                    #'split-window-horizontally)))
+        (delete-other-windows)
+        (funcall func)
+        (save-selected-window
+          (other-window 1)
+          (switch-to-buffer (other-buffer))))))
+
   (define-key ctl-x-4-map (kbd "t") 'rotate-windows)
-  
+  (define-key ctl-x-4-map (kbd "s") 'window-split-toggle)
 #+END_SRC
 
