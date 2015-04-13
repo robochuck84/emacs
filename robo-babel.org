@@ -1109,6 +1109,15 @@ as the repo is concerned
   (yas-global-mode 1)
   
 #+END_SRC
+*** Prodigy
+#+BEGIN_SRC emacs-lisp
+  (prodigy-define-service
+    :name "EWS"
+    :command "ews"
+    :args '("-daemon" "-e trrogers@a2z.com" "-p /home/local/ANT/trrogers/.pword" "-f /home/local/ANT/trrogers/org/calendar.org")
+    :tags '(work))
+
+#+END_SRC
 ** Navigation
 *** Pop to mark
 
