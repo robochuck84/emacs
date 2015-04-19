@@ -401,13 +401,27 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
   (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
+  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
   (require 'color-theme)
   (color-theme-initialize)
 
-  ;(color-theme-almost-monokai)
-  (color-theme-eclipse)
+  (color-theme-almost-monokai)
+  ;(color-theme-eclipse)
 
   (set-face-foreground 'erc-input-face "lightblue")
+
+  (defvar tr/current-theme "monokai")
+
+  (defun tr/switch-themes ()
+    (interactive)
+    (if (string= tr/current-theme "monokai")
+        (progn (load-theme 'custom-tr-eclipse)
+               (set-face-attribute 'default nil :height 140)
+               (setq tr/current-theme "eclipse"))
+      (progn (color-theme-almost-monokai)
+             (setq tr/current-theme "monokai"))))
+
+
 #+end_src
 
 *** Undo Tree mode - visualize your undos and branches
@@ -882,34 +896,44 @@ to mute that, which is very useful when a channel you dont care about is getting
 *** Clojure Refactor
 **** Commands
 Combine with the prefix, C-c C-f
+This is it so far:
 
-th: thread another expression
-uw: unwind a threaded expression
-ua: fully unwind a threaded expression
-tf: wrap in thread-first (->) and fully thread
-tl: wrap in thread-last (->>) and fully thread
-il: introduce let
-el: expand let
-ml: move to let
-rf: rename file, update ns-declaration, and then query-replace new ns in project.
+ad: add declaration for current top-level form
+ai: add import to namespace declaration, then jump back
 ar: add require to namespace declaration, then jump back (see optional setup)
 au: add "use" (ie require refer all) to namespace declaration, then jump back
-ai: add import to namespace declaration, then jump back
+cc: cycle surrounding collection type
+ci: cycle between if and if-not
+cp: cycle privacy of defns and defs
+dk: destructure keys
+el: expand let
+il: introduce let
+mf: move one or more forms to another namespace, :refer any functions
+ml: move to let
+pc: run project cleaner functions on the whole project
+pf: promote function literal or fn, or fn to defn
+rf: rename file, update ns-declaration, and then query-replace new ns in project.
+rl: remove-let, inline all variables and remove the let form
+rr: remove unused requires
 ru: replace all :use in namespace with :refer :all
 sn: sort :use, :require and :import in the ns form
-rr: remove unused requires
-pc: run project cleaner functions on the whole project
-sr: stop referring (removes :refer [] from current require, fixing references)
-cc: cycle surrounding collection type
-cp: cycle privacy of defns and defs
-cs: cycle between "string" -> :string -> "string"
-ci: refactoring between if and if-not
-ad: add declaration for current top-level form
-dk: destructure keys
-mf: move one or more forms to another namespace, :refer any functions
 sp: Sort all dependency vectors in project.clj
-rd: Remove (debug) function invocations depends on refactor-nrepl
-ap: add a dependency to your project depends on refactor-nrepl
+sr: stop referring (removes :refer [] from current require, fixing references)
+tf: wrap in thread-first (->) and fully thread
+th: thread another expression
+tl: wrap in thread-last (->>) and fully thread
+ua: fully unwind a threaded expression
+uw: unwind a threaded expression
+Using refactor-nrepl, you also get:
+
+am: add a missing libspec
+ap: add a dependency to your project
+cn: Perform various cleanups on the ns form
+ef: Extract function
+fu: Find usages
+hd: Hotload dependency
+rd: Remove (debug) function invocations
+rs: Rename symbol
 
 #+begin_src emacs-lisp
 ;; CLJ Refactor
