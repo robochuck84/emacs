@@ -102,8 +102,8 @@ Defaults from the beginning
     (global-set-key (kbd "C-h C-m") 'discover-my-major)
 
     (global-set-key [f8] 'neotree-toggle)
-    (global-set-key (kbd "M-x") 'smex)
-    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;    (global-set-key (kbd "M-x") 'smex)
+;    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
     (global-set-key "\C-cl" 'org-store-link)
     (global-set-key "\C-cc" 'org-capture)
     (global-set-key "\C-ca" 'org-agenda)
@@ -387,6 +387,7 @@ Minor modes I do not want to see
   (eval-after-load "projectile" '(diminish 'projectile-mode))
   (eval-after-load "guide-key" '(diminish 'guide-key-mode))
   (eval-after-load "git-gutter" '(diminish 'git-gutter-mode))
+  (eval-after-load "ivy" '(diminish 'ivy-mode))
 #+end_src
 
 *** Change "yes or no" to "y or n"
@@ -1058,8 +1059,8 @@ as the repo is concerned
 
   (defface projectiles-header
     '((((class color) (background light))
-        :foreground "white"
-        :background "black"
+        :foreground "black"
+        :background "white"
         :weight bold
         :underline t)
        (((class color) (background dark))
@@ -1071,8 +1072,8 @@ as the repo is concerned
 
   (defface projectiles-body
     '((((class color) (background light))
-       :foreground "white"
-       :background "black")
+       :foreground "black"
+       :background "white")
       (((class color) (background dark))
        :foreground "DodgerBlue4"
        :background "LightSteelBlue2"
