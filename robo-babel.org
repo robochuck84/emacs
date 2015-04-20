@@ -303,10 +303,11 @@ Tidy is like an html lint, this function cleans up the buffer
 
 *** IDO mode - completion in many places
 #+begin_src emacs-lisp
-  (ido-mode 1)
-  (ido-ubiquitous-mode 1)
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
+  ;(ido-mode 1)
+  ;(ido-ubiquitous-mode 1)
+  ;(setq ido-enable-flex-matching t)
+                                          ;(setq ido-everywhere t)
+  (ivy-mode 1)
 #+end_src
 
 If you use imenu to look at the functions in a file, this will give you ido mode in that
@@ -400,26 +401,27 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
-  (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
-  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
-  (require 'color-theme)
-  (color-theme-initialize)
+                                          ; (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
+                                          ;  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
+  (load-file "~/.emacs.d/custom-tr-ubuntu-theme.el")
+    (require 'color-theme)
+    (color-theme-initialize)
 
-  (color-theme-almost-monokai)
-  ;(color-theme-eclipse)
+    ;(color-theme-almost-monokai)
+    ;(color-theme-eclipse)
 
-  (set-face-foreground 'erc-input-face "lightblue")
+    (set-face-foreground 'erc-input-face "lightblue")
 
-  (defvar tr/current-theme "monokai")
+    (defvar tr/current-theme "monokai")
 
-  (defun tr/switch-themes ()
-    (interactive)
-    (if (string= tr/current-theme "monokai")
-        (progn (load-theme 'custom-tr-eclipse)
-               (set-face-attribute 'default nil :height 140)
-               (setq tr/current-theme "eclipse"))
-      (progn (color-theme-almost-monokai)
-             (setq tr/current-theme "monokai"))))
+    (defun tr/switch-themes ()
+      (interactive)
+      (if (string= tr/current-theme "monokai")
+          (progn (load-theme 'custom-tr-eclipse)
+                 (set-face-attribute 'default nil :height 140)
+                 (setq tr/current-theme "eclipse"))
+        (progn (color-theme-almost-monokai)
+               (setq tr/current-theme "monokai"))))
 
 
 #+end_src
