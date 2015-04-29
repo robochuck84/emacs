@@ -370,9 +370,20 @@ If you use imenu to look at the functions in a file, this will give you ido mode
 I use smart mode line, mostly for ease of use, someday ill customize
 
 #+begin_src emacs-lisp
-;; Smart mode line
-(sml/setup)
-(sml/apply-theme 'dark)
+  ;; Smart mode line
+  ;;(sml/setup)
+  ;;(sml/apply-theme 'dark)
+
+  ;;(smt/enable)
+  ;;(smt/set-theme 'black-crystal)
+
+  (load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
+  ;;(load-file "~/emacs/themes/ocodo-terracotta-smt.el")
+  ;;(load-file "~/emacs/themes/ocodo-svg-mode-line.el")
+  ;;(load-file "~/emacs/themes/ocodo-grass-smt.el")
+  ;;(load-file "~/emacs/themes/ocodo-kawaii-light-smt.el")
+  ;;(load-file "~/emacs/themes/ocodo-minimal-light-smt.el")
+
 #+end_src
 
 Minor modes I do not want to see
@@ -402,16 +413,12 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
+<<<<<<< HEAD
                                           ; (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
                                           ;  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
 ;  (load-file "~/.emacs.d/custom-tr-ubuntu-theme.el")
     (require 'color-theme)
     (color-theme-initialize)
-
-    ;(color-theme-almost-monokai)
-    ;(color-theme-eclipse)
-
-
 
     (defvar tr/current-theme "monokai")
 
