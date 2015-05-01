@@ -30,10 +30,10 @@ Defaults from the beginning
 
   ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
   (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
-  (add-to-list 'load-path "~/emacs/origami")
+;;  (add-to-list 'load-path "~/emacs/origami")
   (add-to-list 'load-path "~/emacs/ipa")
-  (add-to-list 'load-path "~/emacs/httprepl")
-  (add-to-list 'load-path "~/emacs/symon")
+;;  (add-to-list 'load-path "~/emacs/httprepl")
+;;  (add-to-list 'load-path "~/emacs/symon")
   (add-to-list 'load-path "~/emacs/gotolastchange")
   (add-to-list 'load-path "~/emacs/highlight-symbol")
 
@@ -60,16 +60,16 @@ Defaults from the beginning
   (require 'hungry-delete)
   (require 'google-this)
   (require 'clj-refactor)
-  (require 'origami)
+;;  (require 'origami)
   (require 'ipa)
   (require 'rainbow-mode)
   (require 'rainbow-delimiters)
-  (require 'httprepl)
+;;  (require 'httprepl)
   (require 'recentf)
   (require 'soap-client)
   (require 'flycheck)
   (require 'tea-time)
-  (require 'symon)
+;;  (require 'symon)
   (require 'goto-last-change)
   (require 'ace-window)
   (require 'project-explorer)
@@ -102,8 +102,8 @@ Defaults from the beginning
     (global-set-key (kbd "C-h C-m") 'discover-my-major)
 
     (global-set-key [f8] 'neotree-toggle)
-;    (global-set-key (kbd "M-x") 'smex)
-;    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+    (global-set-key (kbd "M-x") 'smex)
+    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
     (global-set-key "\C-cl" 'org-store-link)
     (global-set-key "\C-cc" 'org-capture)
     (global-set-key "\C-ca" 'org-agenda)
@@ -303,11 +303,11 @@ Tidy is like an html lint, this function cleans up the buffer
 
 *** IDO mode - completion in many places
 #+begin_src emacs-lisp
-  ;(ido-mode 1)
-  ;(ido-ubiquitous-mode 1)
-  ;(setq ido-enable-flex-matching t)
-                                          ;(setq ido-everywhere t)
-  (ivy-mode 1)
+  (ido-mode 1)
+  (ido-ubiquitous-mode 1)
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+
 #+end_src
 
 If you use imenu to look at the functions in a file, this will give you ido mode in that
@@ -404,14 +404,14 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
   (load-file "~/.emacs.d/themes/almost-monokai.el")
                                           ; (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
                                           ;  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
-  (load-file "~/.emacs.d/custom-tr-ubuntu-theme.el")
+;  (load-file "~/.emacs.d/custom-tr-ubuntu-theme.el")
     (require 'color-theme)
     (color-theme-initialize)
 
     ;(color-theme-almost-monokai)
     ;(color-theme-eclipse)
 
-    (set-face-foreground 'erc-input-face "lightblue")
+
 
     (defvar tr/current-theme "monokai")
 
@@ -681,7 +681,7 @@ Mnemonic example, "Emacs toggle column", C-x t c
         '((sequence "TODO" "STARTED" "|" "DONE" "PUNT")))
 
   (setq org-todo-keyword-faces
-        '(("TODO" . org-warning) ("STARTED" . "yellow")
+        '(("TODO" . "blue") ("STARTED" . "orange")
           ("DONE" . "green") ("PUNT" . "purple")))
 
   (setq org-agenda-include-diary t)
@@ -699,19 +699,25 @@ Mnemonic example, "Emacs toggle column", C-x t c
                          ((org-agenda-span 1)
                           (org-agenda-toggle-time-grid)
                           ))
-                 (tags-todo "sprint")
-                 (tags-todo "project")
-                 (tags-todo "catexp")
-                 (tags-todo "region")
-                 (tags-todo "adhoc")))))
+                 ))
+               ("w" "Work TODO" tags-todo "+sprint|adhoc|project|catexp"
+                ((org-agenda-sorting-strategy '(priority-down))))
+               )
+             )
 
   (add-hook 'org-mode-hook 'auto-fill-mode)
 
   (setq org-clock-into-drawer t)
   (setq org-hide-leading-stars t)
+  (setq org-agenda-todo-ignore-scheduled t)
 
   (eval-after-load 'org
     '(define-key org-mode-map (kbd "C-c h s") 'helm-org-headlines))
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;
+  ;; EWS related work ;;
+  ;;;;;;;;;;;;;;;;;;;;;;
 
   (defvar ews~launch-script "ews")
 
@@ -807,6 +813,7 @@ First attempt at my own hand written customization, not just copied. Needs some 
 
 #+begin_src emacs-lisp
   (add-to-list 'erc-modules 'highlight-nicknames)
+  (set-face-foreground 'erc-input-face "blue")
   (erc-update-modules)
   (erc-spelling-mode 1)
   (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon")
@@ -1250,3 +1257,4 @@ Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tri
   (define-key ctl-x-4-map (kbd "s") 'window-split-toggle)
 #+END_SRC
 
+    
