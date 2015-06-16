@@ -35,7 +35,8 @@ Defaults from the beginning
   ;;  (add-to-list 'load-path "~/emacs/httprepl")
   ;;  (add-to-list 'load-path "~/emacs/symon")
     (add-to-list 'load-path "~/emacs/gotolastchange")
-    (add-to-list 'load-path "~/emacs/highlight-symbol")
+  (add-to-list 'load-path "~/emacs/highlight-symbol")
+  (add-to-list 'load-path "~/emacs/ob-ipython")
 
     (package-initialize)
 
@@ -78,7 +79,8 @@ Defaults from the beginning
     (require 'git-messenger)
     (require 'helm)
     (require 'helm-config)
-    (require 'prodigy)
+  (require 'prodigy)
+  (require 'ob-ipython)
 #+end_src
 *** Font
 
@@ -372,13 +374,13 @@ I use smart mode line, mostly for ease of use, someday ill customize
 
 #+begin_src emacs-lisp
   ;; Smart mode line
-  ;;(sml/setup)
-  ;;(sml/apply-theme 'dark)
+  (sml/setup)
+  (sml/apply-theme 'dark)
 
   ;;(smt/enable)
   ;;(smt/set-theme 'black-crystal)
 
-  (load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
+  ;;(load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
   ;;(load-file "~/emacs/themes/ocodo-terracotta-smt.el")
   ;;(load-file "~/emacs/themes/ocodo-svg-mode-line.el")
   ;;(load-file "~/emacs/themes/ocodo-grass-smt.el")
@@ -414,7 +416,6 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
-<<<<<<< HEAD
                                           ; (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
                                           ;  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
 ;  (load-file "~/.emacs.d/custom-tr-ubuntu-theme.el")
@@ -1267,4 +1268,5 @@ Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tri
   (define-key ctl-x-4-map (kbd "s") 'window-split-toggle)
 #+END_SRC
 
+    
     
