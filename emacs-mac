@@ -29,7 +29,7 @@
    (quote
     ("/home/local/ANT/trrogers/org/refile.org" "/home/local/ANT/trrogers/org/project_notes.org" "/home/local/ANT/trrogers/org/deep_learning.org" "/home/local/ANT/trrogers/org/agenda.org" "/home/local/ANT/trrogers/org/phonescreens/ovidiu_tirsa.org" "/home/local/ANT/trrogers/org/phonescreens/questions.org" "/home/local/ANT/trrogers/org/emacs-notes.org" "/home/local/ANT/trrogers/org/ticket_notes.org" "/home/local/ANT/trrogers/org/emacs.org" "/home/local/ANT/trrogers/org/nuclear_notes.org" "/home/local/ANT/trrogers/org/journal.org")))
  '(org-hide-leading-stars t)
- '(paradox-github-token t t))
+ '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
