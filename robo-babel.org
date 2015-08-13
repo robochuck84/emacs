@@ -36,7 +36,6 @@ Defaults from the beginning
   ;;  (add-to-list 'load-path "~/emacs/symon")
     (add-to-list 'load-path "~/emacs/gotolastchange")
   (add-to-list 'load-path "~/emacs/highlight-symbol")
-  (add-to-list 'load-path "~/emacs/ob-ipython")
 
     (package-initialize)
 
@@ -80,7 +79,7 @@ Defaults from the beginning
     (require 'helm)
     (require 'helm-config)
   (require 'prodigy)
-  (require 'ob-ipython)
+  (require 'avy)
 #+end_src
 *** Font
 
@@ -1071,7 +1070,7 @@ as the repo is concerned
   (define-derived-mode git-projectiles-mode special-mode "Projectiles")
 
   (define-key git-projectiles-mode-map (kbd "RET") 'tr-projectiles/open-in-magit)
-  (ndefine-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
+  (define-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
   (define-key git-projectiles-mode-map (kbd "p") 'tr-projectiles/search-prev)
   (define-key git-projectiles-mode-map (kbd "f") 'tr-projectiles/find-file-at-point)
   (define-key git-projectiles-mode-map (kbd "k") 'tr-projectiles/remove-project-at-point)
@@ -1216,26 +1215,26 @@ Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tri
 *** Key-chord
 
 #+begin_src emacs-lisp
-(key-chord-mode 1)
-;; faster shift
-(key-chord-define-global "1q" "!")
-(key-chord-define-global "2w" "@")
-(key-chord-define-global "3e" "#")
-(key-chord-define-global "4r" "$")
-(key-chord-define-global "5t" "%")
-(key-chord-define-global "6y" "^")
-(key-chord-define-global "7u" "&")
-(key-chord-define-global "8i" "*")
-(key-chord-define-global "9o" "(")
-(key-chord-define-global "0p" ")")
-;; Ace jump
-(key-chord-define-global "aj" 'ace-jump-mode)
-;; Magit
-(key-chord-define-global "jk" 'magit-status)
+  (key-chord-mode 1)
+  ;; faster shift
+  (key-chord-define-global "1q" "!")
+  (key-chord-define-global "2w" "@")
+  (key-chord-define-global "3e" "#")
+  (key-chord-define-global "4r" "$")
+  (key-chord-define-global "5t" "%")
+  (key-chord-define-global "6y" "^")
+  (key-chord-define-global "7u" "&")
+  (key-chord-define-global "8i" "*")
+  (key-chord-define-global "9o" "(")
+  (key-chord-define-global "0p" ")")
+  ;; Ace jump
+  (key-chord-define-global "aj" 'avy-goto-char)
+  ;; Magit
+  (key-chord-define-global "jk" 'magit-status)
 
-(key-chord-define-global "uu" 'undo)
+  (key-chord-define-global "uu" 'undo)
 
-    
+      
 #+end_src
 
 *** Rotate-windows
