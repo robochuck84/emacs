@@ -22,63 +22,65 @@ Defaults from the beginning
 *** Package Setup
 
 #+begin_src emacs-lisp
-  (require 'package)
-  (add-to-list 'package-archives
-               '("marmalade" . "http://marmalade-repo.org/packages/"))
-  (add-to-list 'package-archives
-               '("melpa" . "http://melpa.milkbox.net/packages/")t)
+    (require 'package)
+    (add-to-list 'package-archives
+                 '("marmalade" . "http://marmalade-repo.org/packages/"))
+    (add-to-list 'package-archives
+                 '("melpa" . "http://melpa.milkbox.net/packages/")t)
 
-  ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
-  (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
-;;  (add-to-list 'load-path "~/emacs/origami")
-  (add-to-list 'load-path "~/emacs/ipa")
-;;  (add-to-list 'load-path "~/emacs/httprepl")
-;;  (add-to-list 'load-path "~/emacs/symon")
-  (add-to-list 'load-path "~/emacs/gotolastchange")
+    ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
+    (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
+  ;;  (add-to-list 'load-path "~/emacs/origami")
+    (add-to-list 'load-path "~/emacs/ipa")
+  ;;  (add-to-list 'load-path "~/emacs/httprepl")
+  ;;  (add-to-list 'load-path "~/emacs/symon")
+    (add-to-list 'load-path "~/emacs/gotolastchange")
   (add-to-list 'load-path "~/emacs/highlight-symbol")
+  (add-to-list 'load-path "~/emacs/ob-ipython")
 
-  (package-initialize)
+    (package-initialize)
 
-  ;; Requires
-  (require 'use-package)
-  (require 'bm)
-  (require 'cl)
-  (require 'cl-lib)                       
-  (require 'discover)
-  (require 'eclim)
-  (require 'eclimd)
-  (require 'company)
-  (require 'company-emacs-eclim)
-  (require 'dirtree)
-  (require 'compile)
-  (require 'highlight-symbol)
-  (require 'visual-regexp-steroids)
-  (require 'tls)
-  (require 'erc)
-  (require 'erc-highlight-nicknames)
-  (require 'smart-mode-line)
-  (require 'hungry-delete)
-  (require 'google-this)
-  (require 'clj-refactor)
-;;  (require 'origami)
-  (require 'ipa)
-  (require 'rainbow-mode)
-  (require 'rainbow-delimiters)
-;;  (require 'httprepl)
-  (require 'recentf)
-  (require 'soap-client)
-  (require 'flycheck)
-  (require 'tea-time)
-;;  (require 'symon)
-  (require 'goto-last-change)
-  (require 'ace-window)
-  (require 'project-explorer)
-  (require 'highlight-symbol)
-  (require 'discover-my-major)
-  (require 'git-messenger)
-  (require 'helm)
-  (require 'helm-config)
+    ;; Requires
+    (require 'use-package)
+    (require 'bm)
+    (require 'cl)
+    (require 'cl-lib)                       
+    (require 'discover)
+    (require 'eclim)
+    (require 'eclimd)
+    (require 'company)
+    (require 'company-emacs-eclim)
+    (require 'dirtree)
+    (require 'compile)
+    (require 'highlight-symbol)
+    (require 'visual-regexp-steroids)
+    (require 'tls)
+    (require 'erc)
+    (require 'erc-highlight-nicknames)
+    (require 'smart-mode-line)
+    (require 'hungry-delete)
+    (require 'google-this)
+    (require 'clj-refactor)
+  ;;  (require 'origami)
+    (require 'ipa)
+    (require 'rainbow-mode)
+    (require 'rainbow-delimiters)
+  ;;  (require 'httprepl)
+    (require 'recentf)
+    (require 'soap-client)
+    (require 'flycheck)
+    (require 'tea-time)
+  ;;  (require 'symon)
+    (require 'goto-last-change)
+    (require 'ace-window)
+    (require 'project-explorer)
+    (require 'highlight-symbol)
+    (require 'discover-my-major)
+    (require 'git-messenger)
+    (require 'helm)
+    (require 'helm-config)
   (require 'prodigy)
+  (require 'ob-ipython)
 #+end_src
 *** Font
 
@@ -117,6 +119,7 @@ Defaults from the beginning
   (defun setup-mu4e () 
     (require 'mu4e)
     (require 'mu4e-contrib)
+    (require 'org-mu4e)
     (setq
      user-full-name "Travis Rogers"
      user-mail-address "trrogers@amazon.co.uk"
@@ -370,19 +373,20 @@ If you use imenu to look at the functions in a file, this will give you ido mode
 I use smart mode line, mostly for ease of use, someday ill customize
 
 #+begin_src emacs-lisp
-  ;; Smart mode line
-  ;;(sml/setup)
-  ;;(sml/apply-theme 'dark)
+    ;; Smart mode line
+    (sml/setup)
+    (sml/apply-theme 'dark)
 
-  ;;(smt/enable)
-  ;;(smt/set-theme 'black-crystal)
+    ;;(smt/enable)
+    ;;(smt/set-theme 'black-crystal)
 
-  (load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
-  ;;(load-file "~/emacs/themes/ocodo-terracotta-smt.el")
-  ;;(load-file "~/emacs/themes/ocodo-svg-mode-line.el")
-  ;;(load-file "~/emacs/themes/ocodo-grass-smt.el")
-  ;;(load-file "~/emacs/themes/ocodo-kawaii-light-smt.el")
-  ;;(load-file "~/emacs/themes/ocodo-minimal-light-smt.el")
+
+  ;;  (load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
+    ;;(load-file "~/emacs/themes/ocodo-terracotta-smt.el")
+    ;;(load-file "~/emacs/themes/ocodo-svg-mode-line.el")
+    ;;(load-file "~/emacs/themes/ocodo-grass-smt.el")
+    ;;(load-file "~/emacs/themes/ocodo-kawaii-light-smt.el")
+    ;;(load-file "~/emacs/themes/ocodo-minimal-light-smt.el")
 
 #+end_src
 
@@ -413,7 +417,6 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
-<<<<<<< HEAD
                                           ; (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
                                           ;  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
 ;  (load-file "~/.emacs.d/custom-tr-ubuntu-theme.el")
@@ -705,8 +708,10 @@ Mnemonic example, "Emacs toggle column", C-x t c
                 ((agenda ""
                          ((org-agenda-span 1)
                           (org-agenda-toggle-time-grid)
+                          (org-agenda-skip-function '(org-agenda-skip-entry-if 'regexp ":home:"))
                           ))
-                 ))
+                 )
+                )
                ("w" "Work TODO" tags-todo "+sprint|adhoc|project|catexp"
                 ((org-agenda-sorting-strategy '(priority-down))))
                )
@@ -1066,9 +1071,10 @@ as the repo is concerned
   (define-derived-mode git-projectiles-mode special-mode "Projectiles")
 
   (define-key git-projectiles-mode-map (kbd "RET") 'tr-projectiles/open-in-magit)
-  (define-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
+  (ndefine-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
   (define-key git-projectiles-mode-map (kbd "p") 'tr-projectiles/search-prev)
-  (define-key git-projectiles-mode-map (kbd "f") 'tr-projectiles/fine-file-at-point)
+  (define-key git-projectiles-mode-map (kbd "f") 'tr-projectiles/find-file-at-point)
+  (define-key git-projectiles-mode-map (kbd "k") 'tr-projectiles/remove-project-at-point)
   ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
 
   (defface projectiles-header
@@ -1092,7 +1098,11 @@ as the repo is concerned
        :foreground "DodgerBlue4"
        :background "LightSteelBlue2"
        ))
-      "Highlights the body of the project")
+    "Highlights the body of the project")
+
+  (defun tr-projectiles/get-project-dir-at-point ()
+    "returns the project directory at point, minus all font faces"
+    (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
   (defun tr-projectiles/present-title (title)
     (concat "\n" (propertize (concat title "\n")
@@ -1139,11 +1149,24 @@ as the repo is concerned
     (let ((default-directory project-dir))
       (projectile-find-file)))
 
-  (defun tr-projectiles/fine-file-at-point ()
+  (defun tr-projectiles/find-file-at-point ()
     "Opens a mini buffer with the files in the project at point"
     (interactive)
     (tr-projectiles/find-file-with-project
      (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+
+  ; needs to refresh the buffer once the removal is complete
+  (defun tr-projectiles/remove-project (project-dir)
+    "Removes the specified project from the list of known projects"
+    (interactive)
+    (let ((default-directory project-dir))
+      (projectile-remove-current-project-from-known-projects)))
+
+  (defun tr-projectiles/remove-project-at-point ()
+    "Removes the project from the list of known"
+    (interactive)
+    (tr-projectiles/remove-project
+     (tr-projectiles/get-project-dir-at-point)))
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
@@ -1264,4 +1287,5 @@ Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tri
   (define-key ctl-x-4-map (kbd "s") 'window-split-toggle)
 #+END_SRC
 
+    
     
