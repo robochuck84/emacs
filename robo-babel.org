@@ -373,19 +373,20 @@ If you use imenu to look at the functions in a file, this will give you ido mode
 I use smart mode line, mostly for ease of use, someday ill customize
 
 #+begin_src emacs-lisp
-  ;; Smart mode line
-  (sml/setup)
-  (sml/apply-theme 'dark)
+    ;; Smart mode line
+    (sml/setup)
+    (sml/apply-theme 'dark)
 
-  ;;(smt/enable)
-  ;;(smt/set-theme 'black-crystal)
+    ;;(smt/enable)
+    ;;(smt/set-theme 'black-crystal)
 
-  ;;(load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
-  ;;(load-file "~/emacs/themes/ocodo-terracotta-smt.el")
-  ;;(load-file "~/emacs/themes/ocodo-svg-mode-line.el")
-  ;;(load-file "~/emacs/themes/ocodo-grass-smt.el")
-  ;;(load-file "~/emacs/themes/ocodo-kawaii-light-smt.el")
-  ;;(load-file "~/emacs/themes/ocodo-minimal-light-smt.el")
+
+  ;;  (load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
+    ;;(load-file "~/emacs/themes/ocodo-terracotta-smt.el")
+    ;;(load-file "~/emacs/themes/ocodo-svg-mode-line.el")
+    ;;(load-file "~/emacs/themes/ocodo-grass-smt.el")
+    ;;(load-file "~/emacs/themes/ocodo-kawaii-light-smt.el")
+    ;;(load-file "~/emacs/themes/ocodo-minimal-light-smt.el")
 
 #+end_src
 
@@ -1070,9 +1071,10 @@ as the repo is concerned
   (define-derived-mode git-projectiles-mode special-mode "Projectiles")
 
   (define-key git-projectiles-mode-map (kbd "RET") 'tr-projectiles/open-in-magit)
-  (define-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
+  (ndefine-key git-projectiles-mode-map (kbd "n") 'tr-projectiles/search-next)
   (define-key git-projectiles-mode-map (kbd "p") 'tr-projectiles/search-prev)
-  (define-key git-projectiles-mode-map (kbd "f") 'tr-projectiles/fine-file-at-point)
+  (define-key git-projectiles-mode-map (kbd "f") 'tr-projectiles/find-file-at-point)
+  (define-key git-projectiles-mode-map (kbd "k") 'tr-projectiles/remove-project-at-point)
   ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
 
   (defface projectiles-header
@@ -1096,7 +1098,11 @@ as the repo is concerned
        :foreground "DodgerBlue4"
        :background "LightSteelBlue2"
        ))
-      "Highlights the body of the project")
+    "Highlights the body of the project")
+
+  (defun tr-projectiles/get-project-dir-at-point ()
+    "returns the project directory at point, minus all font faces"
+    (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
   (defun tr-projectiles/present-title (title)
     (concat "\n" (propertize (concat title "\n")
@@ -1143,11 +1149,24 @@ as the repo is concerned
     (let ((default-directory project-dir))
       (projectile-find-file)))
 
-  (defun tr-projectiles/fine-file-at-point ()
+  (defun tr-projectiles/find-file-at-point ()
     "Opens a mini buffer with the files in the project at point"
     (interactive)
     (tr-projectiles/find-file-with-project
      (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+
+  ; needs to refresh the buffer once the removal is complete
+  (defun tr-projectiles/remove-project (project-dir)
+    "Removes the specified project from the list of known projects"
+    (interactive)
+    (let ((default-directory project-dir))
+      (projectile-remove-current-project-from-known-projects)))
+
+  (defun tr-projectiles/remove-project-at-point ()
+    "Removes the project from the list of known"
+    (interactive)
+    (tr-projectiles/remove-project
+     (tr-projectiles/get-project-dir-at-point)))
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
