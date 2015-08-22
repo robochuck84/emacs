@@ -148,6 +148,402 @@ Defaults from the beginning
      (setq paradox-github-token '0af38642de4c23e8399e7849d875a7118308f322)
    #+END_SRC
 ** General Configuration
+*** Auto Fill Mode
+
+#+begin_src emacs-lisp
+(setq-default fill-column 120)
+#+end_src
+
+*** Buffer Mangement
+
+Function from Greg, used to quickly create new scratch buffers
+
+#+BEGIN_SRC emacs-lisp
+  (defun gs/create-new-scratch-buffer ()
+    "This creates a new *scratch* buffer regardless of whether one
+  exists. It then switches to it."
+    (interactive)
+    (let ((buf (generate-new-buffer "*scratch*")))
+      (switch-to-buffer buf)
+      (lisp-interaction-mode)))
+  
+  (global-set-key (kbd "C-c b b") 'gs/create-new-scratch-buffer)
+#+END_SRC
+
+*** Clojure Refactor
+**** Commands
+Combine with the prefix, C-c C-f
+This is it so far:
+
+ad: add declaration for current top-level form
+ai: add import to namespace declaration, then jump back
+ar: add require to namespace declaration, then jump back (see optional setup)
+au: add "use" (ie require refer all) to namespace declaration, then jump back
+cc: cycle surrounding collection type
+ci: cycle between if and if-not
+cp: cycle privacy of defns and defs
+dk: destructure keys
+el: expand let
+il: introduce let
+mf: move one or more forms to another namespace, :refer any functions
+ml: move to let
+pc: run project cleaner functions on the whole project
+pf: promote function literal or fn, or fn to defn
+rf: rename file, update ns-declaration, and then query-replace new ns in project.
+rl: remove-let, inline all variables and remove the let form
+rr: remove unused requires
+ru: replace all :use in namespace with :refer :all
+sn: sort :use, :require and :import in the ns form
+sp: Sort all dependency vectors in project.clj
+sr: stop referring (removes :refer [] from current require, fixing references)
+tf: wrap in thread-first (->) and fully thread
+th: thread another expression
+tl: wrap in thread-last (->>) and fully thread
+ua: fully unwind a threaded expression
+uw: unwind a threaded expression
+Using refactor-nrepl, you also get:
+
+am: add a missing libspec
+ap: add a dependency to your project
+cn: Perform various cleanups on the ns form
+ef: Extract function
+fu: Find usages
+hd: Hotload dependency
+rd: Remove (debug) function invocations
+rs: Rename symbol
+
+#+begin_src emacs-lisp
+;; CLJ Refactor
+(add-hook 'clojure-mode-hook
+	  (lambda()
+	    (clj-refactor-mode 1)
+	    (paredit-mode 1)
+	    (cljr-add-keybindings-with-prefix "C-c C-f")
+	    ))
+#+end_src
+
+*** Company
+
+#+begin_src emacs-lisp
+  (global-company-mode t)
+  (setq company-dabbrev-downcase nil)
+  (setq company-idle-delay 0.5)
+  (setq company-show-numbers t)
+  (setq company-minimum-prefix-length 2)
+  (setq company-require-match nil)
+  
+#+end_src
+
+*** Eclim
+
+#+begin_src emacs-lisp
+  (global-eclim-mode)
+  (company-emacs-eclim-setup)
+  (setq help-at-pt-display-when-idle t)
+  (setq help-at-pt-timer-delay 0.05)
+  (help-at-pt-set-timer)
+  
+  ;; Functions
+  (defun tr/exit-code-helper (cmd rx)
+    "Pipe through perl looking for rx."
+    (s-concat cmd
+              "|perl -e 'my $flag=0; while(<>) { if ($_=~/" rx "/)"
+              "{ $flag = 1 } print $_ } exit $flag'"))
+  
+  (defvar tr/junit-failure-regex "(Failures: [1-9][0-9]*)|(Errors: [1-9][0-9]*)")
+  
+  (defun tr/eclim-java-junit-all ()
+    (interactive)
+    (compile (tr/exit-code-helper
+              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p"))))
+              tr/junit-failure-regex)))
+  
+  (defun tr/eclim-java-junit ()
+    (interactive)
+    (compile (tr/exit-code-helper
+              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p" "-f" "-o"))))
+              tr/junit-failure-regex)))
+  
+  
+  (add-to-list 'compilation-mode-font-lock-keywords
+               '("Tests run: [0-9]*, Failures: [1-9][0-9]*,.*$"
+                 (0 compilation-error-face)))
+  (add-to-list 'compilation-mode-font-lock-keywords
+               '("Tests run: [0-9]*, Failures: 0, Errors: [1-9][0-9]*,.*$"
+                 (0 compilation-error-face)))
+  (add-to-list 'compilation-mode-font-lock-keywords
+               '("Tests run: [0-9]*, Failures: 0, Errors: 0, Time elapsed: .*$"
+                 (0 compilation-info-face)))
+  
+  (defun tr/java-self-insert-complete (char)
+    (lexical-let ((char char))
+      (lambda ()
+        (interactive)
+        (insert char)
+        (company-complete))))
+  
+  (defun java-mode-keys ()
+    (local-set-key (kbd "C-c o") 'eclim-java-import-organize)
+    (local-set-key (kbd "C-c p") 'eclim-problems)
+    (local-set-key (kbd "C-c P") 'eclim-problems-open)
+    (local-set-key (kbd "C-c d") 'eclim-java-doc-comment)
+    (local-set-key (kbd "C-c C-d") 'eclim-java-find-declaration)
+    (local-set-key (kbd "C-c C-e") 'eclim-java-find-generic)
+    (local-set-key (kbd "C-c C-r") 'eclim-java-find-references)
+    (local-set-key (kbd "C-c C-t") 'eclim-java-find-type)
+    (local-set-key (kbd "C-c C-f") 'eclim-java-format)
+    (local-set-key (kbd "C-c G") 'eclim-java-generate-getter-and-setter)
+    (local-set-key (kbd "C-c h") 'eclim-java-hierarchy)
+    (local-set-key (kbd "C-c j") 'eclim-java-show-documentation-for-current-element)
+    (local-set-key (kbd "C-c r") 'eclim-java-refactor-rename-symbol-at-point)
+    (local-set-key (kbd "C-c s") 'eclim-java-method-signature-at-point)
+    (local-set-key (kbd "C-c t") 'tr/eclim-java-junit)
+    (local-set-key (kbd "C-c T") 'tr/eclim-java-junit-all)
+    (local-set-key (kbd "C-c z") 'eclim-java-implement)
+    (local-set-key (kbd ".") (tr/java-self-insert-complete ".")))
+  
+  (add-hook 'java-mode-hook 'java-mode-keys)
+#+end_src
+    
+*** Emphasize-buffer
+
+First attempt at my own hand written customization, not just copied. Needs some work.
+
+#+begin_src emacs-lisp
+(fset 'emphasize-buffer
+   "\C-u32\C-x}")
+(global-set-key [f5] 'emphasize-buffer)
+#+end_src
+
+*** ERC
+
+#+begin_src emacs-lisp
+  (add-to-list 'erc-modules 'highlight-nicknames)
+  (set-face-foreground 'erc-input-face "blue")
+  (erc-update-modules)
+  (erc-spelling-mode 1)
+  (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon")
+                                      ("freenode.net" "#pfproject")))
+
+  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+
+  (defun start-amazon-irc ()
+    "Connect to Amazon IRC."
+    (interactive)
+    (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon" "#grcs")))
+    (erc-tls :server "ircs.amazon.com" :port 6697
+             :nick "trrogers" :full-name "trrogers"))
+
+  (defun start-irc ()
+    "Connect to IRC."
+    (interactive)
+    (setq erc-autojoin-channels-alist '(("freenode.net" "#pfproject")))
+    (erc :server "irc.freenode.net" :port 6667 :nick "robochuck"))
+
+  (add-hook 'erc-insert-post-hook
+            (lambda () (goto-char (point-min))
+              (when (re-search-forward
+                     (regexp-quote (erc-current-nick)) nil t) (ding))))
+
+
+#+end_src
+
+Greg sent me this, is a way to have the mode line go very bright when erc is getting some action. Also provides a way
+to mute that, which is very useful when a channel you dont care about is getting chatty
+
+#+begin_src emacs-lisp
+  (defun gs/set-mode-line-background (color)
+    (when color (set-face-background 'mode-line color)))
+
+  (lexical-let ((alerts '()))
+    (defun gs/mode-line-alert (alert-id color)
+      "Alert by setting the modeline to COLOR. If COLOR is the symbol
+    clear then remove the current notification."
+      (cl-flet ((set-alert (alert-id color)
+                           (when (not (assoc alert-id alerts))
+                             (setq alerts (cons (cons alert-id color) alerts))
+                             (gs/set-mode-line-background color)))
+                (remove-alert (alert-id)
+                              (when (assoc alert-id alerts)
+                                (setq alerts (assq-delete-all alert-id alerts))
+                                (gs/set-mode-line-background (cdar alerts)))))
+        ;; set this lazily to allow a color scheme to be chosen before first use
+        (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
+        (cond ((eq alert-id 'print) alerts)  ;handy debug proxy
+              ((eq color 'clear) (remove-alert alert-id))
+              (t (set-alert alert-id color))))))
+
+  (defvar gs/erc-notify-mute-buffers nil
+    "Buffers that are currently muted and should not be alerted if
+    activity occurs.")
+
+  (defun gs/erc-toggle-mute-buffer ()
+    (interactive)
+    (if (memq (current-buffer) gs/erc-notify-mute-buffers)
+        (progn (setq gs/erc-notify-mute-buffers (delete (current-buffer)
+                                                        gs/erc-notify-mute-buffers))
+               (message "Buffer unmuted"))
+      (add-to-list 'gs/erc-notify-mute-buffers (current-buffer))
+      (message "Buffer muted")))
+
+  (defun gs/erc-notify-activity ()
+    (if (not (null erc-modified-channels-alist))
+        (when (not (every (lambda (channel)
+                            (memq (car channel) gs/erc-notify-mute-buffers))
+                          erc-modified-channels-alist))
+          (gs/mode-line-alert 'erc-notify "#00ff00"))
+      (gs/mode-line-alert 'erc-notify 'clear)))
+
+  (add-hook 'erc-track-list-changed-hook 'gs/erc-notify-activity)
+
+  (let ((list '("#recon" "#grcs")))
+    (dolist (var list)
+      (add-to-list 'gs/erc-notify-mute-buffers var)))
+
+  (defun erc-notify (string, message, buffer, sender)
+    (let ((title buffer)
+          (body string))
+      (shell-command-to-string (format "osascript -e 'display notification \"%s\" with title \"%s\"'" body title))))
+
+  ;;  (add-hook 'erc-echo-notice-in-user-buffers 'erc-notify)
+
+#+end_src
+
+*** File backup
+
+#+begin_src emacs-lisp
+;; Backup file settigs
+(setq
+ backup-directory-alist '(("." . "~/.saves"))
+ delete-old-versions -1
+ version-control t
+ vc-make-backup-files t)
+#+end_src
+
+(add-to-list 'sml/replacer-regexp-list '("^~/development/" ":DEV:") t)
+
+*** Fringe
+#+BEGIN_SRC emacs-lisp
+  (when (window-system)
+    (require 'git-gutter-fringe)
+    (global-git-gutter-mode +1))
+#+END_SRC
+*** Google this
+
+#+begin_src emacs-lisp
+(google-this-mode 1)
+#+end_src
+
+*** Guide-Key
+
+Popup for key shortcuts
+
+#+begin_src emacs-lisp
+  (use-package guide-key
+    :init
+    (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c"))
+    (guide-key-mode 1)
+    (setq guide-key/recursive-key-sequence-flag t)
+    (setq guide-key/popup-window-position 'bottom))
+#+end_src
+
+*** History
+
+#+begin_src emacs-lisp
+(setq savehist-file "~/.emacs.d/savehist")
+(savehist-mode 1)
+(setq history-length t)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+'(kill-ring
+  search-ring
+  regexp-search-ring))
+#+end_src
+    
+*** Hungry delete
+
+#+begin_src emacs-lisp
+(global-hungry-delete-mode)
+#+end_src
+
+*** IDO mode - completion in many places
+#+begin_src emacs-lisp
+  (ido-mode 1)
+  (ido-ubiquitous-mode 1)
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+
+#+end_src
+
+If you use imenu to look at the functions in a file, this will give you ido mode in that
+
+#+begin_src emacs-lisp
+  (defun ido-goto-symbol (&optional symbol-list)
+        "Refresh imenu and jump to a place in the buffer using Ido."
+        (interactive)
+        (unless (featurep 'imenu)
+          (require 'imenu nil t))
+        (cond
+         ((not symbol-list)
+          (let ((ido-mode ido-mode)
+                (ido-enable-flex-matching
+                 (if (boundp 'ido-enable-flex-matching)
+                     ido-enable-flex-matching t))
+                name-and-pos symbol-names position)
+            (unless ido-mode
+              (ido-mode 1)
+              (setq ido-enable-flex-matching t))
+            (while (progn
+                     (imenu--cleanup)
+                     (setq imenu--index-alist nil)
+                     (ido-goto-symbol (imenu--make-index-alist))
+                     (setq selected-symbol
+                           (ido-completing-read "Symbol? " symbol-names))
+                     (string= (car imenu--rescan-item) selected-symbol)))
+            (unless (and (boundp 'mark-active) mark-active)
+              (push-mark nil t nil))
+            (setq position (cdr (assoc selected-symbol name-and-pos)))
+            (cond
+             ((overlayp position)
+              (goto-char (overlay-start position)))
+             (t
+              (goto-char position)))))
+         ((listp symbol-list)
+          (dolist (symbol symbol-list)
+            (let (name position)
+              (cond
+               ((and (listp symbol) (imenu--subalist-p symbol))
+                (ido-goto-symbol symbol))
+               ((listp symbol)
+                (setq name (car symbol))
+                (setq position (cdr symbol)))
+               ((stringp symbol)
+                (setq name symbol)
+                (setq position
+                      (get-text-property 1 'org-imenu-marker symbol))))
+              (unless (or (null position) (null name)
+                          (string= (car imenu--rescan-item) name))
+                (add-to-list 'symbol-names name)
+                (add-to-list 'name-and-pos (cons name position))))))))
+  
+  
+  (global-set-key (kbd "C-c g s") 'ido-goto-symbol)
+#+end_src 
+
+*** IPA
+
+In Place Annotations, lets you make annotations on a file without modifying the original file.
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c i i") 'ipa-insert)
+  (global-set-key (kbd "C-c i e") 'ipa-edit)
+  (global-set-key (kbd "C-c i t") 'ipa-toggle)
+  (global-set-key (kbd "C-c i s") 'ipa-show)
+  (global-set-key (kbd "C-c i n") 'ipa-next)
+  (global-set-key (kbd "C-c i p") 'ipa-previous)
+#+end_src
+
 *** Key Bindings
 **** Global
 #+BEGIN_SRC emacs-lisp
@@ -240,6 +636,30 @@ Mnemonic example, "Emacs toggle column", C-x t c
   (define-key launcher-map "g" (browse "http://www.gmail.com/"))
   
   
+#+end_src
+
+*** Mode line format
+
+I use smart mode line, mostly for ease of use, someday ill customize
+
+#+begin_src emacs-lisp
+    ;; Smart mode line
+    (sml/setup)
+    (sml/apply-theme 'dark)
+#+end_src
+
+Minor modes I do not want to see, uses Diminish
+
+#+begin_src emacs-lisp
+  (eval-after-load "google-this" '(diminish 'google-this-mode))
+  (eval-after-load "company" '(diminish 'company-mode))
+  (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
+  (eval-after-load "smarparens" '(diminish 'smartparens-mode))
+  (eval-after-load "yasnippet" '(diminish 'yas-minor-mode))
+  (eval-after-load "projectile" '(diminish 'projectile-mode))
+  (eval-after-load "guide-key" '(diminish 'guide-key-mode))
+  (eval-after-load "git-gutter" '(diminish 'git-gutter-mode))
+  (eval-after-load "ivy" '(diminish 'ivy-mode))
 #+end_src
 
 *** Mu4e
@@ -347,305 +767,38 @@ Mnemonic example, "Emacs toggle column", C-x t c
   (global-set-key "\C-ck" 'amz/code-link-to-kill-ring)
     
 #+END_SRC  
-*** Sane Defaults
-#+BEGIN_SRC emacs-lisp
-(setq truncate-lines t)
-(fset 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-*** Fringe
-#+BEGIN_SRC emacs-lisp
-  (when (window-system)
-    (require 'git-gutter-fringe)
-    (global-git-gutter-mode +1))
-#+END_SRC
-*** Visual Bookmarks
-
-[[https://github.com/joodland/bm][Github page]]
+*** Narrow-or-widen
 
 #+begin_src emacs-lisp
-  (setq bm-highlight-style 'bm-highlight-only-fringe)
-  
-  (global-set-key "\C-cbt" 'bm-toggle)
-  (global-set-key "\C-cbn" 'bm-next)
-  (global-set-key "\C-cbp" 'bm-previous)
-  (global-set-key "\C-cba" 'bm-show-all)
+(defun narrow-or-widen-dwim (p)
+  "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+Intelligently means: region, org-src-block, org-subtree, or defun,
+whichever applies first.
+Narrowing to org-src-block actually calls `org-edit-src-code'.
+
+With prefix P, don't widen, just narrow even if buffer is already
+narrowed."
+  (interactive "P")
+  (declare (interactive-only))
+  (cond ((and (buffer-narrowed-p) (not p)) (widen))
+        ((region-active-p)
+         (narrow-to-region (region-beginning) (region-end)))
+        ((derived-mode-p 'org-mode)
+         ;; `org-edit-src-code' is not a real narrowing command.
+         ;; Remove this first conditional if you don't want it.
+         (cond ((ignore-errors (org-edit-src-code))
+                (delete-other-windows))
+               ((org-at-block-p)
+                (org-narrow-to-block))
+               (t (org-narrow-to-subtree))))
+        (t (narrow-to-defun))))
+
+(define-key endless/toggle-map "n" #'narrow-or-widen-dwim)
+;; This line actually replaces Emacs' entire narrowing keymap, that's
+;; how much I like this command. Only copy it if that's what you want.
+(define-key ctl-x-map "n" #'narrow-or-widen-dwim)
 #+end_src
 
-*** File backup
-
-#+begin_src emacs-lisp
-;; Backup file settigs
-(setq
- backup-directory-alist '(("." . "~/.saves"))
- delete-old-versions -1
- version-control t
- vc-make-backup-files t)
-#+end_src
-
-(add-to-list 'sml/replacer-regexp-list '("^~/development/" ":DEV:") t)
-
-*** History
-
-#+begin_src emacs-lisp
-(setq savehist-file "~/.emacs.d/savehist")
-(savehist-mode 1)
-(setq history-length t)
-(setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history 1)
-(setq savehist-additional-variables
-'(kill-ring
-  search-ring
-  regexp-search-ring))
-#+end_src
-    
-*** Window configuration
-
-#+begin_src emacs-lisp
-  ;; Modes
-  (tooltip-mode -1)
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  
-  (setq inhibit-startup-message t
-        inhibit-startup-echo-area-message t)
-#+end_src
-
-*** Winner mode - undo and redo window configuration
-
-#+begin_src emacs-lisp
-(winner-mode 1)
-#+end_src
-
-*** IDO mode - completion in many places
-#+begin_src emacs-lisp
-  (ido-mode 1)
-  (ido-ubiquitous-mode 1)
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
-
-#+end_src
-
-If you use imenu to look at the functions in a file, this will give you ido mode in that
-
-#+begin_src emacs-lisp
-  (defun ido-goto-symbol (&optional symbol-list)
-        "Refresh imenu and jump to a place in the buffer using Ido."
-        (interactive)
-        (unless (featurep 'imenu)
-          (require 'imenu nil t))
-        (cond
-         ((not symbol-list)
-          (let ((ido-mode ido-mode)
-                (ido-enable-flex-matching
-                 (if (boundp 'ido-enable-flex-matching)
-                     ido-enable-flex-matching t))
-                name-and-pos symbol-names position)
-            (unless ido-mode
-              (ido-mode 1)
-              (setq ido-enable-flex-matching t))
-            (while (progn
-                     (imenu--cleanup)
-                     (setq imenu--index-alist nil)
-                     (ido-goto-symbol (imenu--make-index-alist))
-                     (setq selected-symbol
-                           (ido-completing-read "Symbol? " symbol-names))
-                     (string= (car imenu--rescan-item) selected-symbol)))
-            (unless (and (boundp 'mark-active) mark-active)
-              (push-mark nil t nil))
-            (setq position (cdr (assoc selected-symbol name-and-pos)))
-            (cond
-             ((overlayp position)
-              (goto-char (overlay-start position)))
-             (t
-              (goto-char position)))))
-         ((listp symbol-list)
-          (dolist (symbol symbol-list)
-            (let (name position)
-              (cond
-               ((and (listp symbol) (imenu--subalist-p symbol))
-                (ido-goto-symbol symbol))
-               ((listp symbol)
-                (setq name (car symbol))
-                (setq position (cdr symbol)))
-               ((stringp symbol)
-                (setq name symbol)
-                (setq position
-                      (get-text-property 1 'org-imenu-marker symbol))))
-              (unless (or (null position) (null name)
-                          (string= (car imenu--rescan-item) name))
-                (add-to-list 'symbol-names name)
-                (add-to-list 'name-and-pos (cons name position))))))))
-  
-  
-  (global-set-key (kbd "C-c g s") 'ido-goto-symbol)
-#+end_src 
-
-*** Mode line format
-
-I use smart mode line, mostly for ease of use, someday ill customize
-
-#+begin_src emacs-lisp
-    ;; Smart mode line
-    (sml/setup)
-    (sml/apply-theme 'dark)
-#+end_src
-
-Minor modes I do not want to see, uses Diminish
-
-#+begin_src emacs-lisp
-  (eval-after-load "google-this" '(diminish 'google-this-mode))
-  (eval-after-load "company" '(diminish 'company-mode))
-  (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
-  (eval-after-load "smarparens" '(diminish 'smartparens-mode))
-  (eval-after-load "yasnippet" '(diminish 'yas-minor-mode))
-  (eval-after-load "projectile" '(diminish 'projectile-mode))
-  (eval-after-load "guide-key" '(diminish 'guide-key-mode))
-  (eval-after-load "git-gutter" '(diminish 'git-gutter-mode))
-  (eval-after-load "ivy" '(diminish 'ivy-mode))
-#+end_src
-
-*** Theme 
-
-#+begin_src emacs-lisp
-  (load-file "~/.emacs.d/themes/almost-monokai.el")
-    (color-theme-initialize)
-#+end_src
-
-*** Undo Tree mode - visualize your undos and branches
-
-Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've made, undo back to a certain pointing
-
-#+begin_src emacs-lisp
-  (use-package undo-tree
-    :init
-    (progn
-      (global-undo-tree-mode)
-      (setq undo-tree-visualizer-timestamps t)
-      (setq undo-tree-visualizer-diff t)))
-#+end_src
-
-*** Eclim
-
-#+begin_src emacs-lisp
-  (global-eclim-mode)
-  (company-emacs-eclim-setup)
-  (setq help-at-pt-display-when-idle t)
-  (setq help-at-pt-timer-delay 0.05)
-  (help-at-pt-set-timer)
-  
-  ;; Functions
-  (defun tr/exit-code-helper (cmd rx)
-    "Pipe through perl looking for rx."
-    (s-concat cmd
-              "|perl -e 'my $flag=0; while(<>) { if ($_=~/" rx "/)"
-              "{ $flag = 1 } print $_ } exit $flag'"))
-  
-  (defvar tr/junit-failure-regex "(Failures: [1-9][0-9]*)|(Errors: [1-9][0-9]*)")
-  
-  (defun tr/eclim-java-junit-all ()
-    (interactive)
-    (compile (tr/exit-code-helper
-              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p"))))
-              tr/junit-failure-regex)))
-  
-  (defun tr/eclim-java-junit ()
-    (interactive)
-    (compile (tr/exit-code-helper
-              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p" "-f" "-o"))))
-              tr/junit-failure-regex)))
-  
-  
-  (add-to-list 'compilation-mode-font-lock-keywords
-               '("Tests run: [0-9]*, Failures: [1-9][0-9]*,.*$"
-                 (0 compilation-error-face)))
-  (add-to-list 'compilation-mode-font-lock-keywords
-               '("Tests run: [0-9]*, Failures: 0, Errors: [1-9][0-9]*,.*$"
-                 (0 compilation-error-face)))
-  (add-to-list 'compilation-mode-font-lock-keywords
-               '("Tests run: [0-9]*, Failures: 0, Errors: 0, Time elapsed: .*$"
-                 (0 compilation-info-face)))
-  
-  (defun tr/java-self-insert-complete (char)
-    (lexical-let ((char char))
-      (lambda ()
-        (interactive)
-        (insert char)
-        (company-complete))))
-  
-  (defun java-mode-keys ()
-    (local-set-key (kbd "C-c o") 'eclim-java-import-organize)
-    (local-set-key (kbd "C-c p") 'eclim-problems)
-    (local-set-key (kbd "C-c P") 'eclim-problems-open)
-    (local-set-key (kbd "C-c d") 'eclim-java-doc-comment)
-    (local-set-key (kbd "C-c C-d") 'eclim-java-find-declaration)
-    (local-set-key (kbd "C-c C-e") 'eclim-java-find-generic)
-    (local-set-key (kbd "C-c C-r") 'eclim-java-find-references)
-    (local-set-key (kbd "C-c C-t") 'eclim-java-find-type)
-    (local-set-key (kbd "C-c C-f") 'eclim-java-format)
-    (local-set-key (kbd "C-c G") 'eclim-java-generate-getter-and-setter)
-    (local-set-key (kbd "C-c h") 'eclim-java-hierarchy)
-    (local-set-key (kbd "C-c j") 'eclim-java-show-documentation-for-current-element)
-    (local-set-key (kbd "C-c r") 'eclim-java-refactor-rename-symbol-at-point)
-    (local-set-key (kbd "C-c s") 'eclim-java-method-signature-at-point)
-    (local-set-key (kbd "C-c t") 'tr/eclim-java-junit)
-    (local-set-key (kbd "C-c T") 'tr/eclim-java-junit-all)
-    (local-set-key (kbd "C-c z") 'eclim-java-implement)
-    (local-set-key (kbd ".") (tr/java-self-insert-complete ".")))
-  
-  (add-hook 'java-mode-hook 'java-mode-keys)
-#+end_src
-    
-*** Company
-
-#+begin_src emacs-lisp
-  (global-company-mode t)
-  (setq company-dabbrev-downcase nil)
-  (setq company-idle-delay 0.5)
-  (setq company-show-numbers t)
-  (setq company-minimum-prefix-length 2)
-  (setq company-require-match nil)
-  
-#+end_src
-
-*** Hungry delete
-
-#+begin_src emacs-lisp
-(global-hungry-delete-mode)
-#+end_src
-
-*** Google this
-
-#+begin_src emacs-lisp
-(google-this-mode 1)
-#+end_src
-
-*** Perl
-
-#+begin_src emacs-lisp
-  ;; Alias
-  (defalias 'perl-mode 'cperl-mode)
-  (setq cperl-invalid-face nil)
-
-  (add-hook 'cperl-mode-hook 'flycheck-mode)
-
-  (flycheck-define-checker perl
-    "Checker for perl"
-    :command ("/apollo/bin/env" "-e" "rtip-state-processor" "perl" "-w" "-c" source)
-    :error-patterns
-    ((error line-start (minimal-match (message))
-            " at " (file-name) " line " line
-            (or "." (and ", " (zero-or-more not-newline))) line-end))
-    :modes (perl-mode cperl-mode)
-    :next-checkers (perl-perlcritic))
-
-  (custom-set-variables
-       '(cperl-indent-parens-as-block t)
-       '(cperl-indent-level 4))
-  
-  (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))
-#+end_src
-    
 *** Org
 
 #+begin_src emacs-lisp
@@ -771,207 +924,6 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
     )
 #+end_src
 
-*** Narrow-or-widen
-
-#+begin_src emacs-lisp
-(defun narrow-or-widen-dwim (p)
-  "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
-Intelligently means: region, org-src-block, org-subtree, or defun,
-whichever applies first.
-Narrowing to org-src-block actually calls `org-edit-src-code'.
-
-With prefix P, don't widen, just narrow even if buffer is already
-narrowed."
-  (interactive "P")
-  (declare (interactive-only))
-  (cond ((and (buffer-narrowed-p) (not p)) (widen))
-        ((region-active-p)
-         (narrow-to-region (region-beginning) (region-end)))
-        ((derived-mode-p 'org-mode)
-         ;; `org-edit-src-code' is not a real narrowing command.
-         ;; Remove this first conditional if you don't want it.
-         (cond ((ignore-errors (org-edit-src-code))
-                (delete-other-windows))
-               ((org-at-block-p)
-                (org-narrow-to-block))
-               (t (org-narrow-to-subtree))))
-        (t (narrow-to-defun))))
-
-(define-key endless/toggle-map "n" #'narrow-or-widen-dwim)
-;; This line actually replaces Emacs' entire narrowing keymap, that's
-;; how much I like this command. Only copy it if that's what you want.
-(define-key ctl-x-map "n" #'narrow-or-widen-dwim)
-#+end_src
-
-*** Emphasize-buffer
-
-First attempt at my own hand written customization, not just copied. Needs some work.
-
-#+begin_src emacs-lisp
-(fset 'emphasize-buffer
-   "\C-u32\C-x}")
-(global-set-key [f5] 'emphasize-buffer)
-#+end_src
-
-*** Windmove
-
-#+begin_src emacs-lisp
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings))
-#+end_src
-
-*** ERC
-
-#+begin_src emacs-lisp
-  (add-to-list 'erc-modules 'highlight-nicknames)
-  (set-face-foreground 'erc-input-face "blue")
-  (erc-update-modules)
-  (erc-spelling-mode 1)
-  (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon")
-                                      ("freenode.net" "#pfproject")))
-
-  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-
-  (defun start-amazon-irc ()
-    "Connect to Amazon IRC."
-    (interactive)
-    (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon" "#grcs")))
-    (erc-tls :server "ircs.amazon.com" :port 6697
-             :nick "trrogers" :full-name "trrogers"))
-
-  (defun start-irc ()
-    "Connect to IRC."
-    (interactive)
-    (setq erc-autojoin-channels-alist '(("freenode.net" "#pfproject")))
-    (erc :server "irc.freenode.net" :port 6667 :nick "robochuck"))
-
-  (add-hook 'erc-insert-post-hook
-            (lambda () (goto-char (point-min))
-              (when (re-search-forward
-                     (regexp-quote (erc-current-nick)) nil t) (ding))))
-
-
-#+end_src
-
-Greg sent me this, is a way to have the mode line go very bright when erc is getting some action. Also provides a way
-to mute that, which is very useful when a channel you dont care about is getting chatty
-
-#+begin_src emacs-lisp
-  (defun gs/set-mode-line-background (color)
-    (when color (set-face-background 'mode-line color)))
-
-  (lexical-let ((alerts '()))
-    (defun gs/mode-line-alert (alert-id color)
-      "Alert by setting the modeline to COLOR. If COLOR is the symbol
-    clear then remove the current notification."
-      (cl-flet ((set-alert (alert-id color)
-                           (when (not (assoc alert-id alerts))
-                             (setq alerts (cons (cons alert-id color) alerts))
-                             (gs/set-mode-line-background color)))
-                (remove-alert (alert-id)
-                              (when (assoc alert-id alerts)
-                                (setq alerts (assq-delete-all alert-id alerts))
-                                (gs/set-mode-line-background (cdar alerts)))))
-        ;; set this lazily to allow a color scheme to be chosen before first use
-        (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
-        (cond ((eq alert-id 'print) alerts)  ;handy debug proxy
-              ((eq color 'clear) (remove-alert alert-id))
-              (t (set-alert alert-id color))))))
-
-  (defvar gs/erc-notify-mute-buffers nil
-    "Buffers that are currently muted and should not be alerted if
-    activity occurs.")
-
-  (defun gs/erc-toggle-mute-buffer ()
-    (interactive)
-    (if (memq (current-buffer) gs/erc-notify-mute-buffers)
-        (progn (setq gs/erc-notify-mute-buffers (delete (current-buffer)
-                                                        gs/erc-notify-mute-buffers))
-               (message "Buffer unmuted"))
-      (add-to-list 'gs/erc-notify-mute-buffers (current-buffer))
-      (message "Buffer muted")))
-
-  (defun gs/erc-notify-activity ()
-    (if (not (null erc-modified-channels-alist))
-        (when (not (every (lambda (channel)
-                            (memq (car channel) gs/erc-notify-mute-buffers))
-                          erc-modified-channels-alist))
-          (gs/mode-line-alert 'erc-notify "#00ff00"))
-      (gs/mode-line-alert 'erc-notify 'clear)))
-
-  (add-hook 'erc-track-list-changed-hook 'gs/erc-notify-activity)
-
-  (let ((list '("#recon" "#grcs")))
-    (dolist (var list)
-      (add-to-list 'gs/erc-notify-mute-buffers var)))
-
-  (defun erc-notify (string, message, buffer, sender)
-    (let ((title buffer)
-          (body string))
-      (shell-command-to-string (format "osascript -e 'display notification \"%s\" with title \"%s\"'" body title))))
-
-  ;;  (add-hook 'erc-echo-notice-in-user-buffers 'erc-notify)
-
-#+end_src
-
-*** Clojure Refactor
-**** Commands
-Combine with the prefix, C-c C-f
-This is it so far:
-
-ad: add declaration for current top-level form
-ai: add import to namespace declaration, then jump back
-ar: add require to namespace declaration, then jump back (see optional setup)
-au: add "use" (ie require refer all) to namespace declaration, then jump back
-cc: cycle surrounding collection type
-ci: cycle between if and if-not
-cp: cycle privacy of defns and defs
-dk: destructure keys
-el: expand let
-il: introduce let
-mf: move one or more forms to another namespace, :refer any functions
-ml: move to let
-pc: run project cleaner functions on the whole project
-pf: promote function literal or fn, or fn to defn
-rf: rename file, update ns-declaration, and then query-replace new ns in project.
-rl: remove-let, inline all variables and remove the let form
-rr: remove unused requires
-ru: replace all :use in namespace with :refer :all
-sn: sort :use, :require and :import in the ns form
-sp: Sort all dependency vectors in project.clj
-sr: stop referring (removes :refer [] from current require, fixing references)
-tf: wrap in thread-first (->) and fully thread
-th: thread another expression
-tl: wrap in thread-last (->>) and fully thread
-ua: fully unwind a threaded expression
-uw: unwind a threaded expression
-Using refactor-nrepl, you also get:
-
-am: add a missing libspec
-ap: add a dependency to your project
-cn: Perform various cleanups on the ns form
-ef: Extract function
-fu: Find usages
-hd: Hotload dependency
-rd: Remove (debug) function invocations
-rs: Rename symbol
-
-#+begin_src emacs-lisp
-;; CLJ Refactor
-(add-hook 'clojure-mode-hook
-	  (lambda()
-	    (clj-refactor-mode 1)
-	    (paredit-mode 1)
-	    (cljr-add-keybindings-with-prefix "C-c C-f")
-	    ))
-#+end_src
-
-*** Auto Fill Mode
-
-#+begin_src emacs-lisp
-(setq-default fill-column 120)
-#+end_src
-
 *** Origami
 This is gregs folding code, works pretty well, this is just the key chords I am using
 
@@ -981,79 +933,41 @@ This is gregs folding code, works pretty well, this is just the key chords I am 
   (key-chord-define-global "[]" 'origami-show-only-node)
 #+end_src
 
-*** IPA
-
-In Place Annotations, lets you make annotations on a file without modifying the original file.
+*** Perl
 
 #+begin_src emacs-lisp
-  (global-set-key (kbd "C-c i i") 'ipa-insert)
-  (global-set-key (kbd "C-c i e") 'ipa-edit)
-  (global-set-key (kbd "C-c i t") 'ipa-toggle)
-  (global-set-key (kbd "C-c i s") 'ipa-show)
-  (global-set-key (kbd "C-c i n") 'ipa-next)
-  (global-set-key (kbd "C-c i p") 'ipa-previous)
+  ;; Alias
+  (defalias 'perl-mode 'cperl-mode)
+  (setq cperl-invalid-face nil)
+
+  (add-hook 'cperl-mode-hook 'flycheck-mode)
+
+  (flycheck-define-checker perl
+    "Checker for perl"
+    :command ("/apollo/bin/env" "-e" "rtip-state-processor" "perl" "-w" "-c" source)
+    :error-patterns
+    ((error line-start (minimal-match (message))
+            " at " (file-name) " line " line
+            (or "." (and ", " (zero-or-more not-newline))) line-end))
+    :modes (perl-mode cperl-mode)
+    :next-checkers (perl-perlcritic))
+
+  (custom-set-variables
+       '(cperl-indent-parens-as-block t)
+       '(cperl-indent-level 4))
+  
+  (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))
 #+end_src
-
-*** Guide-Key
-
-Popup for key shortcuts
-
-#+begin_src emacs-lisp
-  (use-package guide-key
-    :init
-    (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c"))
-    (guide-key-mode 1)
-    (setq guide-key/recursive-key-sequence-flag t)
-    (setq guide-key/popup-window-position 'bottom))
-#+end_src
-
-*** Rainbow Delimiters
-
+    
+*** Prodigy
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+  (prodigy-define-service
+    :name "EWS"
+    :command "ews"
+    :args '("-daemon" "-e trrogers@a2z.com" "-p /home/local/ANT/trrogers/.pword" "-f /home/local/ANT/trrogers/org/calendar.org")
+    :tags '(work))
+
 #+END_SRC
-
-*** Buffer Mangement
-
-Function from Greg, used to quickly create new scratch buffers
-
-#+BEGIN_SRC emacs-lisp
-  (defun gs/create-new-scratch-buffer ()
-    "This creates a new *scratch* buffer regardless of whether one
-  exists. It then switches to it."
-    (interactive)
-    (let ((buf (generate-new-buffer "*scratch*")))
-      (switch-to-buffer buf)
-      (lisp-interaction-mode)))
-  
-  (global-set-key (kbd "C-c b b") 'gs/create-new-scratch-buffer)
-#+END_SRC
-
-*** RecentF
-
-Find a file from a list of your most recent files. Very handy because i look at the same files over and over and over
-again all the time.
-
-#+BEGIN_SRC emacs-lisp
-  ;; get rid of `find-file-read-only' and replace it with something
-  ;; more useful.
-  (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
-  
-  ;; enable recent files mode.
-  (recentf-mode t)
-  
-  ; 50 files ought to be enough.
-  (setq recentf-max-saved-items 50)
-  
-  (defun ido-recentf-open ()
-    "Use `ido-completing-read' to \\[find-file] a recent file"
-    (interactive)
-    (if (find-file (ido-completing-read "Find recent file: " recentf-list))
-        (message "Opening file...")
-      (message "Aborting")))
-  
-#+END_SRC
-
 *** Projectile
 
 #+BEGIN_SRC emacs-lisp
@@ -1178,19 +1092,105 @@ as the repo is concerned
      (tr-projectiles/get-project-dir-at-point))
     (tr-projectiles/list-projects))
 #+END_SRC
+*** Rainbow Delimiters
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+#+END_SRC
+
+*** RecentF
+
+Find a file from a list of your most recent files. Very handy because i look at the same files over and over and over
+again all the time.
+
+#+BEGIN_SRC emacs-lisp
+  ;; get rid of `find-file-read-only' and replace it with something
+  ;; more useful.
+  (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
+  
+  ;; enable recent files mode.
+  (recentf-mode t)
+  
+  ; 50 files ought to be enough.
+  (setq recentf-max-saved-items 50)
+  
+  (defun ido-recentf-open ()
+    "Use `ido-completing-read' to \\[find-file] a recent file"
+    (interactive)
+    (if (find-file (ido-completing-read "Find recent file: " recentf-list))
+        (message "Opening file...")
+      (message "Aborting")))
+  
+#+END_SRC
+
+*** Sane Defaults
+#+BEGIN_SRC emacs-lisp
+(setq truncate-lines t)
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+*** Theme 
+
+#+begin_src emacs-lisp
+  (load-file "~/.emacs.d/themes/almost-monokai.el")
+    (color-theme-initialize)
+#+end_src
+
+*** Undo Tree mode - visualize your undos and branches
+
+Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've made, undo back to a certain pointing
+
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :init
+    (progn
+      (global-undo-tree-mode)
+      (setq undo-tree-visualizer-timestamps t)
+      (setq undo-tree-visualizer-diff t)))
+#+end_src
+
+*** Visual Bookmarks
+
+[[https://github.com/joodland/bm][Github page]]
+
+#+begin_src emacs-lisp
+  (setq bm-highlight-style 'bm-highlight-only-fringe)
+  
+  (global-set-key "\C-cbt" 'bm-toggle)
+  (global-set-key "\C-cbn" 'bm-next)
+  (global-set-key "\C-cbp" 'bm-previous)
+  (global-set-key "\C-cba" 'bm-show-all)
+#+end_src
+
+*** Windmove
+
+#+begin_src emacs-lisp
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
+#+end_src
+
+*** Window configuration
+
+#+begin_src emacs-lisp
+  ;; Modes
+  (tooltip-mode -1)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  
+  (setq inhibit-startup-message t
+        inhibit-startup-echo-area-message t)
+#+end_src
+
+*** Winner mode - undo and redo window configuration
+
+#+begin_src emacs-lisp
+(winner-mode 1)
+#+end_src
+
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
   (yas-global-mode 1)
   
-#+END_SRC
-*** Prodigy
-#+BEGIN_SRC emacs-lisp
-  (prodigy-define-service
-    :name "EWS"
-    :command "ews"
-    :args '("-daemon" "-e trrogers@a2z.com" "-p /home/local/ANT/trrogers/.pword" "-f /home/local/ANT/trrogers/org/calendar.org")
-    :tags '(work))
-
 #+END_SRC
 ** Navigation
 *** Pop to mark
