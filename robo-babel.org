@@ -20,83 +20,138 @@ Defaults from the beginning
 
 ** Emacs initialization
 *** Package Setup
+#+BEGIN_SRC emacs-lisp
+  ;; Set path to dependencies
+  (setq site-lisp-dir
+        (expand-file-name "site-lisp" user-emacs-directory))
+
+  (setq settings-dir
+        (expand-file-name "settings" user-emacs-directory))
+
+  ;; Set up load path
+  (add-to-list 'load-path settings-dir)
+  (add-to-list 'load-path site-lisp-dir)
+
+  ;; Keep emacs Custom-settings in separate file
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (load custom-file)
+
+  ;; Add external projects to load path
+  (dolist (project (directory-files site-lisp-dir t "\\w+"))
+    (when (file-directory-p project)
+      (add-to-list 'load-path project)))
+
+  ;; Are we on a mac?
+  (setq is-mac (equal system-type 'darwin))
+
+  ;; Setup packages
+  (require 'setup-package)
+
+  ;; Install extensions if they're missing
+  (defun init--install-packages ()
+    (packages-install
+     '(ace-window
+       avy
+       bm
+       cl
+       cl-lib                       
+       clj-refactor
+       company
+       compile
+       diminish
+       dirtree
+       discover
+       discover-my-major
+       erc
+       f
+       flycheck
+       flycheck-clojure
+       git-gutter-fringe+
+       git-messenger
+       google-this
+       helm
+       hungry-delete
+       prodigy
+       project-explorer
+       rainbow-delimiters
+       rainbow-mode
+       recentf
+       smart-mode-line
+       soap-client
+       tea-time
+       tls
+       visual-regexp-steroids
+       magit
+       )))
+
+  (condition-case nil
+      (init--install-packages)
+    (error
+     (package-refresh-contents)
+     (init--install-packages)))
+
+  ;; Setup environment variables from the user's shell.
+  (when is-mac
+    (require-package 'exec-path-from-shell)
+    (exec-path-from-shell-initialize))
+
+#+END_SRC
 
 #+begin_src emacs-lisp
-    (require 'package)
-    (add-to-list 'package-archives
-                 '("marmalade" . "http://marmalade-repo.org/packages/"))
-    (add-to-list 'package-archives
-                 '("melpa" . "http://melpa.milkbox.net/packages/")t)
-
-    ;; (add-to-list 'load-path (expand-file-name "c:/Users/trrogers/.emacs.d/elpa/emacs-eclim-20140125.258"))
-    (add-to-list 'load-path "~/emacs/erc-highlight-nicknames")
-  ;;  (add-to-list 'load-path "~/emacs/origami")
-    (add-to-list 'load-path "~/emacs/ipa")
-  ;;  (add-to-list 'load-path "~/emacs/httprepl")
-  ;;  (add-to-list 'load-path "~/emacs/symon")
-    (add-to-list 'load-path "~/emacs/gotolastchange")
-  (add-to-list 'load-path "~/emacs/highlight-symbol")
-
-    (package-initialize)
-
-    ;; Requires
-    (require 'use-package)
-    (require 'bm)
-    (require 'cl)
-    (require 'cl-lib)                       
-    (require 'discover)
-    (require 'eclim)
-    (require 'eclimd)
-    (require 'company)
-    (require 'company-emacs-eclim)
-    (require 'dirtree)
-    (require 'compile)
-    (require 'highlight-symbol)
-    (require 'visual-regexp-steroids)
-    (require 'tls)
-    (require 'erc)
-    (require 'erc-highlight-nicknames)
-    (require 'smart-mode-line)
-    (require 'hungry-delete)
-    (require 'google-this)
-    (require 'clj-refactor)
-  ;;  (require 'origami)
-    (require 'ipa)
-    (require 'rainbow-mode)
-    (require 'rainbow-delimiters)
-  ;;  (require 'httprepl)
-    (require 'recentf)
-    (require 'soap-client)
-    (require 'flycheck)
-    (require 'tea-time)
-  ;;  (require 'symon)
-    (require 'goto-last-change)
-    (require 'ace-window)
-    (require 'project-explorer)
-    (require 'highlight-symbol)
-    (require 'discover-my-major)
-    (require 'git-messenger)
-    (require 'helm)
-    (require 'helm-config)
-  (require 'prodigy)
+  ;; Requires
+  (require 'ace-window)
   (require 'avy)
-#+end_src
-*** Font
+  (require 'bm)
+  (require 'cl)
+  (require 'cl-lib)                       
+  (require 'clj-refactor)
+  (require 'company)
+  (require 'company-emacs-eclim)
+  (require 'compile)
+  (require 'diminish)
+  (require 'dirtree)
+  (require 'discover)
+  (require 'discover-my-major)
+  (require 'eclim)
+  (require 'eclimd)
+  (require 'erc)
+  (require 'erc-highlight-nicknames)
+  (require 'flycheck)
+  (require 'git-messenger)
+  (require 'google-this)
+  (require 'goto-last-change)
+  (require 'helm)
+  (require 'helm-config)
+  (require 'highlight-symbol)
+  (require 'highlight-symbol)
+  (require 'httprepl)
+  (require 'hungry-delete)
+  (require 'ipa)
+  (require 'origami)
+  (require 'prodigy)
+  (require 'project-explorer)
+  (require 'rainbow-delimiters)
+  (require 'rainbow-mode)
+  (require 'recentf)
+  (require 'smart-mode-line)
+  (require 'soap-client)
+  (require 'symon)
+  (require 'tea-time)
+  (require 'tls)
+  (require 'use-package)
+  (require 'visual-regexp-steroids)
 
-#+BEGIN_SRC emacs-lisp
-  (if (find-font (font-spec :name "DejaVu Sans Mono"))
-      (set-face-attribute 'default t :font "DejaVu Sans Mono-10"))
-#+END_SRC
+#+end_src
 ** Global Variables
    #+BEGIN_SRC emacs-lisp
      (setq-default indent-tabs-mode nil)
      (setq paradox-github-token '0af38642de4c23e8399e7849d875a7118308f322)
    #+END_SRC
 ** General Configuration
-*** Global Key Bindings
-
+*** Key Bindings
+**** Global
 #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "M-p") 'ace-window)
+    (global-set-key (kbd "C-c M-p") 'ace-window)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
     ;; Discover my major, good for those days you cant remember!
@@ -111,6 +166,81 @@ Defaults from the beginning
     (global-set-key "\C-cml" 'magit-file-log)
     (define-key global-map (kbd "RET") 'newline-and-indent)
 #+END_SRC
+**** Endless toggle and launcher
+
+Found these great global key bindings at endlessparentheses.com
+Mnemonic example, "Emacs toggle column", C-x t c
+
+#+begin_src emacs-lisp
+  ;; Global keys
+  (define-prefix-command 'endless/toggle-map)
+  (define-key ctl-x-map "t" 'endless/toggle-map)
+  
+  (define-key endless/toggle-map "c" #'column-number-mode)
+  (define-key endless/toggle-map "d" #'toggle-debug-on-error)
+  (define-key endless/toggle-map "e" #'toggle-debug-on-error)
+  (define-key endless/toggle-map "f" #'auto-fill-mode)
+  (define-key endless/toggle-map "l" #'toggle-truncate-lines)
+  (define-key endless/toggle-map "q" #'toggle-debug-on-quit)
+  (define-key endless/toggle-map "t" #'endless/toggle-theme)
+  ;;; Generalized version of `read-only-mode'.
+  (define-key endless/toggle-map "r" #'dired-toggle-read-only)
+  (autoload 'dired-toggle-read-only "dired" nil t)
+  (define-key endless/toggle-map "w" #'whitespace-mode)
+  
+  ;; More from endless, say "Emacs launch calc", C-x l c
+  (define-prefix-command 'launcher-map)
+  ;; C-x l is `count-lines-page' by default. If you
+  ;; use that, you can try s-l or <C-return>.
+  (define-key ctl-x-map "l" 'launcher-map)
+  (global-set-key (kbd "s-l") 'launcher-map)
+  (define-key launcher-map "c" #'calc)
+  (define-key launcher-map "d" #'ediff-buffers)
+  (define-key launcher-map "f" #'find-dired)
+  (define-key launcher-map "g" #'lgrep)
+  (define-key launcher-map "G" #'rgrep)
+  (define-key launcher-map "h" #'man) ; Help
+  (define-key launcher-map "n" #'nethack)
+  (define-key launcher-map "l" #'paradox-list-packages)
+  (define-key launcher-map "s" #'eshell)
+  (define-key launcher-map "t" #'proced) ; top
+  (define-key launcher-map "C" #'tr/open-code-amazon-com)
+  
+  (defmacro run (exec)
+    "Return a function that runs the executable EXEC."
+    (let ((func-name (intern (concat "endless/run-" exec))))
+      `(progn
+         (defun ,func-name ()
+           ,(format "Run the %s executable." exec)
+           (interactive)
+           (start-process "" nil ,exec))
+         ',func-name)))
+  
+  ;; (define-key launcher-map "v" (run "steam"))
+  (define-key launcher-map "e" (run "eclipse"))
+  (define-key launcher-map "p" (run "pidgin"))
+  (define-key launcher-map "s" (run "spotify"))
+  
+  (defmacro browse (url)
+    "Return a function that calls `browse-url' on URL."
+    (let ((func-name (intern (concat "endless/browse-" url))))
+      `(progn
+         (defun ,func-name ()
+           ,(format "Browse to the url %s." url)
+           (interactive)
+           (browse-url ,url))
+         ',func-name)))
+  
+  (define-key launcher-map "r" (browse "http://www.reddit.com/r/emacs/"))
+  (define-key launcher-map "w" (browse "http://www.emacswiki.org/"))
+  (define-key launcher-map "?" (browse "http://emacs.stackexchange.com/"))
+  (define-key launcher-map "a" (browse "http://www.penny-arcade.com/"))
+  (define-key launcher-map "x" (browse "http://www.xkcd.com/"))
+  (define-key launcher-map "m" (browse "http://www.gizmag.com/"))
+  (define-key launcher-map "g" (browse "http://www.gmail.com/"))
+  
+  
+#+end_src
 
 *** Mu4e
 #+BEGIN_SRC emacs-lisp
@@ -148,100 +278,85 @@ Defaults from the beginning
 
 #+END_SRC
 *** My Functions
-Some of the things I have found that are handy or I have written up to make life easier
+    Some of the things I have found that are handy or I have written up to make life easier
 
-Tidy is like an html lint, this function cleans up the buffer
+    Tidy is like an html lint, this function cleans up the buffer
 #+BEGIN_SRC emacs-lisp
+
+  (defun tidy-html()
+    "Tidies the HTML content in the buffer using `tidy"
+    (interactive)
+    (shell-command-on-region
+     (point-min)
+     (point-max)
+     "tidy -i -w 120 -q"
+     (current-buffer)
+     t
+     "*Tidy Error Buffer*"
+     t))
+
+  (defun highlight-and-show()
+    "Highlight a symbol and show all occurences"
+    (interactive)
+    (highlight-symbol-at-point)
+    (highlight-symbol-occur))
+
+  (global-set-key "\C-chs" 'highlight-and-show)
+
+  (defun tr/search-text-next-prop (prop value)
+    "Searches the text from point until it finds the property"
+    (interactive)
+    (let ((text-loc (next-property-change (point) (current-buffer))))
+      (while (or (= text-loc (buffer-size))
+                 (not (member value (get-text-property text-loc prop))))
+        (setq text-loc (next-property-change text-loc (current-buffer))))
+      (goto-char text-loc)))
+
+  (defun tr/search-text-prev-prop (prop value)
+    "Searches the text backwards from point until it finds the property"
+    (interactive)
+    (while (progn
+             (goto-char (or (previous-single-property-change (point) prop (current-buffer)) (point)))
+             (not (member value (get-text-property (point) prop))))))
+
+
+  (defun gs/git-get-branch (path)
+    (let ((default-directory path))
+      (-> "git symbolic-ref -q --short HEAD" shell-command-to-string s-trim)))
+
+  (defun gs/git-get-dir (path)
+    (let ((default-directory path))
+      (-> "git rev-parse --show-toplevel" shell-command-to-string s-trim)))
+
+  (defun amz/generate-code-link (path)
+    "Builds a link to the proper spot in code.amazon.com"
+    (let ((path (f-relative path (gs/git-get-dir path)))
+          (branch (gs/git-get-branch path))
+          (package (f-filename (gs/git-get-dir path))))
+      (format "https://code.amazon.com/packages/%s/blobs/heads/%s/--/%s#line-%d"
+              package branch path (line-number-at-pos))))
+
+  (defun amz/view-on-code (path)
+    (interactive (list (buffer-file-name)))
+    (browse-url (amz/generate-code-link path)))
+
+  (defun amz/code-link-to-kill-ring ()
+    (interactive)
+    (kill-new (amz/generate-code-link)))
+
+  (global-set-key "\C-ck" 'amz/code-link-to-kill-ring)
     
-    (defun tidy-html()
-      "Tidies the HTML content in the buffer using `tidy"
-      (interactive)
-      (shell-command-on-region
-       (point-min)
-       (point-max)
-       "tidy -i -w 120 -q"
-       (current-buffer)
-       t
-       "*Tidy Error Buffer*"
-       t))
-    
-    (defun highlight-and-show()
-      "Highlight a symbol and show all occurences"
-      (interactive)
-      (highlight-symbol-at-point)
-      (highlight-symbol-occur))
-    
-    (global-set-key "\C-chs" 'highlight-and-show)
-    
-    (defun tr/search-text-next-prop (prop value)
-      "Searches the text from point until it finds the property"
-      (interactive)
-      (let ((next-change
-             (or (text-property-any
-                  (next-property-change (point) (current-buffer))
-                  (buffer-size)
-                  prop
-                  value)
-                 (point))))
-        (goto-char next-change)))
-    
-    (defun tr/search-text-prev-prop (prop value)
-      "Searches the text backwards from point until it finds the property"
-      (interactive)
-      (while (progn
-               (goto-char (or (previous-single-property-change (point) prop (current-buffer)) (point)))
-               (not (eq (get-char-property (point) prop) value)))))
-    
-    
-    (defun gs/git-get-branch (path)
-      (let ((default-directory path))
-        (-> "git symbolic-ref -q --short HEAD" shell-command-to-string s-trim)))
-    
-    (defun gs/git-get-dir (path)
-      (let ((default-directory path))
-        (-> "git rev-parse --show-toplevel" shell-command-to-string s-trim)))
-    
-    (defun amz/generate-code-link (path)
-      "Builds a link to the proper spot in code.amazon.com"
-      (let ((path (f-relative path (gs/git-get-dir path)))
-            (branch (gs/git-get-branch path))
-            (package (f-filename (gs/git-get-dir path))))
-        (format "https://code.amazon.com/packages/%s/blobs/heads/%s/--/%s#line-%d"
-                package branch path (line-number-at-pos))))
-    
-    (defun amz/view-on-code (path)
-      (interactive (list (buffer-file-name)))
-      (browse-url (amz/generate-code-link path)))
-    
-    (defun amz/code-link-to-kill-ring ()
-      (interactive)
-      (kill-new (amz/generate-code-link)))
-    
-    (global-set-key "\C-ck" 'amz/code-link-to-kill-ring)
-  
 #+END_SRC  
-*** Defaults
+*** Sane Defaults
 #+BEGIN_SRC emacs-lisp
-  (setq truncate-lines t)
+(setq truncate-lines t)
+(fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 *** Fringe
 #+BEGIN_SRC emacs-lisp
   (when (window-system)
     (require 'git-gutter-fringe)
     (global-git-gutter-mode +1))
-#+END_SRC
-*** Octave
-
-#+BEGIN_SRC emacs-lisp
-  (setq auto-mode-alist
-        (cons '("\\.m$" . octave-mode) auto-mode-alist))
-  
-  (add-hook 'octave-mode-hook
-            (lambda ()
-              (abbrev-mode 1)
-              (auto-fill-mode 1)
-              (if (eq window-system 'x)
-                  (font-lock-mode 1))))
 #+END_SRC
 *** Visual Bookmarks
 
@@ -292,7 +407,6 @@ Tidy is like an html lint, this function cleans up the buffer
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   
-  (set-face-attribute 'default nil :height 100)
   (setq inhibit-startup-message t
         inhibit-startup-echo-area-message t)
 #+end_src
@@ -375,24 +489,11 @@ I use smart mode line, mostly for ease of use, someday ill customize
     ;; Smart mode line
     (sml/setup)
     (sml/apply-theme 'dark)
-
-    ;;(smt/enable)
-    ;;(smt/set-theme 'black-crystal)
-
-
-  ;;  (load-file "~/emacs/themes/ocodo-slim-svg-mode-line.el")
-    ;;(load-file "~/emacs/themes/ocodo-terracotta-smt.el")
-    ;;(load-file "~/emacs/themes/ocodo-svg-mode-line.el")
-    ;;(load-file "~/emacs/themes/ocodo-grass-smt.el")
-    ;;(load-file "~/emacs/themes/ocodo-kawaii-light-smt.el")
-    ;;(load-file "~/emacs/themes/ocodo-minimal-light-smt.el")
-
 #+end_src
 
-Minor modes I do not want to see
+Minor modes I do not want to see, uses Diminish
 
 #+begin_src emacs-lisp
-  (require 'diminish)
   (eval-after-load "google-this" '(diminish 'google-this-mode))
   (eval-after-load "company" '(diminish 'company-mode))
   (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
@@ -404,36 +505,11 @@ Minor modes I do not want to see
   (eval-after-load "ivy" '(diminish 'ivy-mode))
 #+end_src
 
-*** Change "yes or no" to "y or n"
-
-I didnt even realize this was a thing, but its nice to have, if your lazy. Which I am.
-
-#+begin_src emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
-#+end_src
-
 *** Theme 
 
 #+begin_src emacs-lisp
   (load-file "~/.emacs.d/themes/almost-monokai.el")
-                                          ; (load-file "~/.emacs.d/themes/color-theme-eclipse.el")
-                                          ;  (load-file "~/.emacs.d/custom-tr-eclipse-theme.el")
-;  (load-file "~/.emacs.d/custom-tr-ubuntu-theme.el")
-    (require 'color-theme)
     (color-theme-initialize)
-
-    (defvar tr/current-theme "monokai")
-
-    (defun tr/switch-themes ()
-      (interactive)
-      (if (string= tr/current-theme "monokai")
-          (progn (load-theme 'custom-tr-eclipse)
-                 (set-face-attribute 'default nil :height 140)
-                 (setq tr/current-theme "eclipse"))
-        (progn (color-theme-almost-monokai)
-               (setq tr/current-theme "monokai"))))
-
-
 #+end_src
 
 *** Undo Tree mode - visualize your undos and branches
@@ -441,12 +517,12 @@ I didnt even realize this was a thing, but its nice to have, if your lazy. Which
 Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've made, undo back to a certain pointing
 
 #+begin_src emacs-lisp
-(use-package undo-tree
-  :init
-  (progn
-    (global-undo-tree-mode)
-    (setq undo-tree-visualizer-timestamps t)
-    (setq undo-tree-visualizer-diff t)))
+  (use-package undo-tree
+    :init
+    (progn
+      (global-undo-tree-mode)
+      (setq undo-tree-visualizer-timestamps t)
+      (setq undo-tree-visualizer-diff t)))
 #+end_src
 
 *** Eclim
@@ -569,83 +645,7 @@ Use =C-x u= (=undo-tree-visualize=) to visually walk through the changes you've 
   
   (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))
 #+end_src
-
-*** Endless toggle and launcher
-
-Found these great global key bindings at endlessparentheses.com
-Mnemonic example, "Emacs toggle column", C-x t c
-
-#+begin_src emacs-lisp
-  ;; Global keys
-  (define-prefix-command 'endless/toggle-map)
-  (define-key ctl-x-map "t" 'endless/toggle-map)
-  
-  (define-key endless/toggle-map "c" #'column-number-mode)
-  (define-key endless/toggle-map "d" #'toggle-debug-on-error)
-  (define-key endless/toggle-map "e" #'toggle-debug-on-error)
-  (define-key endless/toggle-map "f" #'auto-fill-mode)
-  (define-key endless/toggle-map "l" #'toggle-truncate-lines)
-  (define-key endless/toggle-map "q" #'toggle-debug-on-quit)
-  (define-key endless/toggle-map "t" #'endless/toggle-theme)
-  ;;; Generalized version of `read-only-mode'.
-  (define-key endless/toggle-map "r" #'dired-toggle-read-only)
-  (autoload 'dired-toggle-read-only "dired" nil t)
-  (define-key endless/toggle-map "w" #'whitespace-mode)
-  
-  ;; More from endless, say "Emacs launch calc", C-x l c
-  (define-prefix-command 'launcher-map)
-  ;; C-x l is `count-lines-page' by default. If you
-  ;; use that, you can try s-l or <C-return>.
-  (define-key ctl-x-map "l" 'launcher-map)
-  (global-set-key (kbd "s-l") 'launcher-map)
-  (define-key launcher-map "c" #'calc)
-  (define-key launcher-map "d" #'ediff-buffers)
-  (define-key launcher-map "f" #'find-dired)
-  (define-key launcher-map "g" #'lgrep)
-  (define-key launcher-map "G" #'rgrep)
-  (define-key launcher-map "h" #'man) ; Help
-  (define-key launcher-map "n" #'nethack)
-  (define-key launcher-map "l" #'paradox-list-packages)
-  (define-key launcher-map "s" #'eshell)
-  (define-key launcher-map "t" #'proced) ; top
-  (define-key launcher-map "C" #'tr/open-code-amazon-com)
-  
-  (defmacro run (exec)
-    "Return a function that runs the executable EXEC."
-    (let ((func-name (intern (concat "endless/run-" exec))))
-      `(progn
-         (defun ,func-name ()
-           ,(format "Run the %s executable." exec)
-           (interactive)
-           (start-process "" nil ,exec))
-         ',func-name)))
-  
-  ;; (define-key launcher-map "v" (run "steam"))
-  (define-key launcher-map "e" (run "eclipse"))
-  (define-key launcher-map "p" (run "pidgin"))
-  (define-key launcher-map "s" (run "spotify"))
-  
-  (defmacro browse (url)
-    "Return a function that calls `browse-url' on URL."
-    (let ((func-name (intern (concat "endless/browse-" url))))
-      `(progn
-         (defun ,func-name ()
-           ,(format "Browse to the url %s." url)
-           (interactive)
-           (browse-url ,url))
-         ',func-name)))
-  
-  (define-key launcher-map "r" (browse "http://www.reddit.com/r/emacs/"))
-  (define-key launcher-map "w" (browse "http://www.emacswiki.org/"))
-  (define-key launcher-map "?" (browse "http://emacs.stackexchange.com/"))
-  (define-key launcher-map "a" (browse "http://www.penny-arcade.com/"))
-  (define-key launcher-map "x" (browse "http://www.xkcd.com/"))
-  (define-key launcher-map "m" (browse "http://www.gizmag.com/"))
-  (define-key launcher-map "g" (browse "http://www.gmail.com/"))
-  
-  
-#+end_src
-
+    
 *** Org
 
 #+begin_src emacs-lisp
@@ -1002,7 +1002,9 @@ Popup for key shortcuts
   (use-package guide-key
     :init
     (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c"))
-    (guide-key-mode 1))
+    (guide-key-mode 1)
+    (setq guide-key/recursive-key-sequence-flag t)
+    (setq guide-key/popup-window-position 'bottom))
 #+end_src
 
 *** Rainbow Delimiters
@@ -1058,9 +1060,6 @@ again all the time.
   (projectile-global-mode)
   
   (setq projectile-file-exists-remote-cache-expire nil)
-  
-  (add-to-list 'projectile-test-files-suffices ".t")
-  (add-to-list 'projectile-test-files-suffices ".pm")
 #+END_SRC
 
 This bit creates a view of all projects which also shells out to git to get some useful info about the project as far
@@ -1099,15 +1098,27 @@ as the repo is concerned
        ))
     "Highlights the body of the project")
 
+  (defface local-changes
+    '((((class color) (background dark))
+       :background "red"))
+    "Highlights projects with work not checked in")
+
   (defun tr-projectiles/get-project-dir-at-point ()
     "returns the project directory at point, minus all font faces"
     (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
+  (defun tr-projectiles/get-text-faces (text)
+    (let ((default-directory text)
+          (status (shell-command-to-string "git status --porcelain")))
+      (cond ((string-match "fatal" status) '())
+            ((> (length status) 0) 'local-changes)
+            (t '()))))
   (defun tr-projectiles/present-title (title)
     (concat "\n" (propertize (concat title "\n")
-                             'face 'projectiles-header)))
+                             'face '(local-changes projectiles-header))))
+
   (defun tr-projectiles/present-body (body)
-    (propertize body 'face 'projectiles-body))
+    (propertize body 'face '(projectiles-body)))
 
   (defun tr-projectiles/list-projects ()
     "Loops through all known projects from projectile and applies git-tldr to them"
@@ -1119,8 +1130,7 @@ as the repo is concerned
           (mapc
            (lambda (project)
              (let ((default-directory project))
-               (insert (tr-projectiles/present-title project))
-               (insert (tr-projectiles/present-body (shell-command-to-string "git tldr")))))
+               (insert (tr-projectiles/present-title project))))
            (projectile-relevant-known-projects))
           (git-projectiles-mode)
           (pop-to-buffer bufname)))))
@@ -1140,7 +1150,7 @@ as the repo is concerned
   (defun tr-projectiles/open-in-magit ()
     "Opens the current line in magit"
     (interactive)
-    (magit-status (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+    (magit-status (tr-projectiles/get-project-dir-at-point)))
 
   (defun tr-projectiles/find-file-with-project (project-dir)
     "Opens a mini buffer with the files from the project"
@@ -1152,7 +1162,7 @@ as the repo is concerned
     "Opens a mini buffer with the files in the project at point"
     (interactive)
     (tr-projectiles/find-file-with-project
-     (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+     (tr-projectiles/get-project-dir-at-point)))
 
   ; needs to refresh the buffer once the removal is complete
   (defun tr-projectiles/remove-project (project-dir)
@@ -1165,7 +1175,8 @@ as the repo is concerned
     "Removes the project from the list of known"
     (interactive)
     (tr-projectiles/remove-project
-     (tr-projectiles/get-project-dir-at-point)))
+     (tr-projectiles/get-project-dir-at-point))
+    (tr-projectiles/list-projects))
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
