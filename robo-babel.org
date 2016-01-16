@@ -148,17 +148,20 @@ Defaults from the beginning
     Tidy is like an html lint, this function cleans up the buffer
 #+BEGIN_SRC emacs-lisp
 
-  (defun tidy-html()
-    "Tidies the HTML content in the buffer using `tidy"
-    (interactive)
-    (shell-command-on-region
-     (point-min)
-     (point-max)
-     "tidy -i -w 120 -q"
-     (current-buffer)
-     t
-     "*Tidy Error Buffer*"
-     t))
+  (defun bf-pretty-print-xml-region (begin end)
+    "Pretty format XML markup in region. You need to have nxml-mode
+  http://www.emacswiki.org/cgi-bin/wiki/NxmlMode installed to do
+  this.  The function inserts linebreaks to separate tags that have
+  nothing but whitespace between them.  It then indents the markup
+  by using nxml's indentation rules."
+    (interactive "r")
+    (save-excursion
+        (nxml-mode)
+        (goto-char begin)
+        (while (search-forward-regexp "\>[ \\t]*\<" nil t) 
+          (backward-char) (insert "\n"))
+        (indent-region begin end))
+      (message "Ah, much better!"))
 
   (defun highlight-and-show()
     "Highlight a symbol and show all occurences"
@@ -193,6 +196,21 @@ Defaults from the beginning
     (let ((default-directory path))
       (-> "git rev-parse --show-toplevel" shell-command-to-string s-trim)))
 
+  (defun open-codeac-at-point ()
+    (interactive)
+    (let* ((repository-root-directory (vc-find-root (buffer-file-name) ".git"))
+           (package-name (file-name-base (directory-file-name repository-root-directory)))
+           (relative-file-path (file-relative-name (buffer-file-name) repository-root-directory))
+           (current-commit (replace-regexp-in-string (rx (* (any " \t\n"))) ""
+                                                     (shell-command-to-string "git rev-parse --short HEAD")))
+           (codeac-url
+            (concat "https://code.amazon.com/packages/" package-name
+                    "/blobs/" current-commit
+                    "/--/" relative-file-path
+                    "#line-" (number-to-string (line-number-at-pos)))))
+      (message codeac-url)
+      (browse-url codeac-url)))
+
   (defun amz/generate-code-link (path)
     "Builds a link to the proper spot in code.amazon.com"
     (let ((path (f-relative path (gs/git-get-dir path)))
@@ -210,6 +228,10 @@ Defaults from the beginning
     (kill-new (amz/generate-code-link)))
 
   (global-set-key "\C-ck" 'amz/code-link-to-kill-ring)
+
+  (defun amz/post-review ()
+    (interactive)
+    (shell-command-to-string "post-review -u GRCS-Reconciliation -i polma"))
     
 #+END_SRC  
 ** Global Variables
@@ -389,7 +411,7 @@ First attempt at my own hand written customization, not just copied. Needs some 
 
 #+begin_src emacs-lisp
   (add-to-list 'erc-modules 'highlight-nicknames)
-  (set-face-foreground 'erc-input-face "blue")
+  (set-face-foreground 'erc-input-face "lightblue")
   (erc-update-modules)
   (erc-spelling-mode 1)
   (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon")
@@ -617,20 +639,20 @@ In Place Annotations, lets you make annotations on a file without modifying the 
 *** Key Bindings
 **** Global
 #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-c M-p") 'ace-window)
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (global-set-key (kbd "C-c M-p") 'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
-    ;; Discover my major, good for those days you cant remember!
-    (global-set-key (kbd "C-h C-m") 'discover-my-major)
+  ;; Discover my major, good for those days you cant remember!
+  (global-set-key (kbd "C-h C-m") 'discover-my-major)
 
-    (global-set-key [f8] 'neotree-toggle)
-    (global-set-key (kbd "M-x") 'smex)
-    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-    (global-set-key "\C-cl" 'org-store-link)
-    (global-set-key "\C-cc" 'org-capture)
-    (global-set-key "\C-ca" 'org-agenda)
-    (global-set-key "\C-cml" 'magit-file-log)
-    (define-key global-map (kbd "RET") 'newline-and-indent)
+  (global-set-key [f8] 'neotree-toggle)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cml" 'magit-file-log)
+  (define-key global-map (kbd "RET") 'newline-and-indent)
 #+END_SRC
 **** Endless toggle and launcher
 
@@ -708,6 +730,14 @@ Mnemonic example, "Emacs toggle column", C-x t c
   
 #+end_src
 
+**** Magit
+#+BEGIN_SRC emacs-lisp
+  (defun my-magit-keys ()
+    "Keys for my special functions"
+    (local-set-key (kbd "C-c r") 'amz/post-review))
+
+  (add-hook 'magit-mode-hook 'my-magit-keys)
+#+END_SRC
 *** Mode line format
 
 I use smart mode line, mostly for ease of use, someday ill customize
@@ -829,6 +859,9 @@ narrowed."
       (if (> (length at-point) 0)
           (cdr (assoc at-point status-map))
         " ")))
+
+  (defun tr/org-agenda-add-location ()
+    (org-entry-get (point) "Location"))
 
   (setq org-agenda-prefix-format
           (quote
@@ -1039,9 +1072,11 @@ as the repo is concerned
       (cond ((string-match "fatal" status) '())
             ((> (length status) 0) 'local-changes)
             (t '()))))
+
   (defun tr-projectiles/present-title (title)
     (concat "\n" (propertize (concat title "\n")
-                             'face '(local-changes projectiles-header))))
+                             'face
+                             `(,(tr-projectiles/get-text-faces title) projectiles-header))))
 
   (defun tr-projectiles/present-body (body)
     (propertize body 'face '(projectiles-body)))
