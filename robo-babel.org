@@ -955,6 +955,7 @@ narrowed."
   (eval-after-load 'org-agenda
     '(define-key org-agenda-mode-map (kbd "C-c M-d") 'tr/decline-meeting-invite)
     )
+
 #+end_src
 
 *** Origami
@@ -1001,17 +1002,9 @@ This is gregs folding code, works pretty well, this is just the key chords I am 
     :tags '(work))
 
   (prodigy-define-service
-    :name "Boot2Docker"
-    :command "boot2docker"
-    :args '("up")
-    :tags '(home))
-
-  (prodigy-define-service
-    :name "ElasticSearch"
-    :command "docker"
-    :args '("start" "elasticsearch")
-    :tags '(home))
-
+    :name "Ninja Sync"
+    :command "ninja-dev-sync"
+    :tags '(work))
 #+END_SRC
 *** Projectile
 
@@ -1084,14 +1077,17 @@ as the repo is concerned
   (defun tr-projectiles/list-projects ()
     "Loops through all known projects from projectile and applies git-tldr to them"
     (interactive)
-    (let ((bufname (get-buffer-create "*Git*")))
+    (let ((bufname (get-buffer-create "*Git*"))
+          (cleaned (projectile-cleanup-known-projects))
+          )
       (with-current-buffer bufname
         (let ((inhibit-read-only t))
           (erase-buffer)
           (mapc
            (lambda (project)
              (let ((default-directory project))
-               (insert (tr-projectiles/present-title project))))
+               (insert (tr-projectiles/present-title project))
+               (insert (tr-projectiles/present-body (shell-command-to-string "git tldr")))))
            (projectile-relevant-known-projects))
           (git-projectiles-mode)
           (pop-to-buffer bufname)))))
