@@ -229,9 +229,11 @@ Defaults from the beginning
 
   (global-set-key "\C-ck" 'amz/code-link-to-kill-ring)
 
-  (defun amz/post-review ()
-    (interactive)
-    (shell-command-to-string "post-review -u GRCS-Reconciliation -i polma"))
+  (defun amz/post-review (team user)
+    (interactive "sTeam:\nsUsername:")
+    (let ((tD (if (> (length team) 0) team "GRCS-Reconciliation"))
+          (uD (if (> (length user) 0) user "oaimihai")))
+      (shell-command-to-string (format "post-review -u %s -i %s" tD uD))))
     
 #+END_SRC  
 ** Global Variables
@@ -1025,7 +1027,8 @@ as the repo is concerned
   (define-key git-projectiles-mode-map (kbd "p") 'tr-projectiles/search-prev)
   (define-key git-projectiles-mode-map (kbd "f") 'tr-projectiles/find-file-at-point)
   (define-key git-projectiles-mode-map (kbd "k") 'tr-projectiles/remove-project-at-point)
-  ;(define-key git-projects-mode-map (kbd "g") 'gs-git-proj/rebuild-buffer)
+  (define-key git-projectiles-mode-map (kbd "g") 'tr-projectiles/list-projects)
+  (define-key git-projectiles-mode-map (kbd "r") 'tr-projectiles/code-review)
 
   (defface projectiles-header
     '((((class color) (background light))
@@ -1052,32 +1055,39 @@ as the repo is concerned
 
   (defface local-changes
     '((((class color) (background dark))
-       :background "red"))
+       :background "IndianRed4"))
+    "Highlights projects with work not checked in")
+
+  (defface local-changes-body
+    '((((class color) (background dark))
+       :background "RosyBrown1"
+       :foreground "IndianRed4"))
     "Highlights projects with work not checked in")
 
   (defun tr-projectiles/get-project-dir-at-point ()
     "returns the project directory at point, minus all font faces"
     (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
-  (defun tr-projectiles/get-text-faces (text)
+  (defun tr-projectiles/get-text-faces (text face)
     (let ((default-directory text)
           (status (shell-command-to-string "git status --porcelain")))
       (cond ((string-match "fatal" status) '())
-            ((> (length status) 0) 'local-changes)
+            ((> (length status) 0) face)
             (t '()))))
 
   (defun tr-projectiles/present-title (title)
     (concat "\n" (propertize (concat title "\n")
                              'face
-                             `(,(tr-projectiles/get-text-faces title) projectiles-header))))
+                             `(,(tr-projectiles/get-text-faces title 'local-changes) projectiles-header))))
 
-  (defun tr-projectiles/present-body (body)
-    (propertize body 'face '(projectiles-body)))
+  (defun tr-projectiles/present-body (project body)
+    (propertize body 'face `(,(tr-projectiles/get-text-faces project 'local-changes-body) projectiles-body)))
+
 
   (defun tr-projectiles/list-projects ()
     "Loops through all known projects from projectile and applies git-tldr to them"
     (interactive)
-    (let ((bufname (get-buffer-create "*Git*"))
+    (let ((bufname (get-buffer-create "*Projectiles*"))
           (cleaned (projectile-cleanup-known-projects))
           )
       (with-current-buffer bufname
@@ -1087,7 +1097,7 @@ as the repo is concerned
            (lambda (project)
              (let ((default-directory project))
                (insert (tr-projectiles/present-title project))
-               (insert (tr-projectiles/present-body (shell-command-to-string "git tldr")))))
+               (insert (tr-projectiles/present-body project (shell-command-to-string "git tldr")))))
            (projectile-relevant-known-projects))
           (git-projectiles-mode)
           (pop-to-buffer bufname)))))
@@ -1134,6 +1144,12 @@ as the repo is concerned
     (tr-projectiles/remove-project
      (tr-projectiles/get-project-dir-at-point))
     (tr-projectiles/list-projects))
+
+  (defun tr-projectiles/code-review (team user)
+    "Starts a code review at the specified project"
+    (interactive "sTeam:\nsUser:")
+    (let ((default-directory (tr-projectiles/get-project-dir-at-point)))
+      (amz/post-review team user)))
 #+END_SRC
 *** Rainbow Delimiters
 
