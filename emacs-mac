@@ -1,8 +1,7 @@
-(package-initialize nil)
-
-(package-initialize t)
-
+(require 'package)
 (setq package-enable-at-startup nil)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(package-initialize)
 
 (set-keyboard-coding-system nil)
 

@@ -12,7 +12,7 @@ Defaults from the beginning
 #+begin_src emacs-lisp
 ;; default to better frame titles
 (setq frame-title-format
-      (concat  "%b - emacs@" (system-name)))
+      "%b - emacs")
 
 ;; default to unified diffs
 (setq diff-tsjswitches "-u")
@@ -27,6 +27,12 @@ Defaults from the beginning
 
   (setq settings-dir
         (expand-file-name "settings" user-emacs-directory))
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (require 'use-package)
 
   ;; Set up load path
   (add-to-list 'load-path settings-dir)
@@ -44,102 +50,87 @@ Defaults from the beginning
   ;; Are we on a mac?
   (setq is-mac (equal system-type 'darwin))
 
-  ;; Setup packages
-  (require 'setup-package)
-
-  ;; Install extensions if they're missing
-  (defun init--install-packages ()
-    (packages-install
-     '(ace-window
-       avy
-       bm
-       cl
-       cl-lib                       
-       clj-refactor
-       company
-       compile
-       diminish
-       dirtree
-       discover
-       discover-my-major
-       erc
-       f
-       flycheck
-       flycheck-clojure
-       git-gutter-fringe+
-       git-messenger
-       google-this
-       helm
-       hungry-delete
-       prodigy
-       project-explorer
-       rainbow-delimiters
-       rainbow-mode
-       recentf
-       smart-mode-line
-       soap-client
-       tea-time
-       tls
-       visual-regexp-steroids
-       magit
-       )))
-
-  (condition-case nil
-      (init--install-packages)
-    (error
-     (package-refresh-contents)
-     (init--install-packages)))
-
   ;; Setup environment variables from the user's shell.
   (when is-mac
-    (require-package 'exec-path-from-shell)
+    (use-package exec-path-from-shell :ensure t)
     (exec-path-from-shell-initialize))
 
-#+END_SRC
+  ;; Setup packages
 
-#+begin_src emacs-lisp
   ;; Requires
-  (require 'ace-window)
-  (require 'avy)
-  (require 'bm)
-  (require 'cl)
-  (require 'cl-lib)                       
-  (require 'clj-refactor)
-  (require 'company)
-  (require 'company-emacs-eclim)
-  (require 'compile)
-  (require 'diminish)
-  (require 'dirtree)
-  (require 'discover)
-  (require 'discover-my-major)
-  (require 'eclim)
-  (require 'eclimd)
-  (require 'erc)
-  (require 'erc-highlight-nicknames)
-  (require 'flycheck)
-  (require 'git-messenger)
-  (require 'google-this)
-  (require 'goto-last-change)
-  (require 'helm)
-  (require 'helm-config)
-  (require 'highlight-symbol)
-  (require 'highlight-symbol)
-  (require 'httprepl)
-  (require 'hungry-delete)
-  (require 'ipa)
-  (require 'origami)
-  (require 'prodigy)
-  (require 'project-explorer)
-  (require 'rainbow-delimiters)
-  (require 'rainbow-mode)
-  (require 'recentf)
-  (require 'smart-mode-line)
-  (require 'soap-client)
-  (require 'symon)
-  (require 'tea-time)
-  (require 'tls)
-  (require 'use-package)
-  (require 'visual-regexp-steroids)
+  (use-package ace-window
+    :commands ace-window
+    :demand
+    :config
+    (key-chord-define-global "qp" 'ace-window)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    :ensure t)
+  (use-package avy :ensure t)
+  (use-package bm :ensure t)
+  (use-package cl :ensure t)
+  (use-package cl-lib :ensure t)
+  (use-package clj-refactor :ensure t)
+  (use-package color-theme :ensure t)
+  (use-package company
+    :diminish company-mode
+    :ensure t)
+  (use-package compile :ensure t)
+  (use-package dash :ensure t)
+  (use-package diminish :ensure t)
+  (use-package dirtree :ensure t)
+  (use-package discover :ensure t)
+  (use-package discover-my-major
+    :commands discover-my-major
+    :init (bind-key "C-h C-m" 'discover-my-major)
+    :ensure t)
+  (use-package flycheck :ensure t)
+  (use-package git-messenger :ensure t)
+  (use-package google-this
+    :diminish google-this-mode
+    :ensure t)
+  (use-package goto-last-change :ensure t)
+  (use-package guide-key
+    :diminish guide-key-mode
+    :ensure t)
+  (use-package helm
+    :config
+    (require 'helm-org)
+    :ensure t)
+  (use-package highlight-symbol :ensure t)
+  (use-package httprepl :ensure t)
+  (use-package hungry-delete :ensure t)
+  (use-package ido-ubiquitous :ensure t)
+  (use-package key-chord :ensure t)
+  (use-package magit :ensure t)
+  (use-package org-bullets
+    :init
+    (add-hook 'org-mode-hook 'org-bullets-mode)
+    :ensure t)
+  (use-package paradox :ensure t)
+  (use-package prodigy :ensure t)
+  (use-package project-explorer :ensure t)
+  (use-package projectile
+    :diminish projectile-mode
+    :ensure t)
+  (use-package rainbow-delimiters :ensure t)
+  (use-package rainbow-mode :ensure t)
+  (use-package recentf :ensure t)
+  (use-package smart-mode-line :ensure t)
+  (use-package smartparens
+    :diminish smartparens-mode
+    :ensure t)
+  (use-package smex :ensure t)
+  (use-package soap-client :ensure t)
+  (use-package symon :ensure t)
+  (use-package tea-time :ensure t)
+  (use-package tls :ensure t)
+  (use-package visual-regexp-steroids :ensure t)
+  (use-package undo-tree
+    :diminish undo-tree-mode
+    :ensure t)
+  (use-package yasnippet
+    :diminish yas-minor-mode
+    :ensure t)
 
 #+end_src
 ** Functions
@@ -241,6 +232,10 @@ Defaults from the beginning
      (setq-default indent-tabs-mode nil)
      (setq paradox-github-token '0af38642de4c23e8399e7849d875a7118308f322)
    #+END_SRC
+*** Registers
+    #+BEGIN_SRC emacs-lisp
+      (set-register ?e (cons 'file "~/emacs/robo-babel.org"))
+    #+END_SRC
 ** General Configuration
 *** Auto Fill Mode
 
@@ -327,79 +322,8 @@ rs: Rename symbol
   (setq company-require-match nil)
   
 #+end_src
-
-*** Eclim
-
-#+begin_src emacs-lisp
-  (global-eclim-mode)
-  (company-emacs-eclim-setup)
-  (setq help-at-pt-display-when-idle t)
-  (setq help-at-pt-timer-delay 0.05)
-  (help-at-pt-set-timer)
-  
-  ;; Functions
-  (defun tr/exit-code-helper (cmd rx)
-    "Pipe through perl looking for rx."
-    (s-concat cmd
-              "|perl -e 'my $flag=0; while(<>) { if ($_=~/" rx "/)"
-              "{ $flag = 1 } print $_ } exit $flag'"))
-  
-  (defvar tr/junit-failure-regex "(Failures: [1-9][0-9]*)|(Errors: [1-9][0-9]*)")
-  
-  (defun tr/eclim-java-junit-all ()
-    (interactive)
-    (compile (tr/exit-code-helper
-              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p"))))
-              tr/junit-failure-regex)))
-  
-  (defun tr/eclim-java-junit ()
-    (interactive)
-    (compile (tr/exit-code-helper
-              (eclim--make-command (cons "java_junit" (eclim--expand-args '("-p" "-f" "-o"))))
-              tr/junit-failure-regex)))
-  
-  
-  (add-to-list 'compilation-mode-font-lock-keywords
-               '("Tests run: [0-9]*, Failures: [1-9][0-9]*,.*$"
-                 (0 compilation-error-face)))
-  (add-to-list 'compilation-mode-font-lock-keywords
-               '("Tests run: [0-9]*, Failures: 0, Errors: [1-9][0-9]*,.*$"
-                 (0 compilation-error-face)))
-  (add-to-list 'compilation-mode-font-lock-keywords
-               '("Tests run: [0-9]*, Failures: 0, Errors: 0, Time elapsed: .*$"
-                 (0 compilation-info-face)))
-  
-  (defun tr/java-self-insert-complete (char)
-    (lexical-let ((char char))
-      (lambda ()
-        (interactive)
-        (insert char)
-        (company-complete))))
-  
-  (defun java-mode-keys ()
-    (local-set-key (kbd "C-c o") 'eclim-java-import-organize)
-    (local-set-key (kbd "C-c p") 'eclim-problems)
-    (local-set-key (kbd "C-c P") 'eclim-problems-open)
-    (local-set-key (kbd "C-c d") 'eclim-java-doc-comment)
-    (local-set-key (kbd "C-c C-d") 'eclim-java-find-declaration)
-    (local-set-key (kbd "C-c C-e") 'eclim-java-find-generic)
-    (local-set-key (kbd "C-c C-r") 'eclim-java-find-references)
-    (local-set-key (kbd "C-c C-t") 'eclim-java-find-type)
-    (local-set-key (kbd "C-c C-f") 'eclim-java-format)
-    (local-set-key (kbd "C-c G") 'eclim-java-generate-getter-and-setter)
-    (local-set-key (kbd "C-c h") 'eclim-java-hierarchy)
-    (local-set-key (kbd "C-c j") 'eclim-java-show-documentation-for-current-element)
-    (local-set-key (kbd "C-c r") 'eclim-java-refactor-rename-symbol-at-point)
-    (local-set-key (kbd "C-c s") 'eclim-java-method-signature-at-point)
-    (local-set-key (kbd "C-c t") 'tr/eclim-java-junit)
-    (local-set-key (kbd "C-c T") 'tr/eclim-java-junit-all)
-    (local-set-key (kbd "C-c z") 'eclim-java-implement)
-    (local-set-key (kbd ".") (tr/java-self-insert-complete ".")))
-  
-  (add-hook 'java-mode-hook 'java-mode-keys)
-#+end_src
     
-*** Emphasize-buffer
+*** Emphasise-Buffer
 
 First attempt at my own hand written customization, not just copied. Needs some work.
 
@@ -407,100 +331,6 @@ First attempt at my own hand written customization, not just copied. Needs some 
 (fset 'emphasize-buffer
    "\C-u32\C-x}")
 (global-set-key [f5] 'emphasize-buffer)
-#+end_src
-
-*** ERC
-
-#+begin_src emacs-lisp
-  (add-to-list 'erc-modules 'highlight-nicknames)
-  (set-face-foreground 'erc-input-face "lightblue")
-  (erc-update-modules)
-  (erc-spelling-mode 1)
-  (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon")
-                                      ("freenode.net" "#pfproject")))
-
-  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-
-  (defun start-amazon-irc ()
-    "Connect to Amazon IRC."
-    (interactive)
-    (setq erc-autojoin-channels-alist '(("amazon.com" "#ingestion" "#recon" "#grcs")))
-    (erc-tls :server "ircs.amazon.com" :port 6697
-             :nick "trrogers" :full-name "trrogers"))
-
-  (defun start-irc ()
-    "Connect to IRC."
-    (interactive)
-    (setq erc-autojoin-channels-alist '(("freenode.net" "#pfproject")))
-    (erc :server "irc.freenode.net" :port 6667 :nick "robochuck"))
-
-  (add-hook 'erc-insert-post-hook
-            (lambda () (goto-char (point-min))
-              (when (re-search-forward
-                     (regexp-quote (erc-current-nick)) nil t) (ding))))
-
-
-#+end_src
-
-Greg sent me this, is a way to have the mode line go very bright when erc is getting some action. Also provides a way
-to mute that, which is very useful when a channel you dont care about is getting chatty
-
-#+begin_src emacs-lisp
-  (defun gs/set-mode-line-background (color)
-    (when color (set-face-background 'mode-line color)))
-
-  (lexical-let ((alerts '()))
-    (defun gs/mode-line-alert (alert-id color)
-      "Alert by setting the modeline to COLOR. If COLOR is the symbol
-    clear then remove the current notification."
-      (cl-flet ((set-alert (alert-id color)
-                           (when (not (assoc alert-id alerts))
-                             (setq alerts (cons (cons alert-id color) alerts))
-                             (gs/set-mode-line-background color)))
-                (remove-alert (alert-id)
-                              (when (assoc alert-id alerts)
-                                (setq alerts (assq-delete-all alert-id alerts))
-                                (gs/set-mode-line-background (cdar alerts)))))
-        ;; set this lazily to allow a color scheme to be chosen before first use
-        (when (null alerts) (push (cons 'default (face-background 'mode-line)) alerts))
-        (cond ((eq alert-id 'print) alerts)  ;handy debug proxy
-              ((eq color 'clear) (remove-alert alert-id))
-              (t (set-alert alert-id color))))))
-
-  (defvar gs/erc-notify-mute-buffers nil
-    "Buffers that are currently muted and should not be alerted if
-    activity occurs.")
-
-  (defun gs/erc-toggle-mute-buffer ()
-    (interactive)
-    (if (memq (current-buffer) gs/erc-notify-mute-buffers)
-        (progn (setq gs/erc-notify-mute-buffers (delete (current-buffer)
-                                                        gs/erc-notify-mute-buffers))
-               (message "Buffer unmuted"))
-      (add-to-list 'gs/erc-notify-mute-buffers (current-buffer))
-      (message "Buffer muted")))
-
-  (defun gs/erc-notify-activity ()
-    (if (not (null erc-modified-channels-alist))
-        (when (not (every (lambda (channel)
-                            (memq (car channel) gs/erc-notify-mute-buffers))
-                          erc-modified-channels-alist))
-          (gs/mode-line-alert 'erc-notify "#00ff00"))
-      (gs/mode-line-alert 'erc-notify 'clear)))
-
-  (add-hook 'erc-track-list-changed-hook 'gs/erc-notify-activity)
-
-  (let ((list '("#recon" "#grcs")))
-    (dolist (var list)
-      (add-to-list 'gs/erc-notify-mute-buffers var)))
-
-  (defun erc-notify (string, message, buffer, sender)
-    (let ((title buffer)
-          (body string))
-      (shell-command-to-string (format "osascript -e 'display notification \"%s\" with title \"%s\"'" body title))))
-
-  ;;  (add-hook 'erc-echo-notice-in-user-buffers 'erc-notify)
-
 #+end_src
 
 *** File backup
@@ -516,12 +346,6 @@ to mute that, which is very useful when a channel you dont care about is getting
 
 (add-to-list 'sml/replacer-regexp-list '("^~/development/" ":DEV:") t)
 
-*** Fringe
-#+BEGIN_SRC emacs-lisp
-  (when (window-system)
-    (require 'git-gutter-fringe)
-    (global-git-gutter-mode +1))
-#+END_SRC
 *** Google this
 
 #+begin_src emacs-lisp
@@ -577,7 +401,7 @@ If you use imenu to look at the functions in a file, this will give you ido mode
         "Refresh imenu and jump to a place in the buffer using Ido."
         (interactive)
         (unless (featurep 'imenu)
-          (require 'imenu nil t))
+          (use-package imenu :ensure t))
         (cond
          ((not symbol-list)
           (let ((ido-mode ido-mode)
@@ -625,28 +449,9 @@ If you use imenu to look at the functions in a file, this will give you ido mode
   (global-set-key (kbd "C-c g s") 'ido-goto-symbol)
 #+end_src 
 
-*** IPA
-
-In Place Annotations, lets you make annotations on a file without modifying the original file.
-
-#+begin_src emacs-lisp
-  (global-set-key (kbd "C-c i i") 'ipa-insert)
-  (global-set-key (kbd "C-c i e") 'ipa-edit)
-  (global-set-key (kbd "C-c i t") 'ipa-toggle)
-  (global-set-key (kbd "C-c i s") 'ipa-show)
-  (global-set-key (kbd "C-c i n") 'ipa-next)
-  (global-set-key (kbd "C-c i p") 'ipa-previous)
-#+end_src
-
 *** Key Bindings
 **** Global
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-c M-p") 'ace-window)
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-
-  ;; Discover my major, good for those days you cant remember!
-  (global-set-key (kbd "C-h C-m") 'discover-my-major)
-
   (global-set-key [f8] 'neotree-toggle)
   (global-set-key (kbd "M-x") 'smex)
   (global-set-key (kbd "M-X") 'smex-major-mode-commands)
@@ -673,6 +478,7 @@ Mnemonic example, "Emacs toggle column", C-x t c
   (define-key endless/toggle-map "l" #'toggle-truncate-lines)
   (define-key endless/toggle-map "q" #'toggle-debug-on-quit)
   (define-key endless/toggle-map "t" #'endless/toggle-theme)
+
   ;;; Generalized version of `read-only-mode'.
   (define-key endless/toggle-map "r" #'dired-toggle-read-only)
   (autoload 'dired-toggle-read-only "dired" nil t)
@@ -706,11 +512,6 @@ Mnemonic example, "Emacs toggle column", C-x t c
            (start-process "" nil ,exec))
          ',func-name)))
   
-  ;; (define-key launcher-map "v" (run "steam"))
-  (define-key launcher-map "e" (run "eclipse"))
-  (define-key launcher-map "p" (run "pidgin"))
-  (define-key launcher-map "s" (run "spotify"))
-  
   (defmacro browse (url)
     "Return a function that calls `browse-url' on URL."
     (let ((func-name (intern (concat "endless/browse-" url))))
@@ -728,8 +529,6 @@ Mnemonic example, "Emacs toggle column", C-x t c
   (define-key launcher-map "x" (browse "http://www.xkcd.com/"))
   (define-key launcher-map "m" (browse "http://www.gizmag.com/"))
   (define-key launcher-map "g" (browse "http://www.gmail.com/"))
-  
-  
 #+end_src
 
 **** Magit
@@ -750,55 +549,6 @@ I use smart mode line, mostly for ease of use, someday ill customize
     (sml/apply-theme 'dark)
 #+end_src
 
-Minor modes I do not want to see, uses Diminish
-
-#+begin_src emacs-lisp
-  (eval-after-load "google-this" '(diminish 'google-this-mode))
-  (eval-after-load "company" '(diminish 'company-mode))
-  (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
-  (eval-after-load "smarparens" '(diminish 'smartparens-mode))
-  (eval-after-load "yasnippet" '(diminish 'yas-minor-mode))
-  (eval-after-load "projectile" '(diminish 'projectile-mode))
-  (eval-after-load "guide-key" '(diminish 'guide-key-mode))
-  (eval-after-load "git-gutter" '(diminish 'git-gutter-mode))
-  (eval-after-load "ivy" '(diminish 'ivy-mode))
-#+end_src
-
-*** Mu4e
-#+BEGIN_SRC emacs-lisp
-
-  (defun setup-mu4e () 
-    (require 'mu4e)
-    (require 'mu4e-contrib)
-    (require 'org-mu4e)
-    (setq
-     user-full-name "Travis Rogers"
-     user-mail-address "trrogers@amazon.co.uk"
-     mu4e-maildir "~/Mail"
-     mu4e-get-mail-command "offlineimap"
-     mu4e-update-interval 300
-     message-send-mail-function 'smtpmail-send-it
-     smtpmail-smtp-server "ballard.amazon.com"
-     mu4e-headers-include-related t)
-    
-    (setq
-     mu4e-maildir-shortcuts
-     '( ("/synced/INBOX" . ?i)))
-    
-    (add-to-list 'mu4e-bookmarks
-                 '("maildir:/synced/INBOX AND flag:unread" "Inbox Unread" ?i))
-
-    (add-to-list 'mu4e-bookmarks
-                 '("flag:flagged" "Flagged" ?f))
-    
-    (setq
-     mu4e-html2text-command "w3m -T text/html")
-  )
-
-  (if (executable-find "mu")
-      (setup-mu4e))
-
-#+END_SRC
 *** Narrow-or-widen
 
 #+begin_src emacs-lisp
@@ -838,6 +588,7 @@ narrowed."
   (setq org-agenda-files (find-lisp-find-files "~/org" "\.org$"))
   (setq org-default-notes-file "~/org/refile.org")
   (setq org-tags-column -100)
+  (setq org-src-fontify-natively t)
 
   (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/org/agenda.org" "Tasks")
@@ -911,7 +662,7 @@ narrowed."
   (setq org-agenda-todo-ignore-scheduled t)
 
   (eval-after-load 'org
-    '(define-key org-mode-map (kbd "C-c h s") 'helm-org-headlines))
+    '(define-key org-mode-map (kbd "C-c h s") 'helm-org-in-buffer-headings))
 
 
   ;;;;;;;;;;;;;;;;;;;;;;
@@ -964,9 +715,9 @@ narrowed."
 This is gregs folding code, works pretty well, this is just the key chords I am using
 
 #+begin_src emacs-lisp
-  (key-chord-define-global "o[" 'origami-open-node-recursively)
-  (key-chord-define-global "c]" 'origami-close-node)
-  (key-chord-define-global "[]" 'origami-show-only-node)
+;;  (key-chord-define-global "o[" 'origami-open-node-recursively)
+;;  (key-chord-define-global "c]" 'origami-close-node)
+;;  (key-chord-define-global "[]" 'origami-show-only-node)
 #+end_src
 
 *** Perl
