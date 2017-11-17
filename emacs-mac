@@ -5,8 +5,6 @@
 
 (set-keyboard-coding-system nil)
 
-(set-default-font "-*-Inconsolata-normal-normal-normal-*-13-*-*-*-m-0-iso10646-1")
-
 (require 'org)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

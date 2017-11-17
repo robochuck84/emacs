@@ -3,6 +3,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["black" "red" "green" "yellow" "deep sky blue" "magenta" "cyan" "white"])
  '(cperl-indent-level 4)
@@ -17,7 +19,10 @@
    (quote
     ("/home/local/ANT/trrogers/org/emacs-notes.org" "/home/local/ANT/trrogers/org/deep_learning.org" "/home/local/ANT/trrogers/org/project_notes.org" "/home/local/ANT/trrogers/org/samurai_runner.org" "/home/local/ANT/trrogers/org/recipes.org" "/home/local/ANT/trrogers/org/phonescreens/ovidiu_tirsa.org" "/home/local/ANT/trrogers/org/phonescreens/questions.org" "/home/local/ANT/trrogers/org/emacs.org" "/home/local/ANT/trrogers/org/ticket_notes.org" "/home/local/ANT/trrogers/org/projects.org" "/home/local/ANT/trrogers/org/agenda.org" "/home/local/ANT/trrogers/org/nuclear_notes.org" "/home/local/ANT/trrogers/org/journal.org" "/home/local/ANT/trrogers/org/refile.org" "/home/local/ANT/trrogers/org/calendar.org")))
  '(org-hide-leading-stars t)
- '(paradox-github-token t t))
+ '(package-selected-packages
+   (quote
+    (undo-tree visual-regexp-steroids tea-time symon smex smartparens smart-mode-line rainbow-mode rainbow-delimiters projectile project-explorer prodigy paradox org-bullets magit key-chord ido-ubiquitous hungry-delete httprepl highlight-symbol helm guide-key goto-last-change google-this git-messenger flycheck discover-my-major discover dirtree dash company color-theme clj-refactor bm ace-window exec-path-from-shell use-package)))
+ '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

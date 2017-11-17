@@ -99,7 +99,7 @@ Defaults from the beginning
   (use-package highlight-symbol :ensure t)
   (use-package httprepl :ensure t)
   (use-package hungry-delete :ensure t)
-  (use-package ido-ubiquitous :ensure t)
+  (use-package ido-completing-read+ :ensure t)
   (use-package key-chord :ensure t)
   (use-package magit :ensure t)
   (use-package org-bullets
@@ -634,7 +634,7 @@ narrowed."
 
   (setq org-agenda-include-diary t)
 
-  (setq org-tag-alist '(("region" . ?r) ("sprint" . ?s) ("home" . ?h) ("adhoc" . ?a) ("project" . ?p) ("catexp" . ?c)))
+  (setq org-tag-alist '(("payments" . ?p) ("sprint" . ?s) ("home" . ?h) ("adhoc" . ?a) ))
 
   (setq org-log-done 'time)
 
