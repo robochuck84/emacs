@@ -23,7 +23,7 @@ Defaults from the beginning
 #+BEGIN_SRC emacs-lisp
   ;; Set path to dependencies
   (setq site-lisp-dir
-        (expand-file-name "site-lisp" user-emacs-directory))
+        (expand-file-name "site-lisp" user-emacs-directory)) 
 
   (setq settings-dir
         (expand-file-name "settings" user-emacs-directory))
@@ -69,7 +69,6 @@ Defaults from the beginning
   (use-package bm :ensure t)
   (use-package cl :ensure t)
   (use-package cl-lib :ensure t)
-  (use-package clj-refactor :ensure t)
   (use-package color-theme :ensure t)
   (use-package company
     :diminish company-mode
@@ -83,6 +82,10 @@ Defaults from the beginning
     :commands discover-my-major
     :init (bind-key "C-h C-m" 'discover-my-major)
     :ensure t)
+  (use-package doom-themes :ensure t)
+  (use-package doom-modeline
+    :ensure t
+    :defer t)
   (use-package flycheck :ensure t)
   (use-package git-messenger :ensure t)
   (use-package google-this
@@ -102,11 +105,14 @@ Defaults from the beginning
   (use-package ido-ubiquitous :ensure t)
   (use-package key-chord :ensure t)
   (use-package magit :ensure t)
+  (use-package neotree :ensure t)
   (use-package org-bullets
     :init
     (add-hook 'org-mode-hook 'org-bullets-mode)
     :ensure t)
   (use-package paradox :ensure t)
+;;  (use-package persp-mode :ensure t)
+ ;; (use-package persp-projectile :ensure t)
   (use-package prodigy :ensure t)
   (use-package project-explorer :ensure t)
   (use-package projectile
@@ -115,14 +121,13 @@ Defaults from the beginning
   (use-package rainbow-delimiters :ensure t)
   (use-package rainbow-mode :ensure t)
   (use-package recentf :ensure t)
-  (use-package smart-mode-line :ensure t)
+  ;; (use-package smart-mode-line :ensure t)
   (use-package smartparens
     :diminish smartparens-mode
     :ensure t)
   (use-package smex :ensure t)
   (use-package soap-client :ensure t)
   (use-package symon :ensure t)
-  (use-package tea-time :ensure t)
   (use-package tls :ensure t)
   (use-package visual-regexp-steroids :ensure t)
   (use-package undo-tree
@@ -544,9 +549,10 @@ Mnemonic example, "Emacs toggle column", C-x t c
 I use smart mode line, mostly for ease of use, someday ill customize
 
 #+begin_src emacs-lisp
-    ;; Smart mode line
-    (sml/setup)
-    (sml/apply-theme 'dark)
+  ;; Smart mode line
+  ;;(sml/setup)
+  ;;(sml/apply-theme 'dark)
+  (doom-modeline-init)
 #+end_src
 
 *** Narrow-or-widen
@@ -941,8 +947,14 @@ again all the time.
 *** Theme 
 
 #+begin_src emacs-lisp
-  (load-file "~/.emacs.d/themes/almost-monokai.el")
-    (color-theme-initialize)
+  ;;(load-file "~/.emacs.d/themes/almost-monokai.el")
+  ;;  (color-theme-initialize)
+  (setq doom-themes-enable-bold t
+        doom-themes-ebable-italic t)
+
+  (load-theme 'doom-tomorrow-night t)
+  (doom-themes-neotree-config)
+  (doom-themes-visual-bell-config)
 #+end_src
 
 *** Undo Tree mode - visualize your undos and branches
