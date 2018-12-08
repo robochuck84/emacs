@@ -21,122 +21,113 @@ Defaults from the beginning
 ** Emacs initialization
 *** Package Setup
 #+BEGIN_SRC emacs-lisp
-  ;; Set path to dependencies
-  (setq site-lisp-dir
-        (expand-file-name "site-lisp" user-emacs-directory)) 
+      ;; Set path to dependencies
+      (setq site-lisp-dir
+            (expand-file-name "site-lisp" user-emacs-directory)) 
 
-  (setq settings-dir
-        (expand-file-name "settings" user-emacs-directory))
+      (setq settings-dir
+            (expand-file-name "settings" user-emacs-directory))
 
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
+      (unless (package-installed-p 'use-package)
+        (package-refresh-contents)
+        (package-install 'use-package))
 
-  (require 'use-package)
+      (require 'use-package)
 
-  ;; Set up load path
-  (add-to-list 'load-path settings-dir)
-  (add-to-list 'load-path site-lisp-dir)
+      ;; Set up load path
+      (add-to-list 'load-path settings-dir)
+      (add-to-list 'load-path site-lisp-dir)
 
-  ;; Keep emacs Custom-settings in separate file
-  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (load custom-file)
+      ;; Keep emacs Custom-settings in separate file
+      (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+      (load custom-file)
 
-  ;; Add external projects to load path
-  (dolist (project (directory-files site-lisp-dir t "\\w+"))
-    (when (file-directory-p project)
-      (add-to-list 'load-path project)))
+      ;; Add external projects to load path
+      (dolist (project (directory-files site-lisp-dir t "\\w+"))
+        (when (file-directory-p project)
+          (add-to-list 'load-path project)))
 
-  ;; Are we on a mac?
-  (setq is-mac (equal system-type 'darwin))
+      ;; Are we on a mac?
+      (setq is-mac (equal system-type 'darwin))
 
-  ;; Setup environment variables from the user's shell.
-  (when is-mac
-    (use-package exec-path-from-shell :ensure t)
-    (exec-path-from-shell-initialize))
+      ;; Setup environment variables from the user's shell.
+      (when is-mac
+        (use-package exec-path-from-shell :ensure t)
+        (exec-path-from-shell-initialize))
 
-  ;; Setup packages
+      ;; Setup packages
 
-  ;; Requires
-  (use-package ace-window
-    :commands ace-window
-    :demand
-    :config
-    (key-chord-define-global "qp" 'ace-window)
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-    :ensure t)
-  (use-package avy :ensure t)
-  (use-package bm :ensure t)
-  (use-package cl :ensure t)
-  (use-package cl-lib :ensure t)
-  (use-package color-theme :ensure t)
-  (use-package company
-    :diminish company-mode
-    :ensure t)
-  (use-package compile :ensure t)
-  (use-package dash :ensure t)
-  (use-package diminish :ensure t)
-  (use-package dirtree :ensure t)
-  (use-package discover :ensure t)
-  (use-package discover-my-major
-    :commands discover-my-major
-    :init (bind-key "C-h C-m" 'discover-my-major)
-    :ensure t)
-  (use-package doom-themes :ensure t)
-  (use-package doom-modeline
-    :ensure t
-    :defer t)
-  (use-package flycheck :ensure t)
-  (use-package git-messenger :ensure t)
-  (use-package google-this
-    :diminish google-this-mode
-    :ensure t)
-  (use-package goto-last-change :ensure t)
-  (use-package guide-key
-    :diminish guide-key-mode
-    :ensure t)
-  (use-package helm
-    :config
-    (require 'helm-org)
-    :ensure t)
-  (use-package highlight-symbol :ensure t)
-  (use-package httprepl :ensure t)
-  (use-package hungry-delete :ensure t)
-  (use-package ido-ubiquitous :ensure t)
-  (use-package key-chord :ensure t)
-  (use-package magit :ensure t)
-  (use-package neotree :ensure t)
-  (use-package org-bullets
-    :init
-    (add-hook 'org-mode-hook 'org-bullets-mode)
-    :ensure t)
-  (use-package paradox :ensure t)
-;;  (use-package persp-mode :ensure t)
- ;; (use-package persp-projectile :ensure t)
-  (use-package prodigy :ensure t)
-  (use-package project-explorer :ensure t)
-  (use-package projectile
-    :diminish projectile-mode
-    :ensure t)
-  (use-package rainbow-delimiters :ensure t)
-  (use-package rainbow-mode :ensure t)
-  (use-package recentf :ensure t)
-  ;; (use-package smart-mode-line :ensure t)
-  (use-package smartparens
-    :diminish smartparens-mode
-    :ensure t)
-  (use-package smex :ensure t)
-  (use-package soap-client :ensure t)
-  (use-package symon :ensure t)
-  (use-package tls :ensure t)
-  (use-package visual-regexp-steroids :ensure t)
-  (use-package undo-tree
-    :diminish undo-tree-mode
-    :ensure t)
-  (use-package yasnippet
-    :diminish yas-minor-mode
-    :ensure t)
-
+      ;; Requires
+      (use-package bm :ensure t)
+      (use-package cl :ensure t)
+      (use-package cl-lib :ensure t)
+      (use-package color-theme :ensure t)
+      (use-package company
+        :diminish company-mode
+        :ensure t)
+      (use-package compile :ensure t)
+      (use-package dash :ensure t)
+      (use-package diminish :ensure t)
+      (use-package dirtree :ensure t)
+      (use-package discover :ensure t)
+      (use-package discover-my-major
+        :commands discover-my-major
+        :init (bind-key "C-h C-m" 'discover-my-major)
+        :ensure t)
+      (use-package doom-themes :ensure t)
+      (use-package doom-modeline
+        :ensure t
+        :defer t)
+      (use-package flycheck 
+        :ensure t
+        :init
+        (global-flycheck-mode t))
+      (use-package git-messenger :ensure t)
+      (use-package google-this
+        :diminish google-this-mode
+        :ensure t)
+      (use-package goto-last-change :ensure t)
+      (use-package guide-key
+        :diminish guide-key-mode
+        :ensure t)
+      (use-package helm
+        :config
+        (require 'helm-org)
+        :ensure t)
+      (use-package highlight-symbol :ensure t)
+      (use-package httprepl :ensure t)
+      (use-package hungry-delete :ensure t)
+      (use-package ido-ubiquitous :ensure t)
+      (use-package key-chord :ensure t)
+      (use-package magit :ensure t)
+      (use-package neotree :ensure t)
+      (use-package org-bullets
+        :init
+        (add-hook 'org-mode-hook 'org-bullets-mode)
+        :ensure t)
+      (use-package paradox :ensure t)
+    ;;  (use-package persp-mode :ensure t)
+     ;; (use-package persp-projectile :ensure t)
+      (use-package prodigy :ensure t)
+      (use-package project-explorer :ensure t)
+      (use-package rainbow-delimiters :ensure t)
+      (use-package rainbow-mode :ensure t)
+      (use-package recentf :ensure t)
+      ;; (use-package smart-mode-line :ensure t)
+      (use-package smartparens
+        :diminish smartparens-mode
+        :ensure t)
+      (use-package smex :ensure t)
+      (use-package soap-client :ensure t)
+      (use-package symon :ensure t)
+      (use-package tls :ensure t)
+      (use-package visual-regexp-steroids :ensure t)
+      (use-package undo-tree
+        :diminish undo-tree-mode
+        :ensure t)
+      (use-package yasnippet
+        :diminish yas-minor-mode
+        :ensure t)
 #+end_src
 ** Functions
     Some of the things I have found that are handy or I have written up to make life easier
@@ -236,12 +227,45 @@ Defaults from the beginning
    #+BEGIN_SRC emacs-lisp
      (setq-default indent-tabs-mode nil)
      (setq paradox-github-token '0af38642de4c23e8399e7849d875a7118308f322)
+     (setq-default tab-width 4)
+
+     (global-hl-line-mode t)
    #+END_SRC
 *** Registers
     #+BEGIN_SRC emacs-lisp
       (set-register ?e (cons 'file "~/emacs/robo-babel.org"))
     #+END_SRC
 ** General Configuration
+*** Ace Window
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :commands ace-window
+    :demand
+    :config
+    (key-chord-define-global "qp" 'ace-window)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    :ensure t)
+
+  (defun tr/swap-windows ()
+    "Pick a window to swap to"
+    (interactive)
+    (ace-swap-window)
+    (aw-flip-window))
+
+
+
+#+END_SRC
+*** AG - The Silver Searcher
+Be sure to install the silver searcher
+#+BEGIN_SRC bash
+brew install the_silver_searcher
+#+END_SRC
+
+Now ensure the package is installed
+#+BEGIN_SRC emacs-lisp
+  (use-package ag
+    :ensure t)
+#+END_SRC
 *** Auto Fill Mode
 
 #+begin_src emacs-lisp
@@ -262,6 +286,26 @@ Function from Greg, used to quickly create new scratch buffers
       (lisp-interaction-mode)))
   
   (global-set-key (kbd "C-c b b") 'gs/create-new-scratch-buffer)
+#+END_SRC
+
+Manage Buffers
+#+BEGIN_SRC emacs-lisp
+  (use-package ibuffer
+    :ensure t
+    :bind (("C-x C-b" . ibuffer))
+    :config
+    (setq ibuffer-saved-filter-groups
+          (quote (("default"
+                   ("dired" (mode . dired-mode))
+                   ("org" (name . "^.*org$"))
+                   ("web" (or (mode . web-mode) (mode . js2-mode)))
+                   ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+                   ("programming" (or
+                                   (mode . python-mode)
+                                   (mode . c++-mode)
+                                   (mode . go-mode)))
+                   ("emacs" (or (name . "^\\*scratch\\*$") (name . "^\\*Messages\\*$")))))))
+    (setq ibuffer-expert 1))
 #+END_SRC
 
 *** Clojure Refactor
@@ -321,11 +365,11 @@ rs: Rename symbol
 #+begin_src emacs-lisp
   (global-company-mode t)
   (setq company-dabbrev-downcase nil)
-  (setq company-idle-delay 0.5)
+  (setq company-idle-delay 0)
   (setq company-show-numbers t)
-  (setq company-minimum-prefix-length 2)
+  (setq company-minimum-prefix-length 3)
   (setq company-require-match nil)
-  
+
 #+end_src
     
 *** Emphasise-Buffer
@@ -370,6 +414,57 @@ Popup for key shortcuts
     (setq guide-key/popup-window-position 'bottom))
 #+end_src
 
+*** Golang
+Instructions for setting up emacs for golang are here: http://dominik.honnef.co/posts/2013/03/writing_go_in_emacs/
+
+#+BEGIN_SRC emacs-lisp
+  (use-package go-mode
+    :init
+    (add-hook 'go-mode-hook 'auto-complete-for-go)
+    :ensure t)
+#+END_SRC
+
+Setup for flymake and flycheck: https://github.com/dougm/goflymake
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/gocode/src/github.com/dougm/goflymake")
+  (require 'go-flymake)
+
+  (add-to-list 'load-path "~/gocode/src/github.com/dougm/goflymake")
+  (require 'go-flycheck)
+#+END_SRC
+
+Setup Go Autocomplete
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/gocode/src/github.com/nsf/gocode")
+  (require 'go-autocomplete)
+  (ac-config-default)
+#+END_SRC
+
+Go Eldoc
+#+BEGIN_SRC emacs-lisp
+  (use-package go-eldoc
+    :init
+    (go-eldoc-setup)
+    :ensure t)
+#+END_SRC
+
+Format on save
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-go-mode-hook()
+
+    (setq gofmt-command "goimports")
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    (if (not (string-match "go" compile-command))
+        (set (make-local-variable 'compile-command)
+             "go build -v && go test -v && go vet"))
+    (local-set-key (kbd "M-.") 'godef-jump)
+    (local-set-key (kbd "M-*") 'pop-tag-mark))
+
+  (add-hook 'go-mode-hook 'my-go-mode-hook)
+
+#+END_SRC
 *** History
 
 #+begin_src emacs-lisp
@@ -392,10 +487,10 @@ Popup for key shortcuts
 
 *** IDO mode - completion in many places
 #+begin_src emacs-lisp
-  (ido-mode 1)
-  (ido-ubiquitous-mode 1)
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
+  ;;(ido-mode 1)
+  ;;(ido-ubiquitous-mode 1)
+  ;;(setq ido-enable-flex-matching t)
+  ;;(setq ido-everywhere t)
 
 #+end_src
 
@@ -454,6 +549,31 @@ If you use imenu to look at the functions in a file, this will give you ido mode
   (global-set-key (kbd "C-c g s") 'ido-goto-symbol)
 #+end_src 
 
+*** Swiper
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :ensure t)
+
+  (use-package swiper
+    :ensure try
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)
+           ("C-c C-r" . swiper)
+           ("M-x" . counsel-M-x)
+           ("C-x C-f" . counsel-find-file))
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-display-style 'fancy)))
+#+END_SRC
+*** Avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :config
+    (avy-setup-default))
+#+END_SRC
 *** Key Bindings
 **** Global
 #+BEGIN_SRC emacs-lisp
@@ -465,6 +585,7 @@ If you use imenu to look at the functions in a file, this will give you ido mode
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cml" 'magit-file-log)
   (define-key global-map (kbd "RET") 'newline-and-indent)
+
 #+END_SRC
 **** Endless toggle and launcher
 
@@ -768,8 +889,18 @@ This is gregs folding code, works pretty well, this is just the key chords I am 
 *** Projectile
 
 #+BEGIN_SRC emacs-lisp
-  (projectile-global-mode)
-  
+  (use-package projectile
+    :bind (("C-c p" . projectile-switch-project)
+           ("C-c f" . projectile-find-file-dwim-other-window))
+    :diminish projectile-mode
+    :ensure t
+    :config
+    (projectile-global-mode)
+    (setq projectile-completion-system 'ivy))
+
+  (use-package counsel-projectile
+    :ensure t)
+
   (setq projectile-file-exists-remote-cache-expire nil)
 #+END_SRC
 
@@ -907,6 +1038,18 @@ as the repo is concerned
     (interactive "sTeam:\nsUser:")
     (let ((default-directory (tr-projectiles/get-project-dir-at-point)))
       (amz/post-review team user)))
+#+END_SRC
+*** Dump Jump
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :bind (("M-g o" . dumb-jump-go-other-window)
+           ("M-g j" . dumb-jump-go)
+           ("M-g x" . dumb-jump-go-prefer-external)
+           ("M-g z" . dumb-jump-go-prefer-external-other-window))
+    :config (setq dumb-jump-selector 'ivy)
+    :ensure t
+    :init
+    (dumb-jump-mode))
 #+END_SRC
 *** Rainbow Delimiters
 
@@ -1050,16 +1193,6 @@ Copied from http://www.reddit.com/r/emacs/comments/25v0eo/you_emacs_tips_and_tri
 #+begin_src emacs-lisp
   (key-chord-mode 1)
   ;; faster shift
-  (key-chord-define-global "1q" "!")
-  (key-chord-define-global "2w" "@")
-  (key-chord-define-global "3e" "#")
-  (key-chord-define-global "4r" "$")
-  (key-chord-define-global "5t" "%")
-  (key-chord-define-global "6y" "^")
-  (key-chord-define-global "7u" "&")
-  (key-chord-define-global "8i" "*")
-  (key-chord-define-global "9o" "(")
-  (key-chord-define-global "0p" ")")
   ;; Ace jump
   (key-chord-define-global "aj" 'avy-goto-char)
   ;; Magit
