@@ -22,8 +22,8 @@
     (org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-rmail org-w3m org-drill)))
  '(package-selected-packages
    (quote
-    (ag dumb-jump counsel-projectile try counsel evil go-eldoc go-autocomplete persp-mode persp-projectile doom-modeline neotree doom-themes go-mode lsp-java lsp-mode elpy ess org-beautify-theme org-bullets magit paradox smartparens helm-config helm goto-last-change google-this git-messenger flycheck discover-my-major discover dirtree company clj-refactor bm ace-window exec-path-from-shell
-        (ace-window avy bm cl cl-lib clj-refactor company compile dash diminish dirtree discover discover-my-major f flycheck flycheck-clojure git-gutter-fringe+ git-messenger google-this helm hungry-delete prodigy project-explorer rainbow-delimiters rainbow-mode recentf smart-mode-line soap-client tea-time tls visual-regexp-steroids magit))))
+    (eyebrowse ag dumb-jump counsel-projectile try counsel evil go-eldoc go-autocomplete persp-mode persp-projectile doom-modeline neotree doom-themes go-mode lsp-java lsp-mode elpy ess org-beautify-theme org-bullets magit paradox smartparens helm-config helm goto-last-change google-this git-messenger flycheck discover-my-major discover dirtree company clj-refactor bm ace-window exec-path-from-shell
+               (ace-window avy bm cl cl-lib clj-refactor company compile dash diminish dirtree discover discover-my-major f flycheck flycheck-clojure git-gutter-fringe+ git-messenger google-this helm hungry-delete prodigy project-explorer rainbow-delimiters rainbow-mode recentf smart-mode-line soap-client tea-time tls visual-regexp-steroids magit))))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
